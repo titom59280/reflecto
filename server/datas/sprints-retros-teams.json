@@ -1,0 +1,13 @@
+[
+  {
+    "id": "257f7061-e06d-45b0-a429-bc3621456214",
+    "retroId": "f20e8f5c-f855-4cce-b51e-c872a9ed36a2",
+    "sprintId": "333d54c1-7391-4e95-864b-5a9b07a4071e",
+    "teamId": "f0b9c6fe-b833-40c5-9acc-65b62ba82df5",
+    "companyId": "f106eb09-b182-4562-b9d3-042c3263d4a4",
+    "isActif": true,
+    "isClosed": false,
+    "isRetroInProgress": false,
+    "isRetroDone": false
+  }
+]

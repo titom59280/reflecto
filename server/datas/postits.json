@@ -1,0 +1,38 @@
+[
+  {
+    "id": "e9877f4e-1746-4404-b5d9-b5db09999c54",
+    "message": "J'ai beaucoup aimé travaillé sur ...",
+    "categoryName": "Bien",
+    "sprintRetroTeamLinkId": "257f7061-e06d-45b0-a429-bc3621456214",
+    "trigramme": "SMR",
+    "memberId": "bb44e90f-1348-44de-9b18-0a76348c9cf7",
+    "annotation": ""
+  },
+  {
+    "id": "275b4f36-e12b-420c-8e12-6fc205c81287",
+    "message": "La chaine CI/CD nous a donné beaucoup de mal",
+    "categoryName": "Mauvais",
+    "sprintRetroTeamLinkId": "257f7061-e06d-45b0-a429-bc3621456214",
+    "trigramme": "SMR",
+    "memberId": "bb44e90f-1348-44de-9b18-0a76348c9cf7",
+    "annotation": ""
+  },
+  {
+    "id": "59d697c6-8143-465b-8139-d4b4d5c10548",
+    "message": "L'apport d'un nouveau testeur a été profitable",
+    "categoryName": "aidé",
+    "sprintRetroTeamLinkId": "257f7061-e06d-45b0-a429-bc3621456214",
+    "trigramme": "SMR",
+    "memberId": "bb44e90f-1348-44de-9b18-0a76348c9cf7",
+    "annotation": ""
+  },
+  {
+    "id": "56471126-04a9-48e2-8973-40b1cf36b837",
+    "message": "Un outil digital pour nos rétros nous aidera beaucoup",
+    "categoryName": "Manqué",
+    "sprintRetroTeamLinkId": "257f7061-e06d-45b0-a429-bc3621456214",
+    "trigramme": "SMR",
+    "memberId": "bb44e90f-1348-44de-9b18-0a76348c9cf7",
+    "annotation": ""
+  }
+]

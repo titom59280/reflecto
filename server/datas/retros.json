@@ -1,0 +1,30 @@
+[
+  {
+    "id": "f20e8f5c-f855-4cce-b51e-c872a9ed36a2",
+    "companyId": "f106eb09-b182-4562-b9d3-042c3263d4a4",
+    "name": "Nouvelle rétro",
+    "createdAt": "2025-10-12T14:17:28.804Z",
+    "categories": [
+      {
+        "name": "Bien",
+        "description": "Ce qui c'est bien passé",
+        "image": ""
+      },
+      {
+        "name": "Mauvais",
+        "description": "Ce qui c'est mal passé",
+        "image": ""
+      },
+      {
+        "name": "aidé",
+        "description": "Ce qui nous aidé",
+        "image": ""
+      },
+      {
+        "name": "Manqué",
+        "description": "Ce qui nous a manqué",
+        "image": ""
+      }
+    ]
+  }
+]

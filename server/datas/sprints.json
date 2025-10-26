@@ -1,0 +1,11 @@
+[
+  {
+    "id": "333d54c1-7391-4e95-864b-5a9b07a4071e",
+    "name": "Sprint 1",
+    "isActive": false,
+    "companyId": "f106eb09-b182-4562-b9d3-042c3263d4a4",
+    "isClosed": false,
+    "isRetroDone": false,
+    "createdAt": "2025-10-12T14:16:17.819Z"
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "bb44e90f-1348-44de-9b18-0a76348c9cf7",
+    "companyId": "f106eb09-b182-4562-b9d3-042c3263d4a4",
+    "email": "d8e54ba759fe9cab2fa33998137185aa0f5c0c231fa068890c894e77c5bb035c",
+    "name": "Scrum Master",
+    "trigramme": "SMR",
+    "teamId": "f0b9c6fe-b833-40c5-9acc-65b62ba82df5",
+    "isScrumMaster": true,
+    "isFullAdmin": true,
+    "password": "$2b$10$zaLWNH1Tqa/Cwyh57EyE/eYXruOZLDP4dsrQJWwWr5E6t96exvKra"
+  }
+]

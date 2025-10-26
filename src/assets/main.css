@@ -1,0 +1,260 @@
+:root {
+  --primary-color: #04344f;   /* bleu foncé (header) */
+  --hover-color: #ffffff;     /* blanc */
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+
+/* Fond général */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #FFFCF3; /* crème clair */
+  color: #333;
+  width: 100%;
+}
+
+/* Formulaire centré */
+.container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Input */
+.input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.input:focus {
+  border-color: #002b36;
+  outline: none;
+  box-shadow: 0 0 4px #002b3666;
+}
+
+/* Boutons */
+.button-primary {
+  width: 100%;
+  padding: 10px;
+  background-color: #002b36;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.button-primary:hover {
+  background-color: #005f6b;
+}
+
+/* Onglets */
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  font-weight: bold;
+  background-color: #eee;
+  border: none;
+  border-radius: 6px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.tab-button:last-child {
+  margin-right: 0;
+}
+
+.tab-button.active {
+  background-color: #002b36;
+  color: white;
+}
+
+/* Message */
+.message {
+  text-align: center;
+  margin-top: 0.2rem;
+  font-size: 0.9rem;
+  color: #d33;
+}
+
+
+.separator{
+  border-bottom: 5px solid #005a64;
+  padding-top: 8px;
+  padding-top: 8px;
+}
+
+
+/***************************/
+/*partie pour le responsive*/
+/***************************/
+@media (max-width: 480px) {
+  .container {
+    margin: 40px 20px; /* réduit les marges latérales */
+    padding: 1.5rem;
+  }
+
+  .tabs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tab-button {
+    margin-right: 0 !important;
+  }
+}
+
+
+
+.dropdown {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 180px;
+}
+
+.dropdown a,
+.dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.dropdown a:hover,
+.dropdown button:hover {
+  background-color: var(--primary-color);
+  color: var(--hover-color);
+}
+
+/* Déconnexion bouton toujours coloré */
+.dropdown .logout-btn {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  margin: 0 8px;
+}
+
+.dropdown .logout-btn:hover {
+  background-color: white;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0px 0 20px;
+  color: #333;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.6s ease-out forwards;
+}
+
+.page-title::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background-color: #002b36;
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-content-animated {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.5s ease-out forwards;
+}
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.back-admin-button {
+  position: absolute;
+  left: 0;
+  background-color: #dc3545; /* rouge Bootstrap */
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.back-admin-button:hover {
+  background-color: #a71d2a;
+}
+
+.start-btn:hover {
+  background-color: #02677a;
+}
+
+.header-button {
+  background-color: #02677a;
+}
+
+
+.header-button-bis {
+  background-color: white !important;
+  color: #005a64 !important;
+  margin-right: 2rem;
+}
+
+.header-button-bis:hover {
+  background-color: #005a64 !important;
+  color: white !important;
+}
+
+
+.start-btn {
+  background-color: #002b36;
+  color: white;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
