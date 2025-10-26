@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -21,9 +20,6 @@ app.use('/api/sprint-retro-team', require('./routes/linkRoutes'));
 app.use('/api', require('./routes/authRoutes'));
 app.use('/api/companies', require('./routes/companyRoutes'));
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../dist")));
