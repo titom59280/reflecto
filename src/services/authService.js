@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_BASE = process.env.API_BASE_URL_API;
+const API_BASE = process.env.VUE_APP_API_BASE_URL_API;
 
 const tokenKey = 'retro-token';
 const userKey = 'retro-user';

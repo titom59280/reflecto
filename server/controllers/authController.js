@@ -8,9 +8,9 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { generateToken } = require('../utils/tokenUtils');
 const { resultRequest } = require('../utils/requestUtils');
-const MAIL_PASS = process.env.MAIL_PASS;
-const MAIL_USER = process.env.MAIL_USER;
-const MAIL_RECEIVER = process.env.MAIL_RECEIVER;
+const MAIL_PASS = process.env.VUE_APP_AIL_PASS;
+const MAIL_USER = process.env.VUE_APP_MAIL_USER;
+const MAIL_RECEIVER = process.env.VUE_APP_MAIL_RECEIVER;
 exports.contact = async (req, res) => {
   try{
 

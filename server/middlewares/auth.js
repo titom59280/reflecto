@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const SECRET = process.env.JWT_SECRET;
+const SECRET = process.env.VUE_APP_JWT_SECRET;
 
 module.exports = function requireAuth(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
