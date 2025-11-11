@@ -31,6 +31,11 @@ export default {
     return res.data;
   },
 
+  async getCompanie() {
+    const res = await authService.instance.get(`/companies/getCompanie`);
+    return res.data;
+  },
+
   async createCompany(companyName, scrumMasterEmail, scrumMasterName, scrumMasterTrigramme) {
     const res = await authService.instance.post(`/companies`, {
       companyName,
@@ -96,6 +101,11 @@ export default {
     const res = await authService.instance.get(`/retros`);
     return res.data;
   },
+  async getCategories(retroId) {
+    const res = await authService.instance.get(`/retros/categories/${retroId}`);
+    return res.data;
+  },
+
   async createRetro(retro) {
     const res = await authService.instance.post(`/retros`, retro, {
       headers: { 'Content-Type': 'multipart/form-data' },

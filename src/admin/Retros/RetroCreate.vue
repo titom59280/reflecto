@@ -21,7 +21,7 @@
             <label>Description</label>
             <input v-model="cat.description" required />
           </div>
-          <div class="form-group">
+          <div v-if="companie && companie.subscriptionLevel == 2" class="form-group">
             <label>Image</label>
             <input type="file" @change="handleImageUpload($event, index)" />
           </div>
@@ -62,6 +62,7 @@ export default {
       selectedTeamId: '',
       selectedSprintId: '',
       messageError: '',
+      companie: null,
     };
   },
   computed: {
@@ -69,7 +70,18 @@ export default {
       return this.sprints.filter((s) => !s.isClosed);
     },
   },
+  mounted() {
+    this.fetchCompany();
+  },
   methods: {
+    async fetchCompany() {
+      const resultCompanie = await AdminService.getCompanie();
+      if (!resultCompanie.isSuccess) {
+        this.$root.showToast(resultCompanie.message, 'error');
+        return;
+      }
+      this.companie = resultCompanie.result;
+    },
     addCategory() {
       this.newRetro.categories.push({ name: '', description: '', image: null });
     },
@@ -248,6 +260,8 @@ button:not(.delete):hover {
 .form-container {
   background-color: #fff;
   padding: 0.5rem;
+  height: 100%;
+  overflow: auto;
 }
 
 .categories,

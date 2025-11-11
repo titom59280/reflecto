@@ -3,11 +3,11 @@
     <router-link to="/admin" class="back-admin-button"> ← Retour </router-link>
     <h1 class="page-title">Administration</h1>
   </div>
-  <div>
+  <div class="container-admin">
     <div class="admin-content">
       <div class="container">
         <ul class="admin-links">
-          <li v-if="!isFullAdmin">
+          <li v-if="isFullAdmin">
             <router-link to="/admin/companies" class="card-link">
               <span class="icon">🏢</span>
               <span>Gérer les compagnies</span>
@@ -47,6 +47,12 @@
 import authService from '@/services/authService';
 
 export default {
+  props: {
+    selectedTeamId: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       isFullAdmin: false,
@@ -132,5 +138,10 @@ li {
     opacity: 1;
     transform: translateY(0);
   }
+}
+.container-admin {
+  overflow: auto;
+  height: 100%;
+  justify-content: center;
 }
 </style>

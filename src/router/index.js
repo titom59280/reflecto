@@ -12,6 +12,7 @@ import CompaniesManager from '@/admin/CompaniesManager.vue';
 import ContactPage from '@/views/ContactPage.vue';
 import Legales from '@/views/Legales.vue';
 import ConnectionPage from '@/views/ConnectionPage.vue';
+import Pricing from '@/views/Pricing.vue';
 const routes = [
   {
     path: '/',
@@ -41,6 +42,12 @@ const routes = [
     path: '/contact',
     name: 'Contact',
     component: ContactPage,
+    meta: { public: true },
+  },
+  {
+    path: '/pricing',
+    name: 'Pricing',
+    component: Pricing,
     meta: { public: true },
   },
   {

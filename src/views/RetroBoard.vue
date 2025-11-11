@@ -3,8 +3,8 @@
     <div v-if="noRetroMessage || !retro" class="no-access">{{ noRetroMessage }}</div>
 
     <div v-else class="retro-columns">
-      <div v-for="(cat, index) in retro.categories" :key="index" class="retro-column">
-        <h3 v-if="isScrumMaster">{{ cat.name }}</h3>
+      <div v-for="cat in categories" :key="cat.id" class="retro-column">
+        <h3>{{ cat.name }}</h3>
         <img v-if="cat.image" :src="getImagePath(cat.image)" class="category-image" />
         <p class="description">{{ cat.description }}</p>
         <div v-if="messageToDisplay === ''" class="post-it-container">
@@ -36,7 +36,7 @@
     </div>
     <div v-if="retro && !noRetroMessage" class="add-button-container">
       <button
-        v-if="currentLink && !currentLink.isRetroInProgress"
+        v-if="currentLink && !currentLink.isRetroInProgress && !initializedRetro"
         class="add-postit-btn"
         @click="openAddModal"
       >
@@ -50,7 +50,7 @@
   <AddPostitModal
     v-if="retro"
     :visible="showModal"
-    :categories="retro.categories"
+    :categories="categories"
     :initial-postit="selectedPostit"
     @delete="confirmDelete"
     @close="showModal = false"
@@ -131,6 +131,7 @@ export default {
       nextSprintName: '',
       teams: [],
       retro: null,
+      categories: [],
       postits: [],
       postitsToShow: [],
       noRetroMessage: '',
@@ -178,7 +179,7 @@ export default {
         }
 
         this.$root.showToast(resultFinish.message, 'error');
-      } catch (e) {
+      } catch (err) {
         this.$root.showToast('Erreur lors de la clôture du sprint', 'error');
       }
     },
@@ -300,7 +301,7 @@ export default {
     },
     async handleDeletePostItConfirmed() {
       const resultDeletePostIt = await retroService.deletePostit(this.deletePostItId);
-      if (resultDeletePostIt.isSuccess) {
+      if (!resultDeletePostIt.isSuccess) {
         this.$root.showToast(resultDeletePostIt.message, 'error');
         return;
       }
@@ -468,6 +469,16 @@ export default {
           this.noRetroMessage = "L'équipe n'a pas encore de sprint en cours.";
           return;
         }
+
+        const resultCategories = await retroService.getCategories(this.currentLink.retroId);
+
+        if (!resultCategories.isSuccess) {
+          this.$root.showToast(resultCategories.message, 'error');
+          return;
+        }
+
+        this.categories = resultCategories.result;
+
         const resultRetros = await retroService.getRetros();
         if (!resultRetros.isSuccess) {
           this.$root.showToast(resultRetros.message, 'error');
@@ -479,7 +490,6 @@ export default {
         await this.fetchPostIts();
         this.alreadyFetchData = false;
       } catch (err) {
-        console.log(err);
         this.$root.showToast('Erreur lors de la récupération des données', 'error');
         this.noRetroMessage = 'Erreur de récupération des données.';
       }
@@ -503,7 +513,6 @@ export default {
       }
       const all = resultAll.result;
       this.postits = all.filter((p) => p.sprintRetroTeamLinkId === this.currentLink.id);
-      console.log(all, this.postits, this.currentLink.id);
     },
     truncateText(text, maxChars = 60) {
       if (!text) return '';

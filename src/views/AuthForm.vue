@@ -114,7 +114,6 @@ export default {
         this.$store.dispatch('setShowFormConnection', false);
         this.$router.push('/retro');
       } catch (err) {
-        console.log(err);
         this.$root.showToast(err.response?.data?.error || 'Erreur de connexion', 'error');
       }
     },
@@ -140,7 +139,6 @@ export default {
         authService.saveUser(resUser.result.user, resUser.result.token);
         this.$router.push('/retro');
       } catch (err) {
-        console.log(err);
         this.$root.showToast("Erreur lors de l'inscription.", 'error');
       }
     },

@@ -13,7 +13,7 @@
           v-model="selectedTeamId"
           @change="emitTeamChange"
         >
-          <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.teamName }}</option>
+          <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
         </select>
         <span v-else class="team-name">{{ currentTeamName }}</span>
       </div>
@@ -77,7 +77,7 @@ export default {
     this.teams = resultTeams.result;
     if (!this.isScrumMaster || this.teams.length === 1) {
       const team = this.teams.find((t) => t.id === this.user.teamId);
-      this.currentTeamName = team?.teamName || 'Inconnue';
+      this.currentTeamName = team?.name || 'Inconnue';
       return;
     }
 

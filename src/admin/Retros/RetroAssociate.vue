@@ -26,7 +26,7 @@
       <label>Équipe</label>
       <select v-model="selectedTeamId">
         <option disabled value="">Choisir une équipe</option>
-        <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.teamName }}</option>
+        <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
       </select>
     </div>
   </div>

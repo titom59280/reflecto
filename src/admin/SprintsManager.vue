@@ -16,7 +16,7 @@
     </template>
     <template #tab-1>
       <div class="sprint-form tab-content-animated">
-        <div v-if="sprints.length === 0">Aucun sprint pour le moment.</div>
+        <div v-if="sprints.length === 0" class="no-access">Aucun sprint pour le moment.</div>
         <div v-else class="sprints-grid">
           <div
             v-for="sprint in sortedSprints"
@@ -113,7 +113,6 @@ export default {
         this.$root.showToast('Le sprint a été supprimé', 'success');
         this.fetchSprints();
       } catch (err) {
-        console.log(err);
         this.$root.showToast(err.response.data.error, 'error');
       }
     },
@@ -240,7 +239,6 @@ button:not(.delete):hover {
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
   max-width: 800px;
 }
@@ -304,5 +302,15 @@ button:not(.delete):hover {
   width: 130px;
   display: flex;
   justify-content: space-around;
+}
+
+.no-access {
+  color: #c00;
+  font-weight: bold;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 </style>

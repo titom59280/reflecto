@@ -34,7 +34,7 @@
         />
       </template>
       <template #tab-3>
-        <div v-if="links.length === 0">Aucunes associations pour le moment.</div>
+        <div v-if="links.length === 0" class="no-access">Aucunes associations pour le moment.</div>
         <div v-else class="retros-grid tab-content-animated">
           <RetroLinks
             :teams="teams"
@@ -151,7 +151,6 @@ export default {
     },
     async fetchLinks() {
       const resultRetroLinks = await AdminService.getSprintRetroLinks();
-      console.log(resultRetroLinks);
       if (!resultRetroLinks.isSuccess) {
         this.$root.showToast(resultRetroLinks.message, 'error');
         return;
@@ -445,5 +444,14 @@ button:not(.delete):hover {
 .panel-content {
   padding: 10px;
   background: #fff;
+}
+.no-access {
+  color: #c00;
+  font-weight: bold;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="retros.length === 0">Aucune rétro pour le moment.</div>
+    <div v-if="retros.length === 0" class="no-access">Aucune rétro pour le moment.</div>
     <div v-else class="retros-grid tab-content-animated">
       <div class="retro-list">
         <div v-for="retro in retros" :key="retro.id" class="retro-card">
@@ -33,7 +33,11 @@ export default {
   methods: {
     async deleteRetro(id) {
       try {
-        await AdminService.deleteRetro(id);
+        const result = await AdminService.deleteRetro(id);
+        if (!result.isSuccess) {
+          this.$root.showToast(result.message, 'error');
+          return;
+        }
         this.$root.showToast('La rétro a été supprimée', 'success');
         this.$emit('refresh');
       } catch (err) {
@@ -316,5 +320,15 @@ button:not(.delete):hover {
 .panel-content {
   padding: 10px;
   background: #fff;
+}
+
+.no-access {
+  color: #c00;
+  font-weight: bold;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 </style>

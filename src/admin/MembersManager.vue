@@ -35,7 +35,7 @@
             <label>Équipe</label>
             <select v-model="newMember.teamId" required>
               <option v-for="team in teams" :key="team.id" :value="team.id">
-                {{ team.teamName }}
+                {{ team.name }}
               </option>
             </select>
           </div>
@@ -93,7 +93,7 @@
                 <label>Équipe</label>
                 <select v-model="editingMember.teamId">
                   <option v-for="team in teams" :key="team.id" :value="team.id">
-                    {{ team.teamName }}
+                    {{ team.name }}
                   </option>
                 </select>
               </div>
@@ -194,7 +194,7 @@ export default {
     },
     getTeamName(teamId) {
       const team = this.teams.find((t) => t.id === teamId);
-      return team ? team.teamName : 'Équipe inconnue';
+      return team ? team.name : 'Équipe inconnue';
     },
   },
 };
@@ -297,7 +297,6 @@ button:hover {
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
   max-width: 800px;
 }

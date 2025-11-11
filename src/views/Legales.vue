@@ -3,6 +3,7 @@
     <header class="header">
       <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
       <span class="title" @click="goToAccueil">Reflecto</span>
+      <button class="start-btn header-button-bis" @click="goToPricing">Nos offres</button>
       <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
       <button class="start-btn header-button" @click="goToLandingPageAndConnect()">
         Se connecter
@@ -17,11 +18,10 @@
             <p>
               Le présent site, <strong>Reflecto</strong>, est édité par :
               <br />
-              <strong>Nom de l’entreprise :</strong> Reflecto SAS<br />
-              <strong>Adresse :</strong> 123 Rue de l’Innovation, 75000 Paris, France<br />
+              <strong>Nom :</strong> Thomas Graveleine<br />
+              <strong>Adresse :</strong> 606 rue neuve, 18230 Saint-doulchard, France<br />
               <strong>Email :</strong> contact@reflecto.com<br />
-              <strong>Téléphone :</strong> +33 1 23 45 67 89<br />
-              <strong>SIRET :</strong> 123 456 789 00012
+              <strong>SIRET :</strong> 821 086 683 00033
             </p>
           </div>
 
@@ -30,7 +30,8 @@
             <p>
               Ce site est hébergé par :<br />
               <strong>Nom de l’hébergeur :</strong> Render.com<br />
-              <strong>Adresse :</strong> 456 Avenue du Cloud, 69000 Lyon, France
+              <strong>Adresse :</strong> 525 Brannan Street, Suite 300, San Francisco, CA 94107,
+              United States
             </p>
           </div>
 
@@ -50,7 +51,9 @@
               Les données personnelles collectées via ce site sont utilisées uniquement dans le
               cadre du service Reflecto et ne sont jamais revendues à des tiers. Conformément au
               RGPD, vous pouvez demander la consultation, la modification ou la suppression de vos
-              données en nous contactant à l’adresse : <strong>dpo@reflecto.com</strong>.
+              données en nous contactant via le formulaire de contact :
+              <strong><a href="/contact">Contact</a></strong
+              >.
             </p>
           </div>
 
@@ -76,6 +79,9 @@ import authService from '@/services/authService';
 
 export default {
   methods: {
+    goToPricing() {
+      this.$router.push('/pricing');
+    },
     goToContact() {
       this.$router.push('/contact');
     },
@@ -329,5 +335,9 @@ export default {
 .logo,
 .title {
   cursor: pointer;
+}
+
+.header-button {
+  background-color: #02677a;
 }
 </style>

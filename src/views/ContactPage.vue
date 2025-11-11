@@ -3,6 +3,7 @@
     <header class="header">
       <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
       <span class="title" @click="goToAccueil">Reflecto</span>
+      <button class="start-btn header-button-bis" @click="goToPricing">Nos offres</button>
       <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
       <button class="start-btn header-button connection-btn" @click="goToLandingPageAndConnect()">
         Se connecter
@@ -64,6 +65,12 @@ export default {
     };
   },
   methods: {
+    goToContact() {
+      this.$router.push('/contact');
+    },
+    goToPricing() {
+      this.$router.push('/pricing');
+    },
     goToLandingPageAndConnect() {
       this.$store.dispatch('setShowFormConnection', true);
       this.redirection();

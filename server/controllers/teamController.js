@@ -1,43 +1,65 @@
-const { readJson, writeJson, addItem, deleteItem } = require('../utils/jsonFileHelper');
-const path = require('path');
-const { DATA_DIR } = require('../config');
-const TEAM_FILE = path.join(DATA_DIR, 'teams.json');
-const RETRO_FILE = path.join(DATA_DIR, 'retros.json');
-const MEMBER_FILE = path.join(DATA_DIR, 'members.json');
-const COMPANY_FILE = path.join(DATA_DIR, 'companies.json');
+const pool = require('../utils/dbHelper');
 const crypto = require('crypto');
 const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
-    const allTeams = await readJson(TEAM_FILE);
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
     
-    const teams = allTeams.filter(t => t.companyId === req.user.companyId);
+    const teams = await pool.query(
+      `SELECT id, name, companyid as "companyId" FROM teams WHERE companyid = $1`,
+      [req.user.companyId]
+    );
     resultRequest(res, true, '', teams);
   } catch (err) {
-    resultRequest(res, false, 'Erreur lors de la récupération des équipes', { });
+    let message = "Erreur lors de la récupération des équipes";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message , { });
   }
 };
 
 exports.getAllWithMembers = async (req, res) => {
-  try {    
-    const allTeams = await readJson(TEAM_FILE);
-    const members = await readJson(MEMBER_FILE);
+  try {
 
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
     
-    const teams = allTeams.filter(t => t.companyId === req.user.companyId);
-    const companies = await readJson(COMPANY_FILE);
-    const companylevel = companies[companies.findIndex(c => c.id === req.user.companyId)].subscriptionLevel;
+    const teams = await pool.query(
+      `SELECT id, name, companyid as "companyId" FROM teams WHERE companyid = $1`,
+      [req.user.companyId]
+    );
+
+    const company = await pool.queryOne(
+      `SELECT id, name, subscriptionlevel as "subscriptionLevel" FROM companies WHERE id = $1`,
+      [req.user.companyId]
+    );
+    
+    const companylevel = company.subscriptionLevel;
     const teamsRemaining = companylevel !== "2" ? 0 : 1;
-    const result = { teamsRemaining, teams : teams.map(team => ({
-      ...team,      
-      members: members.filter(m => m.teamId === team.id).map(m => ({ name: m.name, trigramme: m.trigramme }))
-    }))};
+    
+    const teamsWithMembers = await Promise.all(
+      teams.map(async (team) => {
+        const members = await pool.query(
+          "SELECT name, trigramme FROM members WHERE teamid = $1",
+          [team.id]
+        );
+
+        return {
+          ...team,
+          members
+        };
+      })
+    );
+
+    const result = { teamsRemaining, teams: teamsWithMembers };
     resultRequest(res, true, '', result);
   } catch (err) {
-    resultRequest(res, false, 'Erreur lors de la récupération des équipes', { });
+    let message = "Erreur lors de la récupération des équipes";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -47,15 +69,24 @@ exports.create = async (req, res) => {
     
     const { name } = req.body;
     if (!name) return resultRequest(res, false, 'Nom obligatoire', { });
-    const teams = await readJson(TEAM_FILE);
-    const index = teams.findIndex(t => t.name === name && t.companyId === req.user.companyId);
-    if (index !== -1) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { });
+    const team = await pool.queryOne(
+      "SELECT * FROM teams WHERE name = $1 AND companyid = $2",
+      [name, req.user.companyId]
+    );
+    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { });
     
     const newTeam = { id: crypto.randomUUID(), name, companyId: req.user.companyId };
-    await addItem(TEAM_FILE, newTeam);
+    await pool.query(
+      "INSERT INTO teams (id, name, companyid) VALUES ($1, $2, $3)",
+      [newTeam.id, name, req.user.companyId]
+    );
     resultRequest(res, true, '', newTeam);
   }catch(err){
-    resultRequest(res, false, "Erreur lors de la création de l'équipe", { });
+    let message = "Erreur lors de la création de l'équipe";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -63,29 +94,46 @@ exports.update = async (req, res) => {
   try{
     const updatedTeam = req.body;
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
-    const teams = await readJson(TEAM_FILE);
-    const index = teams.findIndex(t => t.id === req.params.id);
-    if (index === -1) return resultRequest(res, false, 'Équipe non trouvée', { });
+    const team = await pool.queryOne(
+      "SELECT * FROM teams WHERE id = $1",
+      [req.params.id]
+    );
+    if (!team) return resultRequest(res, false, 'Équipe non trouvée', { });
     
-    teams[index].name = updatedTeam.name;
-    await writeJson(TEAM_FILE, teams);
-    resultRequest(res, true, '', teams[index]);
+    team.name = updatedTeam.name;
+    await pool.query(
+      "UPDATE teams SET name = $1 WHERE teamid = $2",
+      [team.name, req.params.id]
+    );
+    resultRequest(res, true, '', team);
   }catch(err){
-    resultRequest(res, false, "Erreur lors de la mise à jour de l'équipe", { });
+    let message = "Erreur lors de la mise à jour de l'équipe";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
 exports.remove = async (req, res) => {
   try{
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
-    const members = await readJson(MEMBER_FILE);
-    const hasMembers = members.some(m => m.teamId === req.params.id);
+    const members = await pool.query(
+      "SELECT * FROM members WHERE teamid = $1",
+      [req.params.id]
+    );
+    if (members.length > 0) return resultRequest(res, false, 'Impossible de supprimer une équipe avec des membres', { });
     
-    if (hasMembers) return resultRequest(res, false, 'Impossible de supprimer une équipe avec des membres', { });
-    
-    await deleteItem(TEAM_FILE, req.params.id);
+    await pool.query(
+      "DELETE FROM teams WHERE id = $1",
+      [req.params.id]
+    );
     resultRequest(res, true, '', { });
   }catch(err){
-    resultRequest(res, false, 'Erreur lors de la suppression des équipes', { });
+    let message = "Erreur lors de la suppression des équipes";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };

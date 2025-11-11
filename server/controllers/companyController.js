@@ -1,19 +1,37 @@
-const { readJson, writeJson, addItem, deleteItem } = require('../utils/jsonFileHelper');
-const bcrypt = require('bcrypt');
-const path = require('path');
+const pool = require('../utils/dbHelper');
 const crypto = require('crypto');
-const { DATA_DIR } = require('../config');
-const COMPANY_FILE = path.join(DATA_DIR, 'companies.json');
-const TEAM_FILE = path.join(DATA_DIR, 'teams.json');
 const { createMember } = require('../utils/memberUtils');
 const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
-    const companies = await readJson(COMPANY_FILE);
+    const companies = await pool.query(
+      `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies`,
+      []
+    );
     resultRequest(res, true, '', companies);
   }catch(err){
-    resultRequest(res, false, 'Erreur lors de la récupération des entreprises', { });
+    let message = "Erreur lors de la récupération des entreprises";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
+  }
+};
+
+exports.getCompanieForUser = async (req, res) => {
+  try{
+    const companie = await pool.queryOne(
+      `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies where id = $1`,
+      [req.user.companyId]
+    );
+    resultRequest(res, true, '', companie);
+  }catch(err){
+    let message = "Erreur lors de la récupération de l'entreprise";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -29,9 +47,11 @@ exports.create = async (req, res) => {
       subscriptionLevelCompany = subscriptionLevel;
     }
 
-    const companies = await readJson(COMPANY_FILE);
-    const indexCompany = companies.findIndex(c => c.name === companyName);
-    if (indexCompany !== -1) return resultRequest(res, false, 'Une entreprise avec ce nom existe déjà', { });
+    const company = await pool.queryOne(
+      "SELECT * FROM companies WHERE name = $1",
+      [companyName]
+    );
+    if (company) return resultRequest(res, false, 'Une entreprise avec ce nom existe déjà', { });
     
     const idCompany = crypto.randomUUID();
     const idTeam = crypto.randomUUID();
@@ -40,7 +60,12 @@ exports.create = async (req, res) => {
       name: companyName,
       subscriptionLevel: subscriptionLevelCompany
     };
-    await addItem(COMPANY_FILE, newCompany);
+
+    await pool.query(
+      "INSERT INTO companies (id, name, subscriptionlevel) VALUES ($1, $2, $3)",
+      [idCompany, companyName, subscriptionLevelCompany]
+    );
+
     const datas = {
       companyId: idCompany,
       email: scrumMasterEmail,
@@ -50,24 +75,43 @@ exports.create = async (req, res) => {
       isScrumMaster: true
     };
 
-    const teams = await readJson(TEAM_FILE);
-    const index = teams.findIndex(t => t.name === teamName && t.companyId === idCompany);
-    if (index !== -1) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { });
-    
-    const newTeam = { id: idTeam, teamName, companyId: idCompany };
-    await addItem(TEAM_FILE, newTeam);
+    const team = await pool.queryOne(
+      "SELECT * FROM teams WHERE name = $1",
+      [teamName]
+    );
+    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { });
 
+    await pool.query(
+      "INSERT INTO teams (id, companyid, name) VALUES ($1, $2, $3)",
+      [idTeam, idCompany,  teamName]
+    );
+    
+    
     const result = await createMember(datas);
 
     if (!result.success) {
-      await deleteItem(COMPANY_FILE, idCompany);
+      await pool.query(
+        "DELETE FROM teams where id = $1",
+        [idTeam]
+      );
+
+      await pool.query(
+        "DELETE FROM companies where id = $1",
+        [idCompany]
+      );
+
+
       resultRequest(res, false, result.message, { datas });
       return;
     }
     
     resultRequest(res, true, "Inscription effectuée, le scrum Master peut désormais s'inscrire à son tour", newCompany);
   } catch(err) {
-    resultRequest(res, false, 'Erreur lors de la création de la compagnie', {});
+    let message = "Erreur lors de la création de la compagnie";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, err.message, {});
   }
 };
 
@@ -78,25 +122,40 @@ exports.update = async (req, res) => {
       return resultRequest(res, false, "informations entreprise ou niveau manquantes.", { });
     }
 
-    const companies = await readJson(COMPANY_FILE);
-    const indexCompany = companies.findIndex(c => c.id === companyId);
-    if (indexCompany === -1) return resultRequest(res, false, 'Compagnie non trouvée', { });
+    const company = await pool.queryOne(
+      `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies where id = $1`,
+      [companyId]
+    );
+    if (!company) return resultRequest(res, false, 'Compagnie non trouvée', { });
     
-    companies[indexCompany].name = companyName;
-    companies[indexCompany].subscriptionLevel = subscriptionLevel;
-    await writeJson(COMPANY_FILE, companies);
-    resultRequest(res, true, '', companies[indexCompany]);
-  } catch {
-    resultRequest(res, false, "Erreur de la création de la compagnie", { });
+    company.subscriptionLevel = subscriptionLevel;
+    await pool.query(
+      "UPDATE companies SET subscriptionlevel = $1",
+      [subscriptionLevel]
+    );
+    resultRequest(res, true, '', company);
+  } catch(err) {
+    let message = "Erreur de la mise a jour de la compagnie";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
 exports.remove = async (req, res) => {
   try{
     const id = req.params.id;
-    await deleteItem(COMPANY_FILE, id);
+    await pool.query(
+      "DELETE FROM companies WHERE id = $1",
+      [id]
+    );
     resultRequest(res, true, '', { });
-  } catch {
-    resultRequest(res, false, 'Compagnie introuvable', { });
+  } catch(err) {
+    let message = "Erreur de la suppression de la compagnie";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };

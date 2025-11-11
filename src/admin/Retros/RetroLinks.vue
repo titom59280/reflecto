@@ -9,7 +9,7 @@
     <div class="retro-list retro-container">
       <div v-for="team in teams" :key="team.id" class="team-panel">
         <div class="team-header" @click="toggleTeam(team.id)">
-          <h3 class="team-header-title">{{ team.teamName }}</h3>
+          <h3 class="team-header-title">{{ team.name }}</h3>
           <span>{{ openTeams[team.id] ? '▲' : '▼' }}</span>
         </div>
 
@@ -147,7 +147,6 @@ export default {
         this.$emit('refresh-links');
         this.$root.showToast("L'association a été activé", 'success');
       } catch (err) {
-        console.log(err);
         if (err.status === 400) {
           this.$root.showToast(err.response.data.error, 'error');
           return;

@@ -1,9 +1,5 @@
 const crypto = require('crypto');
-const { addItem, readJson } = require('./jsonFileHelper');
-const path = require('path');
-const { DATA_DIR } = require('../config');
-const MEMBER_FILE = path.join(DATA_DIR, 'members.json');
-const COMPANY_FILE = path.join(DATA_DIR, 'companies.json');
+const pool = require('../utils/dbHelper');
 
 async function createMember({ companyId, email, name, trigramme, teamId, isScrumMaster = false }) {
   if (!email || !trigramme || !name || !companyId) {
@@ -11,13 +7,17 @@ async function createMember({ companyId, email, name, trigramme, teamId, isScrum
   }
 
   const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
-  const members = await readJson(MEMBER_FILE);
-  const companies = await readJson(COMPANY_FILE);
-  const index = members.findIndex(m => m.email === hashedEmail);
-    if (index !== -1) return { success: false, message: 'Email déja utilisé', result: {} };
+  const member = await pool.queryOne(
+    "SELECT * FROM members WHERE email = $1",
+    [hashedEmail]
+  );
+  if (member) return { success: false, message: 'Email déja utilisé', result: {} };
 
-  const indexCompany = companies.findIndex(m => m.id === companyId);
-  if (indexCompany === -1) return  { success: false, message: 'Compagnie non trouvée', result: {} };
+  const companies = await pool.query(
+    "SELECT * FROM companies WHERE id = $1",
+    [companyId]
+  );
+  if (!companies) return  { success: false, message: 'Compagnie non trouvée', result: {} };
   const isFullAdmin = hashedEmail === "f417bbe3950c0a80a48adb13b26ad29f0163f339a412fdb7735f14aa65618b62"  || hashedEmail === 'a3ba629ece9b1b84c5a4119b5aea9566fd762e4a86e63410771791a063911620';
   const trigrammeScrumMaster = trigramme.toUpperCase();
   const newMember = {
@@ -32,7 +32,10 @@ async function createMember({ companyId, email, name, trigramme, teamId, isScrum
     password: ''
   };
 
-  await addItem(MEMBER_FILE, newMember);
+  await pool.query(
+    "INSERT INTO members (id, companyId, email, name, trigramme, teamId, isScrumMaster, isFullAdmin, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, '')",
+    [newMember.id, companyId, hashedEmail, name, trigrammeScrumMaster, teamId, isScrumMaster, isFullAdmin]
+  );
   return { success: true, message: '', result: newMember };
 }
 

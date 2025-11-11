@@ -29,11 +29,16 @@ export default {
 .main-content {
   padding: 2rem;
   height: 80%;
+  overflow: auto;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .main-layout {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: auto;
 }
 </style>

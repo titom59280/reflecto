@@ -8,7 +8,6 @@ const port = process.env.VUE_APP_PORT || 3000;
 // Middlewares
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Routes
 app.use('/api/members', require('./routes/memberRoutes'));

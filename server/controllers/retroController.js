@@ -1,71 +1,103 @@
-const { readJson, writeJson, addItem, deleteItem } = require('../utils/jsonFileHelper');
-const fs = require('fs');
+const { supabase } = require('../utils/supabase');
 const path = require('path');
-const { DATA_DIR } = require('../config');
 const crypto = require('crypto');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // temporaire, tu peux déplacer après
 const qs = require('qs');
-const RETRO_FILE = path.join(DATA_DIR, 'retros.json');
-const LINK_FILE = path.join(DATA_DIR, 'sprints-retros-teams.json');
-const COMPANY_FILE = path.join(DATA_DIR, 'companies.json');
-const MEMBER_FILE = path.join(DATA_DIR, 'members.json');
+const pool = require('../utils/dbHelper');
 const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
-    const allRetros = await readJson(RETRO_FILE);
-    const retros = allRetros.filter(r => r.companyId === req.user.companyId);
+    
+    const retros = await pool.query(
+      `SELECT id, companyid as "companyId", name, createdat as "createdAt" FROM retros WHERE companyid = $1`,
+      [req.user.companyId]
+    )
     resultRequest(res, true, '', retros); 
   }catch(err){
-    resultRequest(res, false, 'Erreur lors de la récupération des rétros', { });
+    let message = "Erreur lors de la récupération des rétros";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
+  }
+};
+
+exports.getCategories = async(req, res) =>{
+  try{
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    
+    const categories = await pool.query(
+      `SELECT id, name, description, image FROM retrocategories WHERE retroid = $1`,
+      [req.params.id]
+    )
+    resultRequest(res, true, '', categories); 
+  }catch(err){
+    let message = "Erreur lors de la récupération des catégories";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
 exports.create = async (req, res) => {
+  const retroId = crypto.randomUUID();
   try{
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
     const body = qs.parse(req.body);
-    const retroId = crypto.randomUUID();
-
-    // Création du dossier pour les images
-    const sprintAssetsPath = path.join(__dirname, '..', 'public/uploads/retros', retroId);
-    if (!fs.existsSync(sprintAssetsPath)) {
-      fs.mkdirSync(sprintAssetsPath, { recursive: true });
-    }
-
+    const sprintAssetsPath = `retros/${retroId}`;
     if (!body.name || !Array.isArray(body.categories) || body.categories.length < 2) return resultRequest(res, false, 'Nom requis et au moins 2 catégories', { });
 
-    const retros = await readJson(RETRO_FILE);
     const retroName = body.name.trim();
+    const retro = await pool.queryOne(
+      "SELECT * FROM retros WHERE UPPER(name) = UPPER($1)",
+      [retroName]
+    );
 
-    const nameExists = retros.some(r => r.name.toLowerCase() === retroName.toLowerCase());
-    if (nameExists) return resultRequest(res, false, "Une rétro avec ce nom existe déjà.", { });
+    if (retro) return resultRequest(res, false, "Une rétro avec ce nom existe déjà.", { });
     
-    const companies = await readJson(COMPANY_FILE);
-    
-    const indexCompany = companies.findIndex(m => m.id === req.user.companyId);
-    if (indexCompany === -1) return resultRequest(res, false, 'Compagnie non trouvé', { });
-    
+    const company = await pool.queryOne(
+      "SELECT * FROM companies WHERE id = $1",
+      [req.user.companyId]
+    );
 
-    const categories = body.categories.map((cat, index) => {
+    if (!company) return resultRequest(res, false, 'Compagnie non trouvé', { });
+    
+    await pool.query(
+      "INSERT INTO retros (id, companyid, name, createdat) VALUES ($1, $2, $3, $4)",
+      [retroId, req.user.companyId, retroName, new Date().toISOString()]
+    );
+
+
+    const categories = await Promise.all(body.categories.map(async (cat, index) => {
       const file = req.files?.find(f => f.fieldname === `categories[${index}][image]`);
-      let imageName = '';
+      let imagePath;
 
       if (file) {
-        const ext = path.extname(file.originalname);
-        imageName = `${Date.now()}_${index}${ext}`;
-        const imagePath = path.join(sprintAssetsPath, imageName);
-        fs.renameSync(file.path, imagePath);
-      }
 
-      return {
-        name: cat.name,
-        description: cat.description,
-        image: imageName
-      };
-    });
+        const ext = path.extname(file.originalname);
+        const imageName = `${Date.now()}_${index}${ext}`
+        const {data, error} = await supabase.storage
+          .from('uploads')
+          .upload(`${sprintAssetsPath}/${imageName}`, file.buffer, {
+            contentType: file.mimetype,
+            upsert: true, // remplace si existe déjà
+        });
+        
+        if (error) throw new Error('Erreur upload Supabase: ' + error.message);
+
+        const { data: publicUrlData } = supabase.storage
+          .from('uploads')
+          .getPublicUrl(`${sprintAssetsPath}/${imageName}`);
+        
+        imagePath = publicUrlData.publicUrl;
+      }
+      await pool.query(
+        "INSERT INTO retrocategories (id, retroid, name, description, image) VALUES ($1, $2, $3, $4, $5)",
+        [crypto.randomUUID(), retroId, cat.name, cat.description, imagePath]
+      );
+    }));
 
     const newRetro = {
       id: retroId,
@@ -74,36 +106,71 @@ exports.create = async (req, res) => {
       createdAt: new Date().toISOString(),
       categories
     };
-
-    const result = await addItem(RETRO_FILE, newRetro);
-    resultRequest(res, true, '', result); 
+    
+    resultRequest(res, true, '', newRetro); 
   }catch(err){
-    resultRequest(res, false, 'Erreur lors de la création de la rétro', { });
+    let message = "Erreur lors de la création de la rétro";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
+
 
 exports.remove = async (req, res) => {
   try{
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
     const retroId = req.params.id;
-    const retros = await readJson(RETRO_FILE);
-    const index = retros.findIndex(r => r.id === retroId);
+    const retro = await pool.queryOne(
+      "SELECT * FROM retros where id = $1",
+      [retroId]
+    );
+    const sprintAssetsPath = `retros/${retroId}`;
+    if (!retro) return resultRequest(res, false, 'Rétro non trouvée', { });
 
-    if (index === -1) return resultRequest(res, false, 'Rétro non trouvée', { });
+    const link = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams WHERE retroid = $1 AND isretrodone= false AND isclosed= false",
+      [retroId]
+    );
+    if (link) return resultRequest(res, false, "Une équipe a déja un sprint en cours avec cette retro.", { });
 
-    const links = await readJson(LINK_FILE);
-    const linkExist = links.some(l => l.retroId === req.params.id && !l.isRetroDone && !l.isClosed);
-    if (linkExist) return resultRequest(res, false, "Une équipe a déja un sprint en cours avec cete retro.", { });
-    // Supprimer les fichiers image associés
-    const retroFolderPath = path.join(__dirname, '..', 'public/uploads/retros', retroId);
-
-    if (fs.existsSync(retroFolderPath)) {
-      fs.rmSync(retroFolderPath, { recursive: true, force: true });
+    //supprimer les images s'il y a 
+    const categories = await pool.query(
+      "SELECT * FROM retrocategories where retroid = $1",
+      [retroId]
+    );
+    let images = [];
+    if (categories && categories.length > 0) {
+       categories.forEach(c => {
+        if (c.image && c.image != "") {
+          images.push(`${sprintAssetsPath}/${c.image}`);
+        }
+       });
     }
 
-    await deleteItem(RETRO_FILE, req.params.id);
+    if(images.length > 0) {
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .remove(images);
+    }
+
+    //supprimer les categories
+    await pool.query(
+      "DELETE FROM retrocategories where retroid = $1",
+      [retroId]
+    );
+
+    await pool.query(
+      "DELETE FROM retros WHERE id = $1",
+      [retroId]
+    );
     resultRequest(res, true, '', { });
   }catch(err){
-    resultRequest(res, false, 'Erreur lors de la suppression de la rétro', { });
+    let message = "Erreur lors de la suppression de la rétro";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };

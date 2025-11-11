@@ -199,6 +199,7 @@ body {
 }
 
 .tab-content-animated {
+  height: 100%;
   opacity: 0;
   transform: translateY(20px);
   animation: fadeSlideUp 0.5s ease-out forwards;
@@ -257,4 +258,5 @@ body {
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="retro-page">
     <div v-if="retro" class="retro-columns">
-      <div v-for="(cat, index) in retro.categories" :key="index" class="retro-column">
+      <div v-for="cat in categories" :key="cat.id" class="retro-column">
         <h3>{{ cat.name }}</h3>
         <img v-if="cat.image" :src="getImagePath(cat.image)" class="category-image" />
         <p class="description">{{ cat.description }}</p>
@@ -70,6 +70,7 @@ export default {
       user: authService.getUser(),
       selectedPostit: null,
       currentLink: null,
+      categories: [],
       retro: null,
       readModalVisible: false,
       postits: [],
@@ -102,21 +103,41 @@ export default {
     },
     async fetchLinkData() {
       try {
-        const retros = await AdminService.getRetros();
-        const links = await AdminService.getSprintRetroLinks();
-        console.log(this.currentLinkId);
-        console.log(links);
-        this.currentLink = links.find((link) => link.id === this.currentLinkId);
-        this.retro = retros.find((r) => r.id === this.currentLink.retroId);
+        const resultRetros = await AdminService.getRetros();
+        const resultlinks = await AdminService.getSprintRetroLinks();
+
+        if (!resultlinks.isSuccess) {
+          this.$root.showToast(resultlinks.message, 'error');
+          return;
+        }
+
+        if (!resultRetros.isSuccess) {
+          this.$root.showToast(resultRetros.message, 'error');
+          return;
+        }
+        this.currentLink = resultlinks.result.find((link) => link.id === this.currentLinkId);
+        this.retro = resultRetros.result.find((r) => r.id === this.currentLink.retroId);
+        const resultCategories = await AdminService.getCategories(this.currentLink.retroId);
+
+        if (!resultCategories.isSuccess) {
+          this.$root.showToast(resultCategories.message, 'error');
+          return;
+        }
+
+        this.categories = resultCategories.result;
         this.fetchPostIts();
       } catch (err) {
-        console.log(err);
         this.$root.showToast('Erreur lors de la récupération des données', 'error');
         this.noRetroMessage = 'Erreur de récupération des données.';
       }
     },
     async fetchPostIts() {
-      this.postits = await retroService.getPostitsByLink(this.currentLinkId);
+      const resultPostId = await retroService.getPostitsByLink(this.currentLinkId);
+      if (!resultPostId.isSuccess) {
+        this.$root.showToast(resultPostId.message, 'error');
+        return;
+      }
+      this.postits = resultPostId.result;
     },
     truncateText(text, maxChars = 60) {
       if (!text) return '';
@@ -150,6 +171,7 @@ export default {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   height: 100%;
+  overflow: auto;
 }
 .retro-column {
   padding: 1rem;
@@ -340,6 +362,7 @@ export default {
   flex-direction: column;
   flex: 1;
   height: 100%;
+  overflow: auto;
 }
 
 /* transition d'insertion */

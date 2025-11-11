@@ -22,7 +22,7 @@
         <div v-else class="team-grid tab-content-animated">
           <div v-for="team in teams" :key="team.id" class="team-card">
             <div class="team-header">
-              <h3 class="team-header-title">{{ team.teamName }}</h3>
+              <h3 class="team-header-title">{{ team.name }}</h3>
               <div class="team-actions">
                 <button v-if="editingTeamId !== team.id" @click="startTeamEdit(team)">✏️</button>
                 <button
@@ -258,7 +258,6 @@ button:not(.delete):hover {
   background-color: #fff;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
   max-width: 800px;
 }

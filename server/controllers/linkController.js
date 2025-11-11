@@ -1,87 +1,63 @@
-const { readJson, writeJson, addItem, deleteItem } = require('../utils/jsonFileHelper');
+const pool = require('../utils/dbHelper');
 const crypto = require('crypto');
-const path = require('path');
-const { DATA_DIR } = require('../config');
-const LINK_FILE = path.join(DATA_DIR, 'sprints-retros-teams.json');
-const SPRINT_FILE = path.join(DATA_DIR, 'sprints.json');
-const MEMBER_FILE = path.join(DATA_DIR, 'members.json');
-const TEAM_FILE = path.join(DATA_DIR, 'teams.json');
-const RETRO_FILE = path.join(DATA_DIR, 'retros.json');
 const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
-    const allLinks = await readJson(LINK_FILE);
-    const links = allLinks.filter(l => l.companyId === req.user.companyId);
+    const links = await pool.query(
+      `SELECT id, retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isactif AS "isActif", isclosed AS "isClosed", isretroinprogress AS "isRetroInProgress", isretrodone AS "isRetroDone" FROM sprintsretrosteams where companyId = $1`,
+      [req.user.companyId]
+    );
     resultRequest(res, true, '', links);
   }catch(err){
-    resultRequest(res, false, 'Erreur lors de la récupération des liens rétro-sprint', { });
+    let message = "Erreur lors de la récupération des liens rétro-sprint";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
 exports.getForUser = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
-    const userId = req.params.userId;
-    const [sprints, users, retros, teams, links] = await Promise.all([
-      readJson(SPRINT_FILE),
-      readJson(MEMBER_FILE),
-      readJson(RETRO_FILE),
-      readJson(TEAM_FILE),
-      readJson(LINK_FILE),
-    ]);
     
+    const result = await pool.query(
+      `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "sprintId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.isretrodone= false AND s.isclosed= false`,
+      [req.user.teamId]
+    );
     
-    const result = links
-        .filter(link => link.teamId === req.user.teamId && !link.isRetroDone && !link.isClosed)
-        .map(link => {
-          const team = teams.find(t => t.id === link.teamId);
-          const retro = retros.find(r => r.id === link.retroId);
-          const sprint = sprints.find(s => s.id === link.sprintId);
-          return {
-            ...link,
-            teamName: team?.name,
-            retroName: retro?.name,
-            sprintName: sprint?.name
-          };
-        });
     resultRequest(res, true, '', result);
   } catch(err) {
-    resultRequest(res, false, 'Erreur lors de la récupération des liens rétro-sprint', { });
+    let message = "Erreur lors de la récupération des liens rétro-sprint";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
 exports.getForTeam = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
-    const teamId = req.params.teamId;
-    const [sprints,retros, teams, links] = await Promise.all([
-      readJson(SPRINT_FILE),
-      readJson(RETRO_FILE),
-      readJson(TEAM_FILE),
-      readJson(LINK_FILE),
-    ]);
-    
-    const team = teams.find(u => u.id === teamId);
+    const teamId = req.params.teamId;    
+    const team = await pool.queryOne(
+      "SELECT * FROM teams WHERE id = $1",
+      [teamId]);
     if (!team) return resultRequest(res, false, 'Équipe non trouvé', { });
 
-    const result = links
-      .filter(link => link.teamId === teamId && !link.isRetroDone && !link.isClosed)
-      .map(link => {
-        const team = teams.find(t => t.id === link.teamId);
-        const retro = retros.find(r => r.id === link.retroId);
-        const sprint = sprints.find(s => s.id === link.sprintId);
-        return {
-          ...link,
-          teamName: team?.name,
-          retroName: retro?.name,
-          sprintName: sprint?.name
-        };
-      });
+    const result = await pool.query(
+      `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "teamId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.isretrodone= false AND s.isclosed= false`,
+      [teamId]
+    );
     resultRequest(res, true, '', result);
   } catch(err) {
-    resultRequest(res, false, 'Erreur lors de la récupération des liens rétro-sprint', { });
+    let message = "Erreur lors de la récupération des liens rétro-sprint";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -93,21 +69,27 @@ exports.create = async (req, res) => {
       return resultRequest(res, false, "identifiants du sprint de la rétro et de l'équipe sont requis", { });
     }
 
-    const [sprints, retros, teams, links] = await Promise.all([
-      readJson(SPRINT_FILE),
-      readJson(RETRO_FILE),
-      readJson(TEAM_FILE),
-      readJson(LINK_FILE),
-    ]);
     
-    const sprint = sprints.find(s => s.id === sprintId);
-    const retro = retros.find(r => r.id === retroId);
-    const team = teams.find(t => t.id === teamId);
+    const sprint = await pool.queryOne(
+      "SELECT * FROM sprints WHERE id = $1",
+      [sprintId]
+    );
+    const retro = await pool.queryOne(
+      "SELECT * FROM retros WHERE id = $1",
+      [retroId]
+    );
+    const team = await pool.queryOne(
+      "SELECT * FROM teams WHERE id = $1",
+      [teamId]
+    );
 
     if (!sprint || !retro || !team) return resultRequest(res, false, 'Sprint, rétro ou équipe introuvable', { });
 
-    const exists = links.some(l => l.retroId === retroId && l.sprintId === sprintId && l.teamId === teamId);
-    if (exists) return resultRequest(res, false, 'Une rétro est déjà associée à ce sprint pour cette équipe.', { });
+    const link = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams WHERE sprintid = $1 AND retroid = $2 AND teamId = $3",
+      [sprintId, retroId, teamId]
+    );
+    if (link) return resultRequest(res, false, 'Une rétro est déjà associée à ce sprint pour cette équipe.', { });
 
     const newLink = {
       id: crypto.randomUUID(),
@@ -120,11 +102,17 @@ exports.create = async (req, res) => {
       isRetroInProgress: false,
       isRetroDone: false,
     };
-
-    await addItem(LINK_FILE, newLink);
+    await pool.query(
+      "INSERT INTO sprintsretrosteams (id, retroid, sprintid, teamid, companyid, isactif, isclosed, isretroinprogress, isretrodone) VALUES ($1, $2, $3, $4, $5, false, false, false, false)",
+      [newLink.id, retroId, sprintId, teamId, req.user.companyId]
+    );
     resultRequest(res, true, '', newLink);
-  } catch {
-    resultRequest(res, false, 'Erreur de la création du lien rétro-sprint', { newLink });
+  } catch(err) {
+    let message = "Erreur de la création du lien rétro-sprint";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message + err.stack;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -132,19 +120,25 @@ exports.remove = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster) return resultRequest(res, false, 'Methode non accessible', { });
     const id = req.params.id;
-    const [links] = await Promise.all([
-      readJson(LINK_FILE),
-    ]);
-
-    const link = links.find(l => l.id === id);
+    const link = await pool.queryOne(
+      "SELECT *  FROM sprintsretrosteams WHERE id = $1",
+      [id]
+    );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', { });
     
     if (link?.isRetroDone) return resultRequest(res, false, 'Impossible de supprimer un lien rétro associée à un sprint terminé', { });
 
-    await deleteItem(LINK_FILE, req.params.id);
+    await pool.query(
+      "DELETE FROM sprintsretrosteams WHERE id = $1",
+      [id]
+    );
     resultRequest(res, true, '', { });
-  } catch {
-    resultRequest(res, false, 'Erreur de la suppression du lien rétro-sprint',  { });
+  } catch(err) {
+    let message = "Erreur de la suppression du lien rétro-sprint";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message,  { });
   }
 };
 
@@ -154,27 +148,25 @@ exports.getNextSprintName = async(req, res) =>{
     const teamId = req.params.teamId;
     const currentLinkId = req.params.currentLinkId;
 
-    const links = await readJson(LINK_FILE);
-    const sprints = await readJson(SPRINT_FILE);
-    const index = links.findIndex(l => l.id === currentLinkId);
-    if (index === -1) return resultRequest(res, false, 'Lien non trouvé', { });
+    const link = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams where id = $1",
+      [currentLinkId]
+    );
+    if (!link) return resultRequest(res, false, 'Lien non trouvé', { });
 
-    const currentSprintId = links[index].sprintId;
-
-    const nextSprintIndex = sprints.findIndex(s => s.id !== currentSprintId && !s.isClosed);
-    let result = undefined;
-    let indexNextLink = 0
-    if(nextSprintIndex !== -1){
-      indexNextLink = links.findIndex(l => l.sprintId === sprints[nextSprintIndex].id && l.teamId == teamId);
-    }
-  
-    if(indexNextLink > 0){
-      result = sprints[nextSprintIndex]
-    }
+    const currentSprintId = link.sprintId;
+    const result = await pool.queryOne(
+      `SELECT s.id, s.name, s.isactif AS "iSActif", s.companyid AS "companyId", s.isclosed AS "isClosed", s.isretrodone AS "isRetroDone", s.createdat AS "createdAt" FROM sprints s JOIN sprintsretrosteams links ON links.sprintid = s.id WHERE s.id <> $1 AND links.isclosed= false and links.teamid = $2`,
+      [currentSprintId, teamId]
+    );
     
     resultRequest(res, true, '', result);
-  } catch (e) {
-    resultRequest(res, false, "Erreur lors de la récupération du nom du prochain sprint", { });
+  } catch(err) {
+    let message = "Erreur lors de la récupération du nom du prochain sprint";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -182,34 +174,57 @@ exports.markRetroDone = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster) return resultRequest(res, false, 'Methode non accessible', { });
     const { currentLinkId, nextSprintId, teamId } = req.body;
-    const links = await readJson(LINK_FILE);
-    const sprints = await readJson(SPRINT_FILE);
-    const index = links.findIndex(la => la.id === currentLinkId);
-    if (index === -1) return resultRequest(res, false, 'Lien non trouvé', { });
-  
-    const sprintIndex = sprints.findIndex(s => s.id === links[index].sprintId);
-    if (sprintIndex === -1) return resultRequest(res, false, 'sprint non trouvé', { });
-    links[index].isRetroDone = true;
-    links[index].isRetroInProgress = false;
-    links[index].isActif = false;
-    const linksInProgressForSprint = links.find(lb => lb.sprintId === sprints[sprintIndex].id && !lb.isRetroDone)
+    const link = await pool.queryOne(
+       `SELECT id, isactif AS "isActif", retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isclosed AS "isClosed", isretrodone AS "isRetroDone", isretroinprogress AS "isRetroInProgress" FROM sprintsretrosteams where id = $1`,
+      [currentLinkId]
+    );
+    if (!link) return resultRequest(res, false, 'Lien non trouvé', { });
     
-    if(!linksInProgressForSprint || linksInProgressForSprint.length === 0){
-      sprints[sprintIndex].isClosed = true;
-      await writeJson(SPRINT_FILE, sprints);    
+    const sprint = await pool.queryOne(
+      "SELECT * FROM sprints where id = $1",
+      [link.sprintId]
+    );
+    if (!sprint) return resultRequest(res, false, 'sprint non trouvé', { });
+
+    link.isRetroDone = true;
+    link.isRetroInProgress = false;
+    link.isActif = false;
+    await pool.query(
+      "UPDATE sprintsretrosteams SET isretrodone= true, isretroinprogress= false, isactif= false  WHERE id = $1",
+      [link.id]
+    );
+    const linksInProgressForSprint = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams where sprintId = $1 AND isretrodone= false",
+      [sprint.id]
+    );
+    
+    if(!linksInProgressForSprint || linksInProgressForSprint.length === 0) {
+      await pool.query(
+        "UPDATE sprints SET isclosed= true WHERE id = $1",
+        [sprint.id]
+      );
     }
     
-    if(nextSprintId){
-      const indexNextLink = links.findIndex(lc => lc.sprintId === nextSprintId && lc.teamId === teamId);
-      if (indexNextLink === -1) return resultRequest(res, false, 'Lien non trouvé pour le prochain sprint', { });
-
-      links[indexNextLink].isActif = true;
+    if(nextSprintId) {
+      const nextLink = await pool.queryOne(
+        "SELECT * FROM sprintsretrosteams WHERE id = $1 AND teamid = $2",
+        [nextSprintId, teamId]
+      );
+      if (!nextLink) return resultRequest(res, false, 'Lien non trouvé pour le prochain sprint', { });
+      
+      await pool.query(
+        "UPDATE sprintsretrosteams SET isactif= true WHERE id = $1 AND teamid = $2",
+        [nextSprintId, teamId]
+      );
     }
-
-    await writeJson(LINK_FILE, links);
-    resultRequest(res, true, '', links[index]);
-  } catch (e) {
-    resultRequest(res, false, 'Erreur lors de la mise à jour du statut du lien',{ });
+    
+    resultRequest(res, true, '', link);
+  } catch(err) {
+    let message = "Erreur lors de la mise à jour du statut du lien";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message,{ });
   }
 };
 
@@ -217,15 +232,24 @@ exports.markClosed = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster) return resultRequest(res, false, 'Methode non accessible', { });
     const { currentLinkId } = req.body;
-    const links = await readJson(LINK_FILE);
-    const index = links.findIndex(l => l.id === currentLinkId);
-    if (index === -1) return resultRequest(res, false, 'Lien non trouvé', { });
+    
+    const link = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams where id = $1",
+      [currentLinkId]
+    );
+    if (!link) return resultRequest(res, false, 'Lien non trouvé', { });
 
-    links[index].isClosed= true;
-    await writeJson(LINK_FILE, links);
+    await pool.query(
+      "UPDATE sprintsretrosteams SET isclosed= true WHERE id = $1",
+      [currentLinkId]
+    );
     resultRequest(res, true, '', { });
-  } catch (e) {
-    resultRequest(res, false, 'Erreur lors de la mise à jour du statut du lien', { });
+  } catch(err) {
+    let message = "Erreur lors de la mise à jour du statut du lien";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -233,18 +257,28 @@ exports.activate = async (req, res) => {
   try{    
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster) return resultRequest(res, false, 'Methode non accessible', { });
     const { linkId } = req.body;
-    const links = await readJson(LINK_FILE);
-    const index = links.findIndex(l => l.id === linkId);
-    if (index === -1) return resultRequest(res, false, 'Lien non trouvé', { });
+    const link = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams where id = $1",[linkId]
+    );
+    if (!link) return resultRequest(res, false, 'Lien non trouvé', { });
 
-    const indexAciveRetro = links.findIndex(l => l.teamId === links[index].teamId && l.isActif);
-    if (indexAciveRetro !== -1) return resultRequest(res, false, 'Il y a déjà une rétro active pour cette équipe', { });
-
-    links[index].isActif= true;
-    await writeJson(LINK_FILE, links);
+    const activeRetro = await pool.queryOne(
+      "SELECT * FROM sprintsretrosteams WHERE teamId = $1 AND isactif= true",
+      [link.teamId]
+    );
+    if (activeRetro) return resultRequest(res, false, 'Il y a déjà une rétro active pour cette équipe', { });
+    
+    await pool.query(
+      "UPDATE sprintsretrosteams SET isactif= true WHERE id = $1",
+      [linkId]
+    );
     resultRequest(res, true, '', { });
   }catch(err){
-    resultRequest(res, false, "Erreur lors de l'activation de la rétro", { });
+    let message = "Erreur lors de l'activation de la rétro";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };
 
@@ -252,16 +286,23 @@ exports.markRetroStart = async (req, res) => {
   try {    
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster) return resultRequest(res, false, 'Methode non accessible', { });
     const { currentLinkId } = req.body;
-    const links = await readJson(LINK_FILE);
-
-    const index = links.findIndex(l => l.id === currentLinkId);
-    if (index === -1) return resultRequest(res, false, 'Lien non trouvé', { });
-
-    links[index].isRetroInProgress = true;
-
-    await writeJson(LINK_FILE, links);
-    resultRequest(res, true, '', links[index]);
-  } catch (e) {
-    resultRequest(res, false, 'Erreur lors de la mise à jour du statut du lien', { });
+    const link = await pool.queryOne(
+      `SELECT id, isactif AS "isActif", retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isclosed AS "isClosed", isretrodone AS "isRetroDone", isretroinprogress AS "isRetroInProgress" FROM sprintsretrosteams where id = $1`,
+      [currentLinkId]
+    );
+    if (!link) return resultRequest(res, false, 'Lien non trouvé', { });
+    
+    link.isRetroInProgress = true;
+    await pool.query(
+      "UPDATE sprintsretrosteams SET isretroinprogress= true WHERE id = $1",
+      [currentLinkId]
+    );
+    resultRequest(res, true, '', link);
+  } catch(err) {
+    let message = "Erreur lors de la mise à jour du statut du lien";
+    if (process.env.LOG_STATUS == "all"){
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
   }
 };

@@ -5,84 +5,94 @@
       <span class="title" @click="goToAccueil">Reflecto</span>
       <button class="start-btn header-button-bis" @click="goToPricing">Nos offres</button>
       <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
-      <button class="start-btn header-button" @click="toggleForm">Se connecter</button>
+      <button class="start-btn header-button" @click="goToLandingPageAndConnect()">
+        Se connecter
+      </button>
     </header>
     <div class="content-landing-page">
       <main class="main-content">
         <div class="intro-section">
-          <div class="left">
-            <h1 class="headline">
-              Libérez la puissance de <br />
-              vos rétrospectives
-            </h1>
-            <p class="subtext">
-              Faites passer vos rétrospectives au niveau supérieur avec <strong>REFLECTO</strong>,
-              l’outil pensé pour les équipes agiles. Renforcez la collaboration, améliorez la
-              communication et facilitez la prise de décision pour une dynamique fluide à chaque
-              sprint.
-            </p>
-            <button class="start-btn pricing-button" @click="toggleFormCompany">Commencer</button>
-            <button class="start-btn pricing-button-bis" @click="goToContact">
-              Demander une demo
+          <h1>Nos offres</h1>
+          <div class="tab-pricing">
+            <button
+              class="tabPriceLink tabLeft"
+              :class="[{ active: isMonth }]"
+              @click="changeOffer(true)"
+            >
+              Mensuel
+            </button>
+            <button
+              class="tabPriceLink tabRight"
+              :class="[{ active: !isMonth }]"
+              @click="changeOffer(false)"
+            >
+              Annuel
+              <span class="btn-badge" aria-label="discount">2 mois <br />gratuits</span>
             </button>
           </div>
-          <div class="right">
-            <img src="@/assets/reflecto.png" alt="Retro Illustration" class="illustration" />
+          <div class="offres">
+            <div class="card card-1">
+              <h2>Gratuit</h2>
+              <h3>0€</h3>
+              <p>Idéal pour essayer</p>
+              <ul>
+                <li class="aval">1 équipe</li>
+                <li class="aval">3 membres</li>
+                <li class="unaval">Image dans les catégories</li>
+                <li class="unaval">Support prioritaire</li>
+              </ul>
+              <div class="btns-link-pricing">
+                <button class="start-btn pricing-button" @click="toggleFormCompany">Essayer</button>
+              </div>
+            </div>
+            <div class="card card-2 hot-badge">
+              <h2>Standard</h2>
+              <h3>{{ getAmount(true) }}</h3>
+              <p>Pour les petites structures</p>
+              <ul>
+                <li class="aval">1 équipe</li>
+                <li class="aval">5 membres</li>
+                <li class="unaval">Image dans les catégories</li>
+                <li class="unaval">Support prioritaire</li>
+              </ul>
+              <div class="btns-link-pricing">
+                <button class="start-btn pricing-button" @click="goToContact">
+                  Nous contacter
+                </button>
+              </div>
+            </div>
+            <div class="card card-3">
+              <h2>Pro</h2>
+              <h3>{{ getAmount(false) }}</h3>
+              <p>Toute l'application en illimité</p>
+              <ul>
+                <li class="aval">Multi-équipes</li>
+                <li class="aval">Membres illimités</li>
+                <li class="aval">Image dans les catégories</li>
+                <li class="aval">Support prioritaire</li>
+              </ul>
+              <div class="btns-link-pricing">
+                <button class="start-btn pricing-button" @click="goToContact">
+                  Nous contacter
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="button">
+            <button class="start-btn" @click="goToLandingPageAndConnect()">← Retour</button>
           </div>
         </div>
       </main>
-
-      <section class="section-dark">
-        <h2 class="pricing-title">POURQUOI REFLECTO ?</h2>
-        <div class="explanation">
-          <div class="texts">
-            <div class="text-explain">
-              <p class="big">Dites adieu aux Post-it et au chaos</p>
-              Fini les murs recouverts de papiers qui disparaissent après chaque sprint. Avec
-              Reflecto, centralisez toutes vos rétrospectives en ligne et ne perdez plus jamais vos
-              idées.
-            </div>
-            <div class="text-explain">
-              <p class="big">Simple, flexible et fait pour vous</p>
-              Pas besoin de formation ni d’outils complexes. Reflecto s’adapte à votre manière de
-              travailler : personnalisez vos catégories, vos sprints et vos équipes facilement.
-            </div>
-            <div class="text-explain">
-              <p class="big">Engagez votre équipe, sans compromis écologique</p>
-              Stimulez la participation, gardez une trace dans le temps et dites au revoir au
-              gaspillage de papier. Une solution moderne, responsable et accessible à tous..
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="screenshots">
-        <h2 class="pictures-title">Aperçu de l’application</h2>
-        <div class="scroll-gallery">
-          <img
-            v-for="(img, i) in images"
-            :key="i"
-            :src="img"
-            :alt="`Aperçu ${i + 1}`"
-            loading="lazy"
-          />
-        </div>
-      </section>
     </div>
   </div>
 </template>
 
 <script>
 import authService from '@/services/authService';
-import screen1 from '@/assets/img/screen1.png';
-import screen2 from '@/assets/img/screen2.png';
-import screen3 from '@/assets/img/screen3.png';
-import screen4 from '@/assets/img/screen4.png';
 
 export default {
   data() {
     return {
-      images: [screen1, screen2, screen3, screen4],
       isMonth: true,
       textsPricing: {
         month: {
@@ -97,27 +107,6 @@ export default {
     };
   },
   methods: {
-    getAmount(standard) {
-      return this.isMonth
-        ? standard
-          ? this.textsPricing.month.standard
-          : this.textsPricing.month.pro
-        : standard
-          ? this.textsPricing.annual.standard
-          : this.textsPricing.annual.pro;
-    },
-    changeOffer(isMonth) {
-      this.isMonth = isMonth;
-    },
-    goToContact() {
-      this.$router.push('/contact');
-    },
-    goToPricing() {
-      this.$router.push('/pricing');
-    },
-    goToAccueil() {
-      this.$router.push('/');
-    },
     toggleFormCompany() {
       this.$store.dispatch('setShowFormCompany', true);
       this.toggleForm();
@@ -130,6 +119,38 @@ export default {
 
       this.$router.push('/connection');
       this.$store.dispatch('setShowFormConnection', !this.$store.getters.showFormConnection);
+    },
+    getAmount(standard) {
+      return this.isMonth
+        ? standard
+          ? this.textsPricing.month.standard
+          : this.textsPricing.month.pro
+        : standard
+          ? this.textsPricing.annual.standard
+          : this.textsPricing.annual.pro;
+    },
+    changeOffer(isMonth) {
+      this.isMonth = isMonth;
+    },
+    goToPricing() {
+      this.$router.push('/pricing');
+    },
+    goToContact() {
+      this.$router.push('/contact');
+    },
+    goToAccueil() {
+      this.$router.push('/');
+    },
+    goToLandingPageAndConnect() {
+      this.$store.dispatch('setShowFormConnection', true);
+      this.redirection();
+    },
+    redirection() {
+      if (authService.getUser()) {
+        this.$router.push('/retro');
+        return;
+      }
+      this.$router.push('/');
     },
   },
 };
@@ -146,9 +167,10 @@ export default {
   cursor: pointer;
 }
 
-.list {
+.button {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 2rem;
 }
 
 .prices {
@@ -160,12 +182,8 @@ export default {
   font-size: 1rem;
 }
 
-.pricing-button {
-  padding: 12px !important;
-}
-
-.price-text {
-  font-size: 2rem !important;
+.first span {
+  font-size: 2rem;
 }
 
 .title {
@@ -199,26 +217,19 @@ export default {
 .main-content {
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 0rem 2rem;
-  min-height: 500px;
   flex: 1;
-}
-
-.offres,
-.section-dark {
-  background-color: #002b36;
-}
-
-.text-explain {
-  color: #fffcf3;
 }
 
 .intro-section {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 3rem;
+  flex-direction: column;
+  width: 50%;
+}
+
+.intro-section h1 {
+  align-self: center;
 }
 
 .left {
@@ -228,7 +239,7 @@ export default {
 }
 
 .headline {
-  font-size: 4rem;
+  font-size: 2.2rem;
   margin-bottom: 1rem;
   color: #003b4a;
 }
@@ -237,25 +248,6 @@ export default {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
   color: #444;
-}
-
-.start-btn {
-  background-color: #002b36;
-  color: white;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.header-button {
-  background-color: #02677a;
-}
-
-.start-btn:hover {
-  background-color: #02677a;
 }
 
 .right {
@@ -350,22 +342,12 @@ export default {
   text-align: center;
   font-size: 1.8rem;
   margin: 2rem 0 1rem;
-  color: #fdf8e6;
-}
-
-.pictures-title {
-  text-align: center;
-  font-size: 1.8rem;
-  margin: 2rem 0 1rem;
-  text-transform: uppercase;
-  color: #002b36;
 }
 
 .pricing {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  padding-bottom: 2rem;
 }
 
 .pricing-card {
@@ -390,10 +372,6 @@ export default {
   border-color: #002b36;
 }
 
-strong {
-  color: #002b36;
-}
-
 .price {
   color: #002b36;
   font-weight: bold;
@@ -406,11 +384,141 @@ strong {
   flex: 1;
 }
 
-.explanation {
-  display: flex;
-  padding-left: 10rem;
-  padding-right: 10rem;
-  padding-bottom: 2rem;
+.logo,
+.title {
+  cursor: pointer;
+}
+
+.card {
+  display: inline-block;
+  position: relative;
+  background: #fffcf3;
+  color: #283d3b;
+  width: 330px;
+  height: 450px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow:
+    0 11px 26px 1px #0000004a,
+    inset 0 -16px 90px #002b3647;
+}
+.card h2 {
+  margin: 0;
+  width: 100%;
+  font-size: 30px;
+  background: #c44536;
+  padding: 20px 0;
+  color: #edddd4;
+  box-shadow: inset 0px 5px 4px -4px #ecddd461;
+}
+.card h3 {
+  margin: 20px 0;
+  font-size: 60px;
+  text-shadow: 3px 2px 2px #283d3b38;
+}
+.card h3 span {
+  font-size: 20px;
+}
+.card p {
+  font-style: italic;
+  margin: 0 0 30px 0;
+}
+.card ul {
+  text-align: left;
+  padding: 0 50px;
+  margin: 0;
+}
+.card ul li {
+  display: block;
+}
+.card ul li:not(:last-child) {
+  margin-bottom: 10px;
+}
+.card ul li.aval::before {
+  font-family: 'Font Awesome 5 Free';
+  content: '';
+  font-weight: 900;
+  font-size: 20px;
+  color: #197278;
+  width: 40px;
+  display: inline-block;
+}
+.card ul li.unaval::before {
+  font-family: 'Font Awesome 5 Free';
+  content: '';
+  font-weight: 900;
+  font-size: 20px;
+  color: #c44536;
+  width: 40px;
+  display: inline-block;
+}
+.card .select {
+  cursor: pointer;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  font-weight: 700;
+  background: #3e3e3e;
+  color: #efefef;
+  font-size: 15px;
+  font-family: inherit;
+  box-shadow: 0 8px 18px 4px #283d3b4d;
+}
+.card .select::before {
+  content: '';
+  font-weight: 900;
+  margin-right: 15px;
+}
+.card-1,
+.card-3 {
+  position: relative;
+  transform: scale(0.9);
+}
+.card-1 {
+  left: 40px;
+  margin-left: -60px;
+  z-index: 0;
+}
+.card-1 h2 {
+  background: #005f73;
+}
+.card-2 {
+  z-index: 1;
+}
+.card-3 {
+  left: -40px;
+  margin-right: -60px;
+  z-index: 0;
+}
+.card-3 h2 {
+  background: #781940;
+}
+
+.hot-badge::after {
+  content: 'POPULAIRE';
+  position: absolute;
+  background: linear-gradient(to right, #ffd400, #ffbc00);
+  padding: 5px 54px;
+  box-shadow: 0 0 5px 3px #715e006e;
+  top: 25px;
+  right: -46px;
+  color: #5d4d00;
+  font-size: 14px;
+  transform: rotateZ(45deg);
+}
+
+.offres {
+  text-align: center;
+}
+
+.pricing-button {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.header-button {
+  background-color: #02677a;
 }
 
 .pricing-button-bis:hover {
@@ -432,6 +540,11 @@ strong {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.btn-badge {
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .tabPriceLink {
@@ -525,38 +638,5 @@ strong {
   justify-content: center;
   align-items: center;
   font-size: 0.7rem;
-}
-
-.logo,
-.title {
-  cursor: pointer;
-}
-
-h2,
-p,
-.text-explain {
-  cursor: default;
-}
-
-.scroll-gallery {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  height: 400px;
-  padding-top: 8px;
-}
-.scroll-gallery img {
-  flex: 0 0 40%;
-  width: 300px;
-  border-radius: 12px;
-  scroll-snap-align: start;
-  transition: transform 0.3s ease;
-}
-.scroll-gallery img:hover {
-  transform: scale(1.05);
 }
 </style>

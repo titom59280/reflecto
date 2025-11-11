@@ -63,6 +63,11 @@ export default {
     return res.data;
   },
 
+  async getCategories(retroId) {
+    const res = await authService.instance.get(`/retros/categories/${retroId}`);
+    return res.data;
+  },
+
   async getUserRetroLinks(userId) {
     const res = await authService.instance.get(`/sprint-retro-team/user/${userId}`);
     return res.data;

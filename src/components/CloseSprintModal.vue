@@ -47,7 +47,6 @@ export default {
   },
   watch: {
     nextSprintName(value) {
-      console.log(value);
       this.sprintName = value;
     },
   },
