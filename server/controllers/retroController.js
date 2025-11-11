@@ -137,7 +137,7 @@ exports.remove = async (req, res) => {
     if (link) return resultRequest(res, false, "Une équipe a déja un sprint en cours avec cette retro.", { });
     const { data: files, error: listError } = await supabase.storage
       .from('uploads')
-      .list(folderPath, { limit: 1000 });
+      .list(sprintAssetsPath, { limit: 1000 });
 
     if (listError) throw listError;
 
