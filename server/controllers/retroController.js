@@ -2,6 +2,7 @@ const { supabase } = require('../utils/supabase');
 const path = require('path');
 const crypto = require('crypto');
 const qs = require('qs');
+const fs = require('fs').promises;
 const pool = require('../utils/dbHelper');
 const { resultRequest } = require('../utils/requestUtils');
 
@@ -75,12 +76,12 @@ exports.create = async (req, res) => {
       let imagePath;
 
       if (file) {
-
+        const fileBuffer = await fs.readFile(file.path);
         const ext = path.extname(file.originalname);
         const imageName = `${Date.now()}_${index}${ext}`
         const {data, error} = await supabase.storage
           .from('uploads')
-          .upload(`${sprintAssetsPath}/${imageName}`, file.buffer, {
+          .upload(`${sprintAssetsPath}/${imageName}`, fileBuffer, {
             contentType: file.mimetype,
             upsert: true, // remplace si existe déjà
         });
