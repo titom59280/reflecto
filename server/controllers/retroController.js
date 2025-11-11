@@ -135,27 +135,20 @@ exports.remove = async (req, res) => {
       [retroId]
     );
     if (link) return resultRequest(res, false, "Une équipe a déja un sprint en cours avec cette retro.", { });
+    const { data: files, error: listError } = await supabase.storage
+      .from('uploads')
+      .list(folderPath, { limit: 1000 });
 
-    //supprimer les images s'il y a 
-    const categories = await pool.query(
-      "SELECT * FROM retrocategories where retroid = $1",
-      [retroId]
-    );
-    let images = [];
-    if (categories && categories.length > 0) {
-       categories.forEach(c => {
-        if (c.image && c.image != "") {
-          images.push(`${sprintAssetsPath}/${c.image}`);
-        }
-       });
+    if (listError) throw listError;
+
+    if (files && files.length > 0) {
+      const filePaths = files.map(f => `${sprintAssetsPath}/${f.name}`);
+      
+      const { error: removeError } = await supabase.storage
+      .from('uploads')
+      .remove(filePaths);
+      
     }
-
-    if(images.length > 0) {
-      const { data, error } = await supabase.storage
-        .from('uploads')
-        .remove(images);
-    }
-
     //supprimer les categories
     await pool.query(
       "DELETE FROM retrocategories where retroid = $1",
