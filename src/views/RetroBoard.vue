@@ -90,7 +90,6 @@
 <script>
 import retroService from '@/services/retroService';
 import authService from '@/services/authService';
-import { API_BASE_URL } from '@/config';
 import AddPostitModal from '@/components/AddPostitModal.vue';
 import ReadPostitModal from '@/components/ReadPostitModal.vue';
 import StartRetroModeModal from '@/components/StartRetroModeModal.vue';

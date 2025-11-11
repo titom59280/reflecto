@@ -46,7 +46,6 @@
 <script>
 import authService from '@/services/authService';
 import retroService from '@/services/retroService';
-import { API_BASE_URL } from '@/config';
 import ReadPostitModal from '@/components/ReadPostitModal.vue';
 import AdminService from './AdminService';
 import CloseRetroModal from '@/components/CloseRetroModal.vue';
