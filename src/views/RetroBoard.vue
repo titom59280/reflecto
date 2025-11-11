@@ -5,7 +5,7 @@
     <div v-else class="retro-columns">
       <div v-for="cat in categories" :key="cat.id" class="retro-column">
         <h3>{{ cat.name }}</h3>
-        <img v-if="cat.image" :src="getImagePath(cat.image)" class="category-image" />
+        <img v-if="cat.image" :src="cat.image" class="category-image" />
         <p class="description">{{ cat.description }}</p>
         <div v-if="messageToDisplay === ''" class="post-it-container">
           <transition-group name="postit" tag="div" class="postit-list">
@@ -517,12 +517,6 @@ export default {
     truncateText(text, maxChars = 60) {
       if (!text) return '';
       return text.length > maxChars ? text.slice(0, maxChars) + '…' : text;
-    },
-    getImagePath(filename) {
-      if (!this.currentLink) {
-        return '';
-      }
-      return `${API_BASE_URL}/uploads/retros/${this.currentLink.retroId}/${filename}`;
     },
     openAddModal() {
       // Tu pourras afficher une modale ou une interface pour créer un post-it
