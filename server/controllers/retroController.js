@@ -152,7 +152,7 @@ exports.remove = async (req, res) => {
 
     if(images.length > 0) {
       const { data, error } = await supabase.storage
-        .from(bucketName)
+        .from('uploads')
         .remove(images);
     }
 
