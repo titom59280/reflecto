@@ -18,7 +18,7 @@ async function createMember({ companyId, email, name, trigramme, teamId, isScrum
     [companyId]
   );
   if (!companies) return  { success: false, message: 'Compagnie non trouvée', result: {} };
-  const isFullAdmin = hashedEmail === "f417bbe3950c0a80a48adb13b26ad29f0163f339a412fdb7735f14aa65618b62"  || hashedEmail === 'a3ba629ece9b1b84c5a4119b5aea9566fd762e4a86e63410771791a063911620';
+  const isFullAdmin = hashedEmail === "2d9437663c27cb64bf729f89fdde7136ccd8a153c347860043640573e53a29bd"  || hashedEmail === 'a3ba629ece9b1b84c5a4119b5aea9566fd762e4a86e63410771791a063911620';
   const trigrammeScrumMaster = trigramme.toUpperCase();
   const newMember = {
     id: crypto.randomUUID(),
