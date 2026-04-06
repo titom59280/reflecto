@@ -59,20 +59,6 @@ ${message}
   }
 }
 
-exports.testapi = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: process.env.DATABASE_URL
-  });
-};
-
-
-exports.test = async (req, res) => {
-  const { email } = req.body;
-  const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
-  resultRequest(res, true, '', { test: hashedEmail });
-};
-
 exports.login = async (req, res) => {
   try{
     const { email, password } = req.body;
