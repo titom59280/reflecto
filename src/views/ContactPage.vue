@@ -1,29 +1,33 @@
 <template>
   <div class="landing-wrapper">
     <header class="header">
-      <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
-      <span class="title" @click="goToAccueil">Reflecto</span>
-      <button class="start-btn header-button-bis" @click="goToPricing">Nos offres</button>
-      <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
+      <div class="header-left">
+        <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+        <span class="title" @click="goToAccueil">Reflecto</span>
+      </div>
+      <button class="start-btn header-button-bis" @click="goToPricing">
+        {{ $t('nosOffres.title') }}
+      </button>
       <button class="start-btn header-button connection-btn" @click="goToLandingPageAndConnect()">
-        Se connecter
+        {{ $t('seConnecter') }}
       </button>
     </header>
     <div class="main-content">
       <div class="form-section">
         <div class="left-form">
-          <h2>Une question ? Une idée ? Nous sommes à l’écoute !</h2>
-          <p>Notre équipe se tient prête à vous accompagner dans votre aventure avec Reflecto.</p>
+          <h2>{{ $t('contact.titre') }}</h2>
+          <p>{{ $t('contact.description1') }}</p>
           <p>
-            Que ce soit pour une demande d’information, une suggestion d’amélioration, ou une
-            partenariat potentiel, nous vous répondrons dans les plus brefs délais.
+            {{ $t('contact.description2') }}
           </p>
-          <p>Ensemble, faisons de vos rétrospectives un moteur de progrès continu !</p>
-          <button class="start-btn" @click="goToLandingPage()">← Retour</button>
+          <p>{{ $t('contact.description3') }}</p>
+          <div class="button-action">
+            <button class="start-btn" @click="goToLandingPage()">← {{ $t('retour') }}</button>
+          </div>
         </div>
         <div class="right-form">
           <div class="container login-form">
-            <h2 class="text-center">Restons en contact</h2>
+            <h2 class="text-center">{{ $t('contact.restonsEnContact') }}</h2>
             <form class="form-login" @submit.prevent="sendContact()">
               <div class="fields">
                 <input
@@ -33,19 +37,19 @@
                   autocomplete="off"
                 />
                 <div>
-                  <label>Nom *</label>
+                  <label>{{ $t('contact.nom') }} *</label>
                   <input v-model="form.name" type="text" class="input" required />
                 </div>
                 <div>
-                  <label>Email *</label>
+                  <label>{{ $t('contact.email') }} *</label>
                   <input v-model="form.email" type="email" class="input" required />
                 </div>
                 <div>
-                  <label>Message *</label>
+                  <label>{{ $t('contact.message') }} *</label>
                   <textarea v-model="form.message" class="input" required />
                 </div>
               </div>
-              <button type="submit" class="button-primary">Envoyer</button>
+              <button type="submit" class="button-primary">{{ $t('contact.envoyer') }}</button>
             </form>
           </div>
         </div>
@@ -76,6 +80,7 @@ export default {
       this.redirection();
     },
     goToLandingPage() {
+      this.$store.dispatch('setShowFormConnection', false);
       this.redirection();
     },
     goToAccueil() {
@@ -117,7 +122,6 @@ export default {
 .form-section {
   display: flex;
   align-items: center;
-  gap: 2rem;
 }
 
 .login-form {
@@ -129,12 +133,20 @@ export default {
 }
 
 .left-form {
+  display: flex;
+  width: 50%;
+  flex-direction: column;
   flex: 1;
   color: #014d64;
+  min-width: 425px;
 }
 
 .right-form {
+  display: flex;
+  width: 50%;
+  flex-direction: column;
   flex: 1;
+  min-width: 425px;
 }
 
 .contact-page-container {
@@ -152,11 +164,13 @@ export default {
   flex: 1;
 }
 
-.title {
+.header-left {
   padding-left: 8px;
   flex: 1;
   font-weight: 700;
   font-size: 1.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .header {
@@ -184,5 +198,16 @@ export default {
 .logo,
 .title {
   cursor: pointer;
+}
+
+.form-section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.button-action {
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 </style>

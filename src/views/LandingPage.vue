@@ -1,29 +1,37 @@
 <template>
   <div class="landing-wrapper">
     <header class="header">
-      <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
-      <span class="title" @click="goToAccueil">Reflecto</span>
-      <button class="start-btn header-button-bis" @click="goToPricing">Nos offres</button>
-      <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
-      <button class="start-btn header-button" @click="toggleForm">Se connecter</button>
+      <div class="header-left">
+        <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+        <span class="title" @click="goToAccueil">Reflecto</span>
+      </div>
+      <button class="start-btn header-button-bis" @click="goToPricing">
+        {{ $t('nosOffres.title') }}
+      </button>
+      <button class="start-btn header-button-bis" @click="goToContact">
+        {{ $t('demanderDemo') }}
+      </button>
+      <button class="start-btn header-button" @click="toggleForm">
+        {{ $t('seConnecter') }}
+      </button>
     </header>
     <div class="content-landing-page">
       <main class="main-content">
         <div class="intro-section">
           <div class="left">
             <h1 class="headline">
-              Libérez la puissance de <br />
-              vos rétrospectives
+              {{ $t('landingPage.titreSection1') }} <br />
+              {{ $t('landingPage.titreSection2') }}
             </h1>
             <p class="subtext">
-              Faites passer vos rétrospectives au niveau supérieur avec <strong>REFLECTO</strong>,
-              l’outil pensé pour les équipes agiles. Renforcez la collaboration, améliorez la
-              communication et facilitez la prise de décision pour une dynamique fluide à chaque
-              sprint.
+              {{ $t('landingPage.descriptionSection1') }} <strong>REFLECTO</strong>,
+              {{ $t('landingPage.descriptionSection2') }}
             </p>
-            <button class="start-btn pricing-button" @click="toggleFormCompany">Commencer</button>
+            <button class="start-btn pricing-button" @click="toggleFormCompany">
+              {{ $t('commencer') }}
+            </button>
             <button class="start-btn pricing-button-bis" @click="goToContact">
-              Demander une demo
+              {{ $t('demanderDemo') }}
             </button>
           </div>
           <div class="right">
@@ -33,31 +41,27 @@
       </main>
 
       <section class="section-dark">
-        <h2 class="pricing-title">POURQUOI REFLECTO ?</h2>
+        <h2 class="pricing-title">{{ $t('landingPage.pourquoi') }}</h2>
         <div class="explanation">
           <div class="texts">
             <div class="text-explain">
-              <p class="big">Dites adieu aux Post-it et au chaos</p>
-              Fini les murs recouverts de papiers qui disparaissent après chaque sprint. Avec
-              Reflecto, centralisez toutes vos rétrospectives en ligne et ne perdez plus jamais vos
-              idées.
+              <p class="big">{{ $t('landingPage.raison1') }}</p>
+              {{ $t('landingPage.raison2') }}
             </div>
             <div class="text-explain">
-              <p class="big">Simple, flexible et fait pour vous</p>
-              Pas besoin de formation ni d’outils complexes. Reflecto s’adapte à votre manière de
-              travailler : personnalisez vos catégories, vos sprints et vos équipes facilement.
+              <p class="big">{{ $t('landingPage.raison3') }}</p>
+              {{ $t('landingPage.raison4') }}
             </div>
             <div class="text-explain">
-              <p class="big">Engagez votre équipe, sans compromis écologique</p>
-              Stimulez la participation, gardez une trace dans le temps et dites au revoir au
-              gaspillage de papier. Une solution moderne, responsable et accessible à tous..
+              <p class="big">{{ $t('landingPage.raison5') }}</p>
+              {{ $t('landingPage.raison6') }}
             </div>
           </div>
         </div>
       </section>
 
       <section class="screenshots">
-        <h2 class="pictures-title">Aperçu de l’application</h2>
+        <h2 class="pictures-title">{{ $t('landingPage.apercu') }}</h2>
         <div class="scroll-gallery">
           <img
             v-for="(img, i) in images"
@@ -96,6 +100,11 @@ export default {
       },
     };
   },
+  mounted() {
+    if (this.$store.getters.showFormConnection) {
+      this.$router.push('/connection');
+    }
+  },
   methods: {
     getAmount(standard) {
       return this.isMonth
@@ -116,6 +125,7 @@ export default {
       this.$router.push('/pricing');
     },
     goToAccueil() {
+      this.$store.dispatch('setShowFormConnection', false);
       this.$router.push('/');
     },
     toggleFormCompany() {
@@ -168,11 +178,13 @@ export default {
   font-size: 2rem !important;
 }
 
-.title {
+.header-left {
   padding-left: 8px;
   flex: 1;
   font-weight: 700;
   font-size: 1.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .header {
@@ -200,8 +212,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0rem 2rem;
-  min-height: 500px;
+  padding: 2rem;
   flex: 1;
 }
 
@@ -219,6 +230,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   gap: 3rem;
+  flex-wrap: wrap;
 }
 
 .left {
@@ -261,6 +273,7 @@ export default {
 .right {
   flex: 1;
   text-align: center;
+  min-width: 300px;
 }
 
 .illustration {

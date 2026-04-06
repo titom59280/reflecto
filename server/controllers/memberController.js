@@ -82,7 +82,7 @@ exports.update = async (req, res) => {
       "UPDATE members set email = $1, name = $2, trigramme = $3, isscrummaster = $4, teamid = $5 WHERE id = $6",
       [user.email, user.name, user.trigramme, user.isScrumMaster, user.teamId, id]
     );
-    
+    user.password = undefined;
     resultRequest(res, true, '', user);
   } catch (err) {
     let message = "Erreur lors de la modification du membres";
@@ -170,8 +170,7 @@ exports.updatePassword = async (req, res) => {
     );
 
     const token = generateToken(user);
-    
-    resultRequest(res, true, '', { user: { user, password: undefined, team: team }, token });
+    resultRequest(res, true, '', { user: { ...user, password: undefined, team: team }, token });
   }catch(err){
     let message = "Erreur lors de la mise à jour du mot de passe";
     if (process.env.LOG_STATUS == "all"){

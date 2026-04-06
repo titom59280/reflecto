@@ -1,27 +1,30 @@
 <template>
   <div class="landing-wrapper">
     <header class="header">
-      <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
-      <span class="title" @click="goToAccueil">Reflecto</span>
-      <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
+      <div class="header-left">
+        <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+        <span class="title" @click="goToAccueil">Reflecto</span>
+      </div>
+      <button class="start-btn header-button-bis" @click="goToContact">
+        {{ $t('demanderDemo') }}
+      </button>
     </header>
     <div class="main-content">
       <div class="form-section">
         <div class="left-form">
-          <h2>Rejoignez l’aventure Reflecto</h2>
+          <h2>{{ $t('connection.titre') }}</h2>
           <p>
-            Simplifiez vos rétrospectives agiles, engagez vos équipes, et transformez chaque sprint
-            en opportunité d'amélioration continue. 🚀
+            {{ $t('connection.description1') }}
           </p>
           <p>
-            Créez un compte gratuitement dès maintenant ou connectez-vous si vous avez déjà accès à
-            un espace Reflecto.
+            {{ $t('connection.description2') }}
           </p>
           <p>
-            Une fois que vous serez convaincue par notre outils, contactez nous pour en faire
-            profiter toute votre équipe.
+            {{ $t('connection.description3') }}
           </p>
-          <button class="start-btn" @click="goToLandingPage()">← Retour</button>
+          <div class="button-action">
+            <button class="start-btn" @click="goToLandingPage()">← {{ $t('retour') }}</button>
+          </div>
         </div>
         <div class="right-form">
           <AuthForm />
@@ -50,10 +53,15 @@ export default {
       this.redirection();
     },
     goToAccueil() {
+      this.$store.dispatch('setShowFormConnection', false);
       this.$router.push('/');
     },
     goToLandingPage() {
+      this.$store.dispatch('setShowFormConnection', false);
       this.redirection();
+    },
+    goToContact() {
+      this.$router.push('/contact');
     },
     redirection() {
       if (authService.getUser()) {
@@ -82,6 +90,10 @@ export default {
   justify-content: center;
 }
 
+.main-content {
+  overflow: auto;
+}
+
 .form-login {
   flex: 1;
   flex-direction: column;
@@ -91,7 +103,7 @@ export default {
 .form-section {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  height: 100%;
 }
 
 .login-form {
@@ -103,12 +115,20 @@ export default {
 }
 
 .left-form {
+  display: flex;
+  width: 50%;
+  flex-direction: column;
   flex: 1;
   color: #014d64;
+  min-width: 425px;
 }
 
 .right-form {
+  display: flex;
+  width: 50%;
+  flex-direction: column;
   flex: 1;
+  min-width: 425px;
 }
 
 .contact-page-container {
@@ -126,11 +146,13 @@ export default {
   flex: 1;
 }
 
-.title {
+.header-left {
   padding-left: 8px;
   flex: 1;
   font-weight: 700;
   font-size: 1.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .header {
@@ -154,5 +176,16 @@ export default {
 .logo,
 .title {
   cursor: pointer;
+}
+
+.form-section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.button-action {
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 </style>

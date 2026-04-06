@@ -1,22 +1,22 @@
 <template>
   <div class="container login-form">
-    <h2 class="text-center">Bienvenue dans RetroApp</h2>
+    <h2 class="text-center">{{ $t('formulaireConnection.titre') }}</h2>
 
     <div class="tabs">
       <button :class="['tab-button', tab === 'login' ? 'active' : '']" @click="changeTab('login')">
-        Connexion
+        {{ $t('formulaireConnection.connection') }}
       </button>
       <button
         :class="['tab-button', tab === 'register' ? 'active' : '']"
         @click="changeTab('register')"
       >
-        Inscription Utilisateur
+        {{ $t('formulaireConnection.inscriptionUtilisateur') }}
       </button>
       <button
         :class="['tab-button', tab === 'registerCompany' ? 'active' : '']"
         @click="changeTab('registerCompany')"
       >
-        Inscription Entreprise
+        {{ $t('formulaireConnection.inscriptionEntreprise') }}
       </button>
     </div>
     <form
@@ -27,27 +27,27 @@
     >
       <div class="fields">
         <div v-if="tab === 'registerCompany'">
-          <label>Nom Entreprise *</label>
+          <label>{{ $t('formulaireConnection.nomEntreprise') }} *</label>
           <input v-model="companyName" type="text" class="input" required />
         </div>
         <div v-if="tab === 'registerCompany'">
-          <label>Nom équipe *</label>
+          <label>{{ $t('formulaireConnection.nomEquipe') }} *</label>
           <input v-model="teamName" type="text" class="input" required />
         </div>
         <div v-if="tab !== 'registerCompany'">
-          <label>Email *</label>
+          <label>{{ $t('formulaireConnection.email') }} *</label>
           <input v-model="email" type="email" class="input" required />
         </div>
         <div v-else>
-          <label>Email ScrumMaster *</label>
+          <label>{{ $t('formulaireConnection.emailScrumMaster') }} *</label>
           <input v-model="scrumMasterEmail" type="email" class="input" required />
         </div>
         <div v-if="tab !== 'registerCompany'">
-          <label>Mot de passe *</label>
+          <label>{{ $t('formulaireConnection.motDePasse') }} *</label>
           <input v-model="password" autocomplete="on" type="password" class="input" required />
         </div>
         <div v-if="tab === 'register'">
-          <label>Confirmer Mot de passe *</label>
+          <label>{{ $t('formulaireConnection.confirmerMotDePasse') }} *</label>
           <input
             v-model="confirmMotDepasse"
             autocomplete="on"
@@ -57,11 +57,11 @@
           />
         </div>
         <div v-if="tab === 'registerCompany'">
-          <label>Nom ScrumMaster *</label>
+          <label>{{ $t('formulaireConnection.nomScrumMaster') }} *</label>
           <input v-model="scrumMasterName" type="text" class="input" required />
         </div>
         <div v-if="tab === 'registerCompany'">
-          <label>Trigramme ScrumMaster *</label>
+          <label>{{ $t('formulaireConnection.trigrammeScrumMaster') }} *</label>
           <input
             v-model="scrumMasterTrigramme"
             type="text"
@@ -73,7 +73,7 @@
         </div>
       </div>
       <button type="submit" class="button-primary">
-        {{ tab === 'login' ? 'Se connecter' : "S'inscrire" }}
+        {{ tab === 'login' ? $t('seConnecter') : $t('formulaireConnection.inscription') }}
       </button>
     </form>
   </div>

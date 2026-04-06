@@ -12,12 +12,12 @@
       <div class="footer-container">
         <div class="footer-left">
           <img src="@/assets/logo.png" alt="Reflecto" class="logo" />
-          <p class="footer-p">© 2025 Reflecto. Tous droits réservés.</p>
+          <p class="footer-p">© {{ getYear() }} Reflecto. {{ $t('tousDroitsReserves') }}.</p>
         </div>
         <div class="footer-links">
-          <span @click="navigate('Landing')">Accueil</span>
-          <span @click="navigate('Contact')">Contact</span>
-          <span @click="navigate('Legales')">Mentions légales</span>
+          <span @click="navigate('Landing')">{{ $t('accueil') }}</span>
+          <span @click="navigate('Contact')">{{ $t('contact.button') }}</span>
+          <span @click="navigate('Legales')">{{ $t('legales.titre') }}</span>
         </div>
       </div>
     </footer>
@@ -41,6 +41,9 @@ export default {
     };
   },
   methods: {
+    getYear() {
+      return new Date().getFullYear();
+    },
     navigate(value) {
       this.$router.push({ name: value });
     },

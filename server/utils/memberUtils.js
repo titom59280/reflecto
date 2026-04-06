@@ -7,6 +7,7 @@ async function createMember({ companyId, email, name, trigramme, teamId, isScrum
   }
 
   const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
+  console.log('Hashed Email:', hashedEmail);
   const member = await pool.queryOne(
     "SELECT * FROM members WHERE email = $1",
     [hashedEmail]

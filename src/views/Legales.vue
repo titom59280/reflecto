@@ -3,70 +3,67 @@
     <header class="header">
       <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
       <span class="title" @click="goToAccueil">Reflecto</span>
-      <button class="start-btn header-button-bis" @click="goToPricing">Nos offres</button>
-      <button class="start-btn header-button-bis" @click="goToContact">Demander une demo</button>
+      <button class="start-btn header-button-bis" @click="goToPricing">
+        {{ $t('nosOffres.title') }}
+      </button>
+      <button class="start-btn header-button-bis" @click="goToContact">
+        {{ $t('demanderDemo') }}
+      </button>
       <button class="start-btn header-button" @click="goToLandingPageAndConnect()">
-        Se connecter
+        {{ $t('seConnecter') }}
       </button>
     </header>
     <div class="content-landing-page">
       <main class="main-content">
         <div class="intro-section">
-          <h1>Mentions Légales</h1>
+          <h1>{{ $t('legales.titre') }}</h1>
           <div>
-            <h2>Éditeur du site</h2>
+            <h2>{{ $t('legales.editeur') }}</h2>
             <p>
-              Le présent site, <strong>Reflecto</strong>, est édité par :
+              {{ $t('legales.description1') }}
+              <strong>Reflecto</strong>,
+              {{ $t('legales.description1bis') }}
               <br />
-              <strong>Nom :</strong> Thomas Graveleine<br />
-              <strong>Adresse :</strong> 606 rue neuve, 18230 Saint-doulchard, France<br />
-              <strong>Email :</strong> contact@reflecto.com<br />
-              <strong>SIRET :</strong> 821 086 683 00033
+              <strong>{{ $t('legales.nom') }}</strong> Thomas Graveleine<br />
+              <strong>{{ $t('legales.adresse') }}</strong>
+              606 rue neuve, 18230 Saint-doulchard, France<br />
+              <strong>{{ $t('legales.email') }}</strong> contact@reflecto.com<br />
+              <strong>{{ $t('legales.SIRET') }}</strong> 821 086 683 00033
             </p>
           </div>
 
           <div>
-            <h2>Hébergement</h2>
+            <h2>{{ $t('legales.hebergement') }}</h2>
             <p>
-              Ce site est hébergé par :<br />
-              <strong>Nom de l’hébergeur :</strong> Render.com<br />
-              <strong>Adresse :</strong> 525 Brannan Street, Suite 300, San Francisco, CA 94107,
-              United States
+              {{ $t('legales.description2') }}<br />
+              <strong>{{ $t('legales.nomHebergeur') }}</strong> Render.com<br />
+              <strong>{{ $t('legales.adresseHebergeur') }}</strong>
+              525 Brannan Street, Suite 300, San Francisco, CA 94107, United States
             </p>
           </div>
 
           <div>
-            <h2>Propriété intellectuelle</h2>
+            <h2>{{ $t('legales.proprieteIntellectuelle') }}</h2>
             <p>
-              L’ensemble des contenus présents sur ce site (textes, images, logos, illustrations,
-              vidéos) sont protégés par les lois en vigueur sur la propriété intellectuelle et
-              restent la propriété exclusive de Reflecto, sauf mention contraire. Toute reproduction
-              ou utilisation sans autorisation préalable est interdite.
+              {{ $t('legales.description3') }}
             </p>
           </div>
 
           <div>
-            <h2>Données personnelles</h2>
+            <h2>{{ $t('legales.donneespersonnelles') }}</h2>
             <p>
-              Les données personnelles collectées via ce site sont utilisées uniquement dans le
-              cadre du service Reflecto et ne sont jamais revendues à des tiers. Conformément au
-              RGPD, vous pouvez demander la consultation, la modification ou la suppression de vos
-              données en nous contactant via le formulaire de contact :
-              <strong><a href="/contact">Contact</a></strong
-              >.
+              {{ $t('legales.description4') }}
             </p>
           </div>
 
           <div>
-            <h2>Responsabilité</h2>
+            <h2>{{ $t('legales.responsabilite') }}</h2>
             <p>
-              Reflecto met tout en œuvre pour assurer l’exactitude et la mise à jour des
-              informations diffusées sur ce site. Toutefois, nous ne saurions être tenus
-              responsables des éventuelles erreurs ou omissions.
+              {{ $t('legales.description5') }}
             </p>
           </div>
           <div class="button">
-            <button class="start-btn" @click="goToLandingPageAndConnect()">← Retour</button>
+            <button class="start-btn" @click="goToAccueil()">← {{ $t('retour') }}</button>
           </div>
         </div>
       </main>
@@ -86,6 +83,7 @@ export default {
       this.$router.push('/contact');
     },
     goToAccueil() {
+      this.$store.dispatch('setShowFormConnection', false);
       this.$router.push('/');
     },
     goToLandingPageAndConnect() {
