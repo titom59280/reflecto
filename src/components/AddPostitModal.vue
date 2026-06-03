@@ -54,7 +54,10 @@ export default {
   },
   watch: {
     initialPostit(value) {
-      if (!value) {
+      if (!value) {          
+        this.id = null;
+        this.message = '';
+        this.selectedCategory = '';
         return;
       }
       this.id = value.id;
