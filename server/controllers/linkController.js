@@ -24,7 +24,7 @@ exports.getForUser = async (req, res) => {
     if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
     
     const result = await pool.query(
-      `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "sprintId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.isretrodone= false AND s.isclosed= false`,
+      `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "teamId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.isretrodone= false AND s.isclosed= false`,
       [req.user.teamId]
     );
     
