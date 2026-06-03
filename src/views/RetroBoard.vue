@@ -313,6 +313,7 @@ export default {
         this.deleteModalVisible = false;
       }
       this.deletePostItId = null;
+      this.selectedPostit = null;
       this.$root.showToast('Post-it supprimé', 'success');
     },
     async confirmDelete(id) {
