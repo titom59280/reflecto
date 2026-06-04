@@ -4,7 +4,7 @@
       <div class="modal-content">
         <div class="post-it-header">
           <h3 class="post-it-header-title">{{ getTextTitle() }}</h3>
-          <button class="delete-btn" @click="confirmDelete">🗑️</button>
+          <button v-if="id !== null" class="delete-btn" @click="confirmDelete">🗑️</button>
         </div>
         <label for="message">Message :</label>
         <textarea id="message" v-model="message" placeholder="Décrivez votre point..." />
