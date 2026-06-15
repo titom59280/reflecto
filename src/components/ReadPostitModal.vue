@@ -220,7 +220,7 @@ export default {
 .annotate-btn {
   background-color: #005a64;
   color: white;
-  border: none;
+  border: 1px solid #005a64;
   border-radius: 6px;
   padding: 0.5rem;
   cursor: pointer;

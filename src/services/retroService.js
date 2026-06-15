@@ -22,6 +22,14 @@ export default {
     return res.data;
   },
 
+  async chooseColorPostIt(color) {
+    const res = await authService.instance.put(`/members/choose-color`, {
+      color,
+    });
+
+    return res.data;
+  },
+
   // 🔹 Mettre à jour un post-it
   async updatePostit({ id, message, categoryName, annotation }) {
     const res = await authService.instance.put(`/postits`, {

@@ -7,6 +7,7 @@ const requireScrumMaster = require('../middlewares/requireScrumMaster');
 router.get('/', auth, requireScrumMaster, controller.getAll);
 router.post('/check-email', controller.checkEmail);
 router.put('/update-password', controller.updatePassword);
+router.put('/choose-color', auth, controller.chooseColorPostIt);
 router.post('/', auth, requireScrumMaster, controller.create);
 router.put('/:id',auth, requireScrumMaster, controller.update);
 router.delete('/:id', auth, requireScrumMaster, controller.remove);

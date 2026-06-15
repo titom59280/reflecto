@@ -13,6 +13,10 @@
               v-for="post in filteredPostIts(cat.name)"
               :key="post.id"
               class="post-it"
+              :style="{
+                backgroundColor: post.color,
+                background: post.color,
+              }"
               @mouseenter="hoveredPostId = post.id"
               @mouseleave="hoveredPostId = null"
               @click="handlePostitClick(post)"
@@ -42,18 +46,30 @@
       >
         Ajouter
       </button>
+      <button
+        v-if="currentLink && !currentLink.isRetroInProgress && !initializedRetro"
+        class="add-postit-btn"
+        @click="showColorPicker = true"
+      >
+        Couleur des post-its
+      </button>
       <button v-if="isScrumMaster" class="add-postit-btn" @click="actionOnRetro">
         {{ getActionOnRetroButtonLabel() }}
       </button>
     </div>
   </div>
+  <ColorPickerModal
+    :visible="showColorPicker"
+    @close="showColorPicker = false"
+    @change-color="handleChangeColorPostits"
+  />
   <AddPostitModal
     v-if="retro"
     :visible="showModal"
     :categories="categories"
     :initial-postit="selectedPostit"
     @delete="confirmDelete"
-    @close="showModal = false"
+    @close="cancelEditOrAddPostIt"
     @submit="handlePostitCreation"
   />
 
@@ -95,6 +111,7 @@ import ReadPostitModal from '@/components/ReadPostitModal.vue';
 import StartRetroModeModal from '@/components/StartRetroModeModal.vue';
 import CloseSprintModal from '@/components/CloseSprintModal.vue';
 import DeletePostitModal from '@/components/DeletePostitModal.vue';
+import ColorPickerModal from '@/components/ColorPickerModal.vue';
 
 export default {
   components: {
@@ -103,6 +120,7 @@ export default {
     StartRetroModeModal,
     CloseSprintModal,
     DeletePostitModal,
+    ColorPickerModal,
   },
   props: {
     selectedTeamId: {
@@ -120,6 +138,7 @@ export default {
       isScrumMaster: false,
       currentLink: null,
       showCloseModal: false,
+      showColorPicker: false,
       initializedRetro: false,
       alreadyFetchData: false,
       hoveredPostId: null,
@@ -151,6 +170,7 @@ export default {
   },
   watch: {
     selectedTeamId(newId) {
+      console.log('selectedTeam is ', newId);
       if (newId && !this.alreadyFetchData) {
         this.fetchLinkData();
       }
@@ -207,7 +227,7 @@ export default {
     async populateNextSprint() {
       const resultNextSprint = await retroService.getNextSprintName(
         this.currentLink.id,
-        this.selectedTeamId
+        this.getTeamId()
       );
       if (!resultNextSprint.isSuccess) {
         this.$root.showToast(resultNextSprint.message, 'error');
@@ -241,7 +261,6 @@ export default {
         this.oneByOneMode = false;
         this.selectedPostit = null;
         this.readModalVisible = false;
-        this.showCloseModal = true;
         return;
       }
       this.selectedPostit = this.remainingPostits.pop();
@@ -297,6 +316,10 @@ export default {
         default:
           return 'Initialiser';
       }
+    },
+    cancelEditOrAddPostIt() {
+      this.selectedPostit = null;
+      this.showModal = false;
     },
     async handleDeletePostItConfirmed() {
       const resultDeletePostIt = await retroService.deletePostit(this.deletePostItId);
@@ -369,6 +392,19 @@ export default {
         return resultUpdateAnnotation.isSuccess;
       } catch (err) {
         this.$root.showToast("Erreur lors de l'ajout de l'annotation", 'error');
+      }
+    },
+    async handleChangeColorPostits({ color }) {
+      try {
+        const resultChangeColor = await retroService.chooseColorPostIt(color);
+        if (!resultChangeColor.isSuccess) {
+          this.$root.showToast(resultChangeColor.message, 'error');
+          return;
+        }
+        this.$store.dispatch('updateMemberColor', color);
+        this.showColorPicker = false;
+      } catch (err) {
+        this.$root.showToast('Erreur lors du changement de la couleur des post-its');
       }
     },
     async handlePostitCreation({ message, category }) {
@@ -772,7 +808,6 @@ export default {
   width: 105px;
   height: 105px;
   padding: 8px;
-  background-color: #fff89a;
   border-radius: 6px;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', sans-serif;
@@ -780,7 +815,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #fff89a;
   color: #333;
   margin: 0.5rem 0;
   white-space: normal;

@@ -5,7 +5,7 @@ const { resultRequest } = require('../utils/requestUtils');
 exports.getMine = async (req, res) => {
   try{
     const postits = await pool.query(
-      `SELECT id, message, categoryname as "categoryName", sprintretroteamlinkid as "sprintRetroTeamLinkId", trigramme, memberid as "memberId", annotation FROM postits WHERE sprintretroteamlinkid = $1 AND memberid = $2`,
+      `SELECT id, message, categoryname as "categoryName", sprintretroteamlinkid as "sprintRetroTeamLinkId", trigramme, color, memberid as "memberId", annotation FROM postits WHERE sprintretroteamlinkid = $1 AND memberid = $2`,
       [req.params.linkId, req.user?.id]
     );
     resultRequest(res, true, '', postits);
@@ -21,7 +21,7 @@ exports.getMine = async (req, res) => {
 exports.getAllByLink = async (req, res) => {
   try{
     const postits = await pool.query(
-      `SELECT id, message, categoryname as "categoryName", sprintretroteamlinkid as "sprintRetroTeamLinkId", trigramme, memberid as "memberId", annotation FROM postits WHERE sprintretroteamlinkid = $1`,
+      `SELECT id, message, categoryname as "categoryName", sprintretroteamlinkid as "sprintRetroTeamLinkId", trigramme, color, memberid as "memberId", annotation FROM postits WHERE sprintretroteamlinkid = $1`,
       [req.params.linkId]
     );
     
@@ -53,12 +53,13 @@ exports.create = async (req, res) => {
       categoryName,
       sprintRetroTeamLinkId,
       trigramme: member.trigramme,
+      color: member.color,
       memberId: req.user?.id,
       annotation: ''
     };
     await pool.query(
-      "INSERT INTO postits (id, message, categoryname, sprintretroteamlinkid, trigramme, memberid, annotation) VALUES ($1, $2, $3, $4, $5, $6, '')",
-      [newPostit.id, message, categoryName, sprintRetroTeamLinkId, member.trigramme, member.id]
+      "INSERT INTO postits (id, message, categoryname, sprintretroteamlinkid, trigramme, memberid, annotation, color) VALUES ($1, $2, $3, $4, $5, $6, '', $7)",
+      [newPostit.id, message, categoryName, sprintRetroTeamLinkId, member.trigramme, member.id, member.color]
     );
     resultRequest(res, true, newPostit);
   } catch (err) {

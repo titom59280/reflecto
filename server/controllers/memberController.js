@@ -61,6 +61,27 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.chooseColorPostIt = async (req, res) => {
+  try{
+    const member = await pool.queryOne(
+      "SELECT * FROM members WHERE id = $1",
+      [req.user?.id]
+    );
+    if (!member) return resultRequest(res, false, 'Membre introuvable', {  user: req.user });
+
+    const { color } = req.body;
+    await pool.query('UPDATE members SET color = $1 WHERE id = $2', [color, req.user.id]);
+
+    resultRequest(res, true, color);
+  }catch (err) {
+    let message = "Erreur lors de la sélection de la couleur";
+    if(process.env.LOG_STATUS == "all") {
+      message = err.message;
+    }
+    resultRequest(res, false, message, { });
+  }
+}
+
 exports.update = async (req, res) => {
   try{
     const id = req.params.id;

@@ -8,6 +8,7 @@ function generateToken(user) {
     companyId: user.companyId,
     isScrumMaster: user.isScrumMaster,
     isFullAdmin: user.isFullAdmin,
+    color: user.color,
   }, 
   SECRET, 
   { expiresIn: '2h' });

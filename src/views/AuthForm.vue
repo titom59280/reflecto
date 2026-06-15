@@ -112,6 +112,7 @@ export default {
         }
         authService.saveUser(res.result.user, res.result.token);
         this.$store.dispatch('setShowFormConnection', false);
+        this.$store.dispatch('updateMemberColor', res.result.user.color);
         this.$router.push('/retro');
       } catch (err) {
         this.$root.showToast(err.response?.data?.error || 'Erreur de connexion', 'error');

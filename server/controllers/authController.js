@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
     const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
     
     const user = await pool.queryOne(
-      `SELECT id, name, email, password, trigramme, isscrummaster AS "isScrumMaster", isfulladmin AS "isFullAdmin", teamid AS "teamId", companyid AS "companyId" FROM members WHERE email = $1`,
+      `SELECT id, name, email, password, trigramme, isscrummaster AS "isScrumMaster", isfulladmin AS "isFullAdmin", teamid AS "teamId", companyid AS "companyId", color FROM members WHERE email = $1`,
       [hashedEmail]
     ); 
     
