@@ -45,6 +45,7 @@ const messages = {
       free: 'Gratuit',
       standard: 'Standard',
       pro: 'Pro',
+      membres: 'membres',
       ideal: 'Idéal pour essayer',
       petitesStructures: 'Pour les petites structures',
       illimite: 'Toute l’application en illimité',
