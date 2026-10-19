@@ -1,0 +1,133 @@
+{
+  "admin": {
+    "dashboard": {
+      "title": "Administración",
+      "manageRetros": "Gestionar retros",
+      "manageRetrosDesc": "Crear, asociar y consultar el historial",
+      "newRetro": "Nueva retro",
+      "kpi": {
+        "companies": "Empresas",
+        "teams": "Equipos",
+        "members": "Miembros",
+        "activeSprints": "Sprints activos",
+        "openRetros": "Retros en curso"
+      },
+      "links": {
+        "sprints": "Sprints",
+        "teams": "Equipos",
+        "members": "Miembros",
+        "companies": "Empresas"
+      }
+    },
+    "companies": {
+      "title": "Gestionar empresas",
+      "tabs": {
+        "create": "Crear una empresa",
+        "list": "Lista de empresas"
+      },
+      "name": "Nombre de la empresa",
+      "scrumMasterName": "Nombre del Scrum Master",
+      "scrumMasterEmail": "Email del Scrum Master",
+      "scrumMasterTrigram": "Iniciales del Scrum Master",
+      "subscriptionLevel": "Plan de suscripción",
+      "subscription": {
+        "free": "Gratis",
+        "basic": "Basic",
+        "premium": "Premium"
+      },
+      "empty": "Todavía no hay empresas.",
+      "toast": {
+        "saved": "Cambios guardados",
+        "created": "Empresa creada",
+        "deleted": "Empresa eliminada"
+      }
+    },
+    "members": {
+      "title": "Gestionar miembros",
+      "tabs": {
+        "add": "Añadir un miembro",
+        "list": "Lista de miembros"
+      },
+      "limitReached": "La suscripción de tu empresa ha alcanzado el límite de miembros",
+      "email": "Email",
+      "fullName": "Nombre completo",
+      "scrumMaster": "Scrum Master",
+      "trigram": "Iniciales",
+      "team": "Equipo",
+      "addSubmit": "Añadir miembro",
+      "listTitle": "Miembros",
+      "empty": "Todavía no hay miembros.",
+      "nameField": "Nombre:",
+      "trigramField": "Iniciales:",
+      "teamField": "Equipo:",
+      "unknownTeam": "Equipo desconocido",
+      "toast": {
+        "saved": "Cambios guardados",
+        "created": "Nuevo miembro creado",
+        "deleted": "Miembro eliminado"
+      }
+    },
+    "sprints": {
+      "title": "Gestionar sprints",
+      "tabs": {
+        "create": "Crear un sprint",
+        "list": "Lista de sprints"
+      },
+      "number": "Número del sprint",
+      "createSubmit": "Crear sprint",
+      "empty": "Todavía no hay sprints.",
+      "status": {
+        "closed": "Sprint cerrado",
+        "done": "Sprint terminado",
+        "active": "Sprint activo o próximo"
+      },
+      "toast": {
+        "loadError": "Error al cargar los sprints",
+        "created": "Sprint creado",
+        "createError": "Error al crear el sprint",
+        "deleted": "Sprint eliminado"
+      }
+    },
+    "teams": {
+      "title": "Gestionar equipos",
+      "tabs": {
+        "create": "Crear un equipo",
+        "list": "Lista de equipos"
+      },
+      "name": "Nombre del equipo",
+      "limitReached": "La suscripción de tu empresa ha alcanzado el límite de equipos",
+      "empty": "Todavía no hay equipos.",
+      "membersField": "Miembros:",
+      "noMembers": "Sin miembros",
+      "toast": {
+        "saved": "Cambios guardados",
+        "created": "Equipo creado",
+        "deleted": "Equipo eliminado"
+      }
+    },
+    "retros": {
+      "title": "Gestionar retros",
+      "tabs": {
+        "create": "Crear una retro",
+        "list": "Lista de retros",
+        "associate": "Asociar una retro",
+        "links": "Asociaciones existentes",
+        "completed": "Retros completadas"
+      },
+      "noLinks": "Todavía no hay asociaciones.",
+      "toast": {
+        "loadRetrosError": "Error al cargar las retros",
+        "loadSprintsError": "Error al cargar los sprints",
+        "loadTeamsError": "Error al cargar los equipos"
+      }
+    },
+    "retroDeRetro": {
+      "close": "Cerrar retro",
+      "toast": {
+        "closed": "Retro cerrada correctamente",
+        "closeError": "Error al cerrar la retro",
+        "loadError": "Error al cargar los datos"
+      }
+    }
+  }
+}

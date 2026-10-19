@@ -1,0 +1,65 @@
+{
+  "adminRetros": {
+    "shared": {
+      "alreadyLinked": "A retro is already linked to this team for this sprint",
+      "deleteError": "Error while deleting"
+    },
+    "create": {
+      "retroName": "Retro name",
+      "categoryName": "Name",
+      "categoryDescription": "Description",
+      "categoryImage": "Image",
+      "removeCategory": "Remove category",
+      "addCategory": "Add a category",
+      "submit": "Create retro",
+      "success": "Retro created successfully",
+      "error": "Error while creating the retro."
+    },
+    "list": {
+      "empty": "No retros yet.",
+      "untitled": "Untitled retro",
+      "deleted": "The retro has been deleted"
+    },
+    "associate": {
+      "retro": "Retro",
+      "selectRetro": "Choose a retro",
+      "sprint": "Sprint",
+      "selectSprint": "Choose a sprint",
+      "team": "Team",
+      "selectTeam": "Choose a team",
+      "submit": "Link",
+      "missingFields": "Please fill in all fields",
+      "success": "Retro linked to the sprint",
+      "error": "Error while linking"
+    },
+    "links": {
+      "hideDone": "Hide completed retros",
+      "showAll": "Show all links",
+      "retroDone": "Retro done",
+      "sprintLabel": "Sprint:",
+      "retroLabel": "Retro:",
+      "startRetroOfRetro": "Run the retro of the retro",
+      "activate": "Activate link",
+      "unknownRetro": "Unknown",
+      "unknownSprint": "Unknown",
+      "noLinkAll": "No retro linked to this team.",
+      "noLinkUpcoming": "No retro linked to the current or upcoming sprint for this team.",
+      "activated": "The link has been activated",
+      "activateError": "Error while activating",
+      "removed": "The link has been deleted"
+    },
+    "previous": {
+      "empty": "No completed retros yet.",
+      "teamLabel": "Team:",
+      "sprintLabel": "Sprint:",
+      "viewTickets": "View sticky notes",
+      "noTickets": "No sticky notes for this retro.",
+      "notAvailable": "N/A",
+      "noteLabel": "Note:",
+      "unknownRetro": "Unknown retro",
+      "unknownTeam": "Unknown team",
+      "unknownSprint": "Unknown sprint",
+      "loadError": "Error while loading sticky notes"
+    }
+  }
+}

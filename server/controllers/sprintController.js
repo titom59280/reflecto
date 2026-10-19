@@ -4,7 +4,7 @@ const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const sprints = await pool.query(
       `SELECT id, name, isactif as "isActif", companyid as "companyID", isclosed as "isClosed", isretrodone as "isRetroDone", createdat as "createdAt" FROM sprints WHERE companyid = $1 ORDER BY createdat DESC`,
       [req.user.companyId]
@@ -15,20 +15,20 @@ exports.getAll = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'SPRINTS_FETCH_ERROR');
   }
 };
 
 exports.create = async (req, res) => {
   try{    
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const { name, isActive = false, isClosed = false, isRetroDone = false } = req.body;
-    if (!name) return resultRequest(res, false, 'Nom obligatoire', { });
+    if (!name) return resultRequest(res, false, 'Nom obligatoire', { }, 'NAME_REQUIRED');
     const company = await pool.queryOne(
       "SELECT * from companies WHERE id = $1",
       [req.user.companyId]
     )
-    if (!company) return resultRequest(res, false, 'Compagnie non trouvé', { });
+    if (!company) return resultRequest(res, false, 'Compagnie non trouvé', { }, 'COMPANY_NOT_FOUND');
     
     const newSprint = {
       id: crypto.randomUUID(),
@@ -50,19 +50,19 @@ exports.create = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'SPRINT_CREATE_ERROR');
   }
 };
 
 exports.remove = async (req, res) => {
   try{    
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const notClosedRetro = await pool.query(
       "SELECT * FROM sprintsretrosteams WHERE sprintid = $1 AND isclosed= false",
       [req.params.id]
     );
-    if (notClosedRetro) return resultRequest(res, false, 'Une rétro liée est encore active', { });
+    if (notClosedRetro) return resultRequest(res, false, 'Une rétro liée est encore active', { }, 'LINKED_RETRO_ACTIVE');
     
     await pool.query(
       "DELETE FROM postits p USING sprintsretrosteams s WHERE p.sprintretroteamid = s.id AND s.retroid = $1",
@@ -82,6 +82,6 @@ exports.remove = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'SPRINT_DELETE_ERROR');
   }
 };

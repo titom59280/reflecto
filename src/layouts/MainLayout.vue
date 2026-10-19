@@ -35,6 +35,18 @@ export default {
   flex-direction: column;
 }
 
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 1rem 0.75rem;
+  }
+}
+
 .main-layout {
   display: flex;
   flex-direction: column;

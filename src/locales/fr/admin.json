@@ -1,0 +1,133 @@
+{
+  "admin": {
+    "dashboard": {
+      "title": "Administration",
+      "manageRetros": "Gérer les rétros",
+      "manageRetrosDesc": "Créer, associer et consulter l'historique",
+      "newRetro": "Nouvelle rétro",
+      "kpi": {
+        "companies": "Compagnies",
+        "teams": "Équipes",
+        "members": "Membres",
+        "activeSprints": "Sprints actifs",
+        "openRetros": "Rétros en cours"
+      },
+      "links": {
+        "sprints": "Sprints",
+        "teams": "Équipes",
+        "members": "Membres",
+        "companies": "Compagnies"
+      }
+    },
+    "companies": {
+      "title": "Gérer les compagnies",
+      "tabs": {
+        "create": "Créer une compagnie",
+        "list": "Liste des compagnies"
+      },
+      "name": "Nom de la compagnie",
+      "scrumMasterName": "Nom du Scrum Master",
+      "scrumMasterEmail": "Email du Scrum Master",
+      "scrumMasterTrigram": "Trigramme du Scrum Master",
+      "subscriptionLevel": "Niveau d'abonnement",
+      "subscription": {
+        "free": "Gratuit",
+        "basic": "Basic",
+        "premium": "Premium"
+      },
+      "empty": "Aucune compagnie pour le moment.",
+      "toast": {
+        "saved": "Les informations ont été enregistrées",
+        "created": "La compagnie a été créée",
+        "deleted": "La compagnie a été supprimée"
+      }
+    },
+    "members": {
+      "title": "Gérer les membres",
+      "tabs": {
+        "add": "Ajouter un membre",
+        "list": "Liste des membres"
+      },
+      "limitReached": "Le nombre maximum de membres a été atteint pour l'abonnement de votre entreprise",
+      "email": "Email",
+      "fullName": "Nom complet",
+      "scrumMaster": "Scrum Master",
+      "trigram": "Trigramme",
+      "team": "Équipe",
+      "addSubmit": "Ajouter le membre",
+      "listTitle": "Membres",
+      "empty": "Aucun membre pour le moment.",
+      "nameField": "Nom :",
+      "trigramField": "Trigramme :",
+      "teamField": "Équipe :",
+      "unknownTeam": "Équipe inconnue",
+      "toast": {
+        "saved": "Les informations ont été enregistrées",
+        "created": "Le nouveau membre a été créé",
+        "deleted": "Le membre a été supprimé"
+      }
+    },
+    "sprints": {
+      "title": "Gérer les sprints",
+      "tabs": {
+        "create": "Créer un sprint",
+        "list": "Liste des sprints"
+      },
+      "number": "Numéro du sprint",
+      "createSubmit": "Créer le sprint",
+      "empty": "Aucun sprint pour le moment.",
+      "status": {
+        "closed": "Sprint fermé",
+        "done": "Sprint terminé",
+        "active": "Sprint actif ou à venir"
+      },
+      "toast": {
+        "loadError": "Erreur lors du chargement des sprints",
+        "created": "Le sprint a été créé",
+        "createError": "Erreur lors de la création du sprint",
+        "deleted": "Le sprint a été supprimé"
+      }
+    },
+    "teams": {
+      "title": "Gérer les équipes",
+      "tabs": {
+        "create": "Créer une équipe",
+        "list": "Liste des équipes"
+      },
+      "name": "Nom de l'équipe",
+      "limitReached": "Le nombre maximum d'équipes a été atteint pour l'abonnement de votre entreprise",
+      "empty": "Aucune équipe pour le moment.",
+      "membersField": "Membres :",
+      "noMembers": "Aucun membre",
+      "toast": {
+        "saved": "Les informations ont été enregistrées",
+        "created": "L'équipe a été créée",
+        "deleted": "L'équipe a été supprimée"
+      }
+    },
+    "retros": {
+      "title": "Gérer les rétros",
+      "tabs": {
+        "create": "Créer une rétro",
+        "list": "Liste des rétros",
+        "associate": "Associer une rétro",
+        "links": "Associations existantes",
+        "completed": "Rétros terminées"
+      },
+      "noLinks": "Aucune association pour le moment.",
+      "toast": {
+        "loadRetrosError": "Erreur lors de la récupération des rétros",
+        "loadSprintsError": "Erreur lors de la récupération des sprints",
+        "loadTeamsError": "Erreur lors de la récupération des équipes"
+      }
+    },
+    "retroDeRetro": {
+      "close": "Clôturer",
+      "toast": {
+        "closed": "La rétro a été clôturée avec succès",
+        "closeError": "Erreur lors de la clôture de la rétro",
+        "loadError": "Erreur lors de la récupération des données"
+      }
+    }
+  }
+}

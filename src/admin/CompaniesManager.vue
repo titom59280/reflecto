@@ -1,41 +1,41 @@
 <template>
   <div class="admin-header">
-    <router-link to="/admin" class="back-admin-button"> ← Retour </router-link>
-    <h1 class="page-title">Gérer les compagnies</h1>
+    <router-link to="/admin" class="back-admin-button">← {{ $t('common.back') }}</router-link>
+    <h1 class="page-title">{{ $t('admin.companies.title') }}</h1>
   </div>
   <AdminTabs :tabs="tabLabels">
     <template #tab-0>
       <div class="Company-form form-container tab-content-animated">
         <div class="form-group">
-          <label>Nom de la compagnie</label>
+          <label>{{ $t('admin.companies.name') }}</label>
           <input v-model="companyName" type="text" />
         </div>
         <div class="form-group">
-          <label>Nom du Scrum Master</label>
-          <input v-model="scrumMasterEmail" type="text" />
-        </div>
-        <div class="form-group">
-          <label>Email du Scrum Master</label>
+          <label>{{ $t('admin.companies.scrumMasterName') }}</label>
           <input v-model="scrumMasterName" type="text" />
         </div>
         <div class="form-group">
-          <label>Trigramme du Scrum Master</label>
+          <label>{{ $t('admin.companies.scrumMasterEmail') }}</label>
+          <input v-model="scrumMasterEmail" type="email" />
+        </div>
+        <div class="form-group">
+          <label>{{ $t('admin.companies.scrumMasterTrigram') }}</label>
           <input v-model="scrumMasterTrigramme" type="text" />
         </div>
         <div class="form-group">
-          <label>Niveau de subscription</label>
+          <label>{{ $t('admin.companies.subscriptionLevel') }}</label>
           <select v-model="subscriptionLevel">
-            <option value="0">Gratuit</option>
-            <option value="1">Basic</option>
-            <option value="2">Premium</option>
+            <option value="0">{{ $t('admin.companies.subscription.free') }}</option>
+            <option value="1">{{ $t('admin.companies.subscription.basic') }}</option>
+            <option value="2">{{ $t('admin.companies.subscription.premium') }}</option>
           </select>
         </div>
-        <button class="btn-submit" @click="createCompany">Ajouter</button>
+        <button class="btn-submit" @click="createCompany">{{ $t('common.add') }}</button>
       </div>
     </template>
     <template #tab-1>
       <div class="Company-form">
-        <div v-if="companies.length === 0">Aucune compagnies pour le moment.</div>
+        <div v-if="companies.length === 0">{{ $t('admin.companies.empty') }}</div>
         <div v-else class="Company-grid tab-content-animated">
           <div v-for="company in companies" :key="company.id" class="Company-card">
             <div class="Company-header">
@@ -57,15 +57,15 @@
               </div>
             </div>
             <div v-if="editingCompanyId === company.id" class="form-group">
-              <label>Nom de la compagnie</label>
+              <label>{{ $t('admin.companies.name') }}</label>
               <input v-model="editedCompanyName" type="text" />
             </div>
             <div v-if="editingCompanyId === company.id" class="form-group">
-              <label>Niveau de subscription</label>
+              <label>{{ $t('admin.companies.subscriptionLevel') }}</label>
               <select v-model="editingCompanySubscription">
-                <option value="0">Gratuit</option>
-                <option value="1">Basic</option>
-                <option value="2">Premium</option>
+                <option value="0">{{ $t('admin.companies.subscription.free') }}</option>
+                <option value="1">{{ $t('admin.companies.subscription.basic') }}</option>
+                <option value="2">{{ $t('admin.companies.subscription.premium') }}</option>
               </select>
             </div>
           </div>
@@ -101,8 +101,15 @@ export default {
       editingCompanySubscription: '',
       editedCompanyName: '',
       companies: [],
-      tabLabels: [{ label: 'Créer une compagnie' }, { label: 'Liste des compagnies' }],
     };
+  },
+  computed: {
+    tabLabels() {
+      return [
+        { label: this.$t('admin.companies.tabs.create') },
+        { label: this.$t('admin.companies.tabs.list') },
+      ];
+    },
   },
   mounted() {
     this.fetchCompanies();
@@ -129,16 +136,16 @@ export default {
         company.subscriptionLevel
       );
       if (!resultUpdate.isSuccess) {
-        this.$root.showToast(resultUpdate.message, 'success');
+        this.$root.showToast(this.$apiMessage(resultUpdate), 'error');
         return;
       }
-      this.$root.showToast('Les informations ont été enregistrées', 'success');
+      this.$root.showToast(this.$t('admin.companies.toast.saved'), 'success');
       this.cancelCompanyEdit();
     },
     async fetchCompanies() {
       const resCompanies = await AdminService.getCompanies();
       if (!resCompanies.isSuccess) {
-        this.$root.showToast(resCompanies.message, 'error');
+        this.$root.showToast(this.$apiMessage(resCompanies), 'error');
         return;
       }
       this.companies = resCompanies.result;
@@ -153,11 +160,11 @@ export default {
         this.subscriptionLevel
       );
       if (!resultAdd.isSuccess) {
-        this.$root.showToast(resultAdd.message, 'success');
+        this.$root.showToast(this.$apiMessage(resultAdd), 'error');
         return;
       }
 
-      this.$root.showToast('La compagnie a été créée', 'success');
+      this.$root.showToast(this.$t('admin.companies.toast.created'), 'success');
       this.companyName = '';
       this.scrumMasterEmail = '';
       this.scrumMasterName = '';
@@ -168,10 +175,10 @@ export default {
     async deleteCompany(companyId) {
       const resutDelete = await AdminService.deleteCompany(companyId);
       if (!resutDelete.isSuccess) {
-        this.$root.showToast(resutDelete.message, 'success');
+        this.$root.showToast(this.$apiMessage(resutDelete), 'error');
         return;
       }
-      this.$root.showToast('La compagnie a été supprimée', 'success');
+      this.$root.showToast(this.$t('admin.companies.toast.deleted'), 'success');
       this.fetchCompanies();
     },
   },
@@ -341,5 +348,54 @@ button.disabled {
   color: #666;
   cursor: not-allowed;
   border: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .form-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .Company-header {
+    gap: 0.5rem;
+  }
+
+  .Company-header-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .Company-actions {
+    width: auto;
+    flex-shrink: 0;
+    gap: 0.5rem;
+  }
+
+  .Company-actions button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .form-group input,
+  .form-group select {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0.75rem;
+  }
+
+  .Company-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-submit {
+    justify-self: stretch;
+    min-height: 44px;
+  }
 }
 </style>

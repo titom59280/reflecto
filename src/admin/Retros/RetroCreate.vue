@@ -3,7 +3,7 @@
     <p v-if="messageError" class="message">{{ messageError }}</p>
 
     <div class="form-group">
-      <label>Nom de la rétro</label>
+      <label>{{ $t('adminRetros.create.retroName') }}</label>
       <input v-model="newRetro.name" type="text" required />
     </div>
 
@@ -12,25 +12,35 @@
         <div v-for="(cat, index) in newRetro.categories" :key="index" class="category-group">
           <div class="form-group">
             <div class="retro-header">
-              <label>Nom</label>
-              <button type="button" class="delete" @click="removeCategory(index)">🗑️</button>
+              <label>{{ $t('adminRetros.create.categoryName') }}</label>
+              <button
+                type="button"
+                class="delete"
+                :aria-label="$t('adminRetros.create.removeCategory')"
+                :title="$t('adminRetros.create.removeCategory')"
+                @click="removeCategory(index)"
+              >
+                🗑️
+              </button>
             </div>
             <input v-model="cat.name" required />
           </div>
           <div class="form-group">
-            <label>Description</label>
+            <label>{{ $t('adminRetros.create.categoryDescription') }}</label>
             <input v-model="cat.description" required />
           </div>
           <div v-if="companie && companie.subscriptionLevel == 2" class="form-group">
-            <label>Image</label>
+            <label>{{ $t('adminRetros.create.categoryImage') }}</label>
             <input type="file" @change="handleImageUpload($event, index)" />
           </div>
         </div>
       </div>
-      <button type="button" class="add-btn" @click="addCategory">Ajouter une catégorie</button>
+      <button type="button" class="add-btn" @click="addCategory">
+        {{ $t('adminRetros.create.addCategory') }}
+      </button>
     </div>
 
-    <button type="submit" class="submit-btn">Créer la rétro</button>
+    <button type="submit" class="submit-btn">{{ $t('adminRetros.create.submit') }}</button>
   </form>
 </template>
 
@@ -77,7 +87,7 @@ export default {
     async fetchCompany() {
       const resultCompanie = await AdminService.getCompanie();
       if (!resultCompanie.isSuccess) {
-        this.$root.showToast(resultCompanie.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultCompanie), 'error');
         return;
       }
       this.companie = resultCompanie.result;
@@ -112,11 +122,7 @@ export default {
         );
 
         if (alreadyLinked) {
-          this.$root.showToast(
-            'Une rétro est déjà associée à cette équipe pour ce sprint',
-            'error',
-            5000
-          );
+          this.$root.showToast(this.$t('adminRetros.shared.alreadyLinked'), 'error', 5000);
           return;
         }
 
@@ -126,12 +132,13 @@ export default {
           this.selectedSprintId,
           this.selectedTeamId
         );
-        this.$root.showToast('Rétro créée avec succès', 'success');
+        this.$root.showToast(this.$t('adminRetros.create.success'), 'success');
         this.resetForm();
         this.$emit('refresh');
       } catch (err) {
-        this.messageError =
-          err.response?.data?.message || 'Erreur lors de la création de la rétro.';
+        this.messageError = err.response?.data?.code
+          ? this.$apiMessage(err.response.data)
+          : err.response?.data?.message || this.$t('adminRetros.create.error');
       }
     },
     resetForm() {
@@ -412,5 +419,58 @@ button:not(.delete):hover {
 .categories-container {
   overflow: auto;
   max-height: 400px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* Catégories : 2 colonnes sur tablette, 1 seule sur téléphone */
+  .categories {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 0.75rem;
+  }
+
+  /* Évite un double défilement imbriqué sur écran tactile */
+  .categories-container {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .category-group {
+    min-width: 0;
+  }
+
+  /* 16px évite le zoom automatique d'iOS au focus */
+  .form-group input,
+  .form-group select {
+    font-size: 16px;
+    min-height: 40px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .form-group input[type='file'] {
+    min-height: 0;
+    font-size: 0.9rem;
+  }
+
+  button {
+    min-height: 40px;
+  }
+
+  .delete {
+    min-width: 40px;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-group {
+    padding: 10px;
+  }
+
+  .add-btn,
+  .submit-btn {
+    width: 100%;
+  }
 }
 </style>

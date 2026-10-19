@@ -1,6 +1,8 @@
 <template>
   <div class="retro-page">
-    <div v-if="noRetroMessage || !retro" class="no-access">{{ noRetroMessage }}</div>
+    <div v-if="noRetroMessage || !retro" class="no-access">
+      {{ noRetroMessage ? $t(noRetroMessage) : '' }}
+    </div>
 
     <div v-else class="retro-columns">
       <div v-for="cat in categories" :key="cat.id" class="retro-column">
@@ -36,7 +38,7 @@
       </div>
     </div>
     <div v-if="messageToDisplay !== ''" class="start-retro-explain">
-      <span>{{ messageToDisplay }}</span>
+      <span>{{ $t(messageToDisplay) }}</span>
     </div>
     <div v-if="retro && !noRetroMessage" class="add-button-container">
       <button
@@ -44,14 +46,14 @@
         class="add-postit-btn"
         @click="openAddModal"
       >
-        Ajouter
+        {{ $t('common.add') }}
       </button>
       <button
         v-if="currentLink && !currentLink.isRetroInProgress && !initializedRetro"
         class="add-postit-btn"
         @click="showColorPicker = true"
       >
-        Couleur des post-its
+        {{ $t('board.retroBoard.postitColor') }}
       </button>
       <button v-if="isScrumMaster" class="add-postit-btn" @click="actionOnRetro">
         {{ getActionOnRetroButtonLabel() }}
@@ -83,7 +85,7 @@
   />
   <StartRetroModeModal
     :visible="startRetroModal"
-    @select="handleRetroMode"
+    @confirm="startRetro"
     @cancel="startRetroModal = false"
   />
   <CloseSprintModal
@@ -131,8 +133,6 @@ export default {
   data() {
     return {
       startRetroModal: false,
-      oneByOneMode: false,
-      remainingPostits: [],
       currentDisplayedPostit: null,
       user: authService.getUser(),
       isScrumMaster: false,
@@ -145,13 +145,14 @@ export default {
       readModalVisible: false,
       selectedPostit: null,
       deleteModalVisible: false,
+      // clé i18n (vide = aucun message)
       messageToDisplay: '',
       nextSprintName: '',
       teams: [],
       retro: null,
       categories: [],
       postits: [],
-      postitsToShow: [],
+      // clé i18n (vide = aucun message)
       noRetroMessage: '',
       sprints: [],
       links: [],
@@ -192,37 +193,28 @@ export default {
         );
 
         if (resultFinish.isSuccess) {
-          this.$root.showToast('Sprint terminé avec succès', 'success');
+          this.$root.showToast(this.$t('board.retroBoard.toast.sprintFinished'), 'success');
           window.location.reload();
           return;
         }
 
-        this.$root.showToast(resultFinish.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultFinish), 'error');
       } catch (err) {
-        this.$root.showToast('Erreur lors de la clôture du sprint', 'error');
+        this.$root.showToast(this.$t('board.retroBoard.toast.sprintCloseError'), 'error');
       }
     },
-    async handleRetroMode(mode) {
+    async startRetro() {
       this.startRetroModal = false;
       this.messageToDisplay = '';
       this.currentLink.isRetroInProgress = true;
       const resultStart = await retroService.startRetro(this.currentLink.id);
 
       if (!resultStart.isSuccess) {
-        this.$root.showToast(resultStart.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultStart), 'error');
         return;
       }
 
       await this.fetchPostIts();
-      if (mode === 'all') {
-        this.showAllPostits = true;
-        return;
-      }
-      this.postitsToShow = [...this.postits];
-      this.postits = [];
-      this.oneByOneMode = true;
-      this.remainingPostits = [...this.postitsToShow].sort(() => Math.random() - 0.5);
-      await this.showNextPostit('');
     },
     async populateNextSprint() {
       const resultNextSprint = await retroService.getNextSprintName(
@@ -230,7 +222,7 @@ export default {
         this.getTeamId()
       );
       if (!resultNextSprint.isSuccess) {
-        this.$root.showToast(resultNextSprint.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultNextSprint), 'error');
         return;
       }
       const nextSprint = resultNextSprint.result;
@@ -242,8 +234,7 @@ export default {
     },
     async initializeRetro() {
       this.populateNextSprint();
-      this.messageToDisplay =
-        'La rétro est prête cliquer sur "Démarrer" quand tous les participants sont préts.';
+      this.messageToDisplay = 'board.retroBoard.readyToStart';
       this.initializedRetro = true;
       this.postits = [];
     },
@@ -257,15 +248,8 @@ export default {
           return;
         }
       }
-      if (this.remainingPostits.length === 0) {
-        this.oneByOneMode = false;
-        this.selectedPostit = null;
-        this.readModalVisible = false;
-        return;
-      }
-      this.selectedPostit = this.remainingPostits.pop();
-      this.postits.push(this.selectedPostit);
-      this.readModalVisible = true;
+      this.selectedPostit = null;
+      this.readModalVisible = false;
     },
     async actionOnRetro() {
       let currentStateRetroForAction = this.getCurrentStateRetro();
@@ -284,7 +268,7 @@ export default {
           this.showCloseModal = true;
           break;
         default:
-          this.$root.showToast('Action non prévue', 'error');
+          this.$root.showToast(this.$t('board.retroBoard.toast.unexpectedAction'), 'error');
           break;
       }
     },
@@ -310,11 +294,11 @@ export default {
       let currentState = this.getCurrentStateRetro();
       switch (currentState) {
         case 3:
-          return 'Terminer';
+          return this.$t('board.retroBoard.action.finish');
         case 2:
-          return 'Démarrer';
+          return this.$t('board.retroBoard.action.start');
         default:
-          return 'Initialiser';
+          return this.$t('board.retroBoard.action.initialize');
       }
     },
     cancelEditOrAddPostIt() {
@@ -324,7 +308,7 @@ export default {
     async handleDeletePostItConfirmed() {
       const resultDeletePostIt = await retroService.deletePostit(this.deletePostItId);
       if (!resultDeletePostIt.isSuccess) {
-        this.$root.showToast(resultDeletePostIt.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultDeletePostIt), 'error');
         return;
       }
 
@@ -337,7 +321,7 @@ export default {
       }
       this.deletePostItId = null;
       this.selectedPostit = null;
-      this.$root.showToast('Post-it supprimé', 'success');
+      this.$root.showToast(this.$t('board.retroBoard.toast.postitDeleted'), 'success');
     },
     async confirmDelete(id) {
       this.deletePostItId = id;
@@ -372,14 +356,14 @@ export default {
         const resultUpdatePostIt = await retroService.updatePostit(this.selectedPostit);
 
         if (!resultUpdatePostIt.isSuccess) {
-          this.$root.showToast(resultUpdatePostIt.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultUpdatePostIt), 'error');
           return;
         }
 
         this.selectedPostit = null;
         this.fetchPostIts();
       } catch (err) {
-        this.$root.showToast('Erreur lors de la modification du post-it', 'error');
+        this.$root.showToast(this.$t('board.retroBoard.toast.postitUpdateError'), 'error');
       }
     },
     async handleAnnotation(annotation) {
@@ -387,24 +371,24 @@ export default {
         this.selectedPostit.annotation = annotation;
         const resultUpdateAnnotation = await retroService.updatePostit(this.selectedPostit);
         if (!resultUpdateAnnotation.isSuccess) {
-          this.$root.showToast(resultUpdateAnnotation.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultUpdateAnnotation), 'error');
         }
         return resultUpdateAnnotation.isSuccess;
       } catch (err) {
-        this.$root.showToast("Erreur lors de l'ajout de l'annotation", 'error');
+        this.$root.showToast(this.$t('board.retroBoard.toast.annotationError'), 'error');
       }
     },
     async handleChangeColorPostits({ color }) {
       try {
         const resultChangeColor = await retroService.chooseColorPostIt(color);
         if (!resultChangeColor.isSuccess) {
-          this.$root.showToast(resultChangeColor.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultChangeColor), 'error');
           return;
         }
         this.$store.dispatch('updateMemberColor', color);
         this.showColorPicker = false;
       } catch (err) {
-        this.$root.showToast('Erreur lors du changement de la couleur des post-its');
+        this.$root.showToast(this.$t('board.retroBoard.toast.colorChangeError'), 'error');
       }
     },
     async handlePostitCreation({ message, category }) {
@@ -423,13 +407,13 @@ export default {
         };
         const resultCreatePostIt = await retroService.createPostit(newPostit);
         if (!resultCreatePostIt.isSuccess) {
-          this.$root.showToast(resultCreatePostIt.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultCreatePostIt), 'error');
           return;
         }
-        this.$root.showToast('Post-it ajouté', 'success');
+        this.$root.showToast(this.$t('board.retroBoard.toast.postitAdded'), 'success');
         this.fetchPostIts();
       } catch (error) {
-        this.$root.showToast("Erreur lors de l'ajout du post-it", 'error');
+        this.$root.showToast(this.$t('board.retroBoard.toast.postitAddError'), 'error');
       }
     },
     logout() {
@@ -456,7 +440,7 @@ export default {
       if (this.isScrumMaster) {
         const resultGetLinksUser = await retroService.getRetroLinksByTeamId(teamId);
         if (!resultGetLinksUser.isSuccess) {
-          this.$root.showToast(resultGetLinksUser.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultGetLinksUser), 'error');
           return;
         }
         return resultGetLinksUser.result;
@@ -464,7 +448,7 @@ export default {
 
       const resultGetUserRetroLinks = await retroService.getUserRetroLinks(this.user.id);
       if (!resultGetUserRetroLinks.isSuccess) {
-        this.$root.showToast(resultGetUserRetroLinks.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultGetUserRetroLinks), 'error');
         return;
       }
       return resultGetUserRetroLinks.result;
@@ -487,7 +471,7 @@ export default {
         if (this.user.isScrumMaster) {
           const resultTeams = await retroService.getTeamsWithMembers();
           if (!resultTeams.isSuccess) {
-            this.$root.showToast(resultTeams.message, 'error');
+            this.$root.showToast(this.$apiMessage(resultTeams), 'error');
             return;
           }
 
@@ -495,21 +479,21 @@ export default {
         }
         const resultSprints = await retroService.getSprints();
         if (!resultSprints.isSuccess) {
-          this.$root.showToast(resultSprints.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultSprints), 'error');
           return;
         }
         this.sprints = resultSprints.result;
 
         this.noRetroMessage = '';
         if (!this.currentLink) {
-          this.noRetroMessage = "L'équipe n'a pas encore de sprint en cours.";
+          this.noRetroMessage = 'board.retroBoard.noActiveSprint';
           return;
         }
 
         const resultCategories = await retroService.getCategories(this.currentLink.retroId);
 
         if (!resultCategories.isSuccess) {
-          this.$root.showToast(resultCategories.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultCategories), 'error');
           return;
         }
 
@@ -517,7 +501,7 @@ export default {
 
         const resultRetros = await retroService.getRetros();
         if (!resultRetros.isSuccess) {
-          this.$root.showToast(resultRetros.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultRetros), 'error');
           return;
         }
 
@@ -526,8 +510,8 @@ export default {
         await this.fetchPostIts();
         this.alreadyFetchData = false;
       } catch (err) {
-        this.$root.showToast('Erreur lors de la récupération des données', 'error');
-        this.noRetroMessage = 'Erreur de récupération des données.';
+        this.$root.showToast(this.$t('board.retroBoard.toast.fetchError'), 'error');
+        this.noRetroMessage = 'board.retroBoard.fetchErrorMessage';
       }
     },
     async fetchPostIts() {
@@ -535,7 +519,7 @@ export default {
       if (this.isScrumMaster && this.currentLink.isRetroInProgress) {
         const resultPostIts = await retroService.getPostitsByLink(this.currentLink.id);
         if (!resultPostIts.isSuccess) {
-          this.$root.showToast(resultPostIts.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultPostIts), 'error');
           return;
         }
         this.postits = resultPostIts.result;
@@ -544,7 +528,7 @@ export default {
 
       const resultAll = await retroService.getPostitsByUser(this.currentLink.id);
       if (!resultAll.isSuccess) {
-        this.$root.showToast(resultAll.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultAll), 'error');
         return;
       }
       const all = resultAll.result;
@@ -841,5 +825,100 @@ export default {
   color: #555;
   text-align: right;
   margin-top: 4px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .retro-columns {
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+    gap: 0.75rem;
+  }
+
+  .retro-column {
+    padding: 0.75rem 0.5rem;
+  }
+
+  /* Titres et descriptions de catégorie plus compacts */
+  .retro-column h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.4rem;
+    text-align: center;
+  }
+
+  .category-image {
+    height: 64px;
+    margin-bottom: 0.5rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0 0 0.75rem;
+  }
+
+  .post-it-container {
+    width: 100%;
+  }
+
+  .postit-list {
+    padding: 0.75rem;
+    gap: 10px;
+  }
+
+  .start-retro-explain {
+    padding: 0 0.5rem;
+    text-align: center;
+  }
+
+  .add-button-container {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .add-postit-btn {
+    min-height: 44px;
+  }
+
+  .btn-delete {
+    width: 28px;
+    height: 28px;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .retro-column {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .retro-column h3 {
+    font-size: 1rem;
+  }
+
+  .category-image {
+    height: 48px;
+  }
+
+  .description {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .postit-list {
+    padding: 0.5rem;
+  }
+
+  /* Boutons d'action empilés sur toute la largeur */
+  .add-button-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .add-postit-btn {
+    width: 100%;
+  }
 }
 </style>

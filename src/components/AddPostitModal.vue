@@ -6,19 +6,23 @@
           <h3 class="post-it-header-title">{{ getTextTitle() }}</h3>
           <button v-if="id !== null" class="delete-btn" @click="confirmDelete">🗑️</button>
         </div>
-        <label for="message">Message :</label>
-        <textarea id="message" v-model="message" placeholder="Décrivez votre point..." />
+        <label for="message">{{ $t('board.addPostit.messageLabel') }}</label>
+        <textarea
+          id="message"
+          v-model="message"
+          :placeholder="$t('board.addPostit.messagePlaceholder')"
+        />
 
-        <label for="category">Catégorie :</label>
+        <label for="category">{{ $t('board.addPostit.categoryLabel') }}</label>
         <select id="category" v-model="selectedCategory">
-          <option disabled value="">Choisissez une catégorie</option>
+          <option disabled value="">{{ $t('board.addPostit.categoryPlaceholder') }}</option>
           <option v-for="cat in categories" :key="cat.name" :value="cat.name">
             {{ cat.name }}
           </option>
         </select>
 
         <div class="modal-actions">
-          <button class="btn cancel" @click="close">Annuler</button>
+          <button class="btn cancel" @click="close">{{ $t('common.cancel') }}</button>
           <button class="btn submit" :disabled="!message || !selectedCategory" @click="submit">
             {{ getTextButtonTitle() }}
           </button>
@@ -68,17 +72,17 @@ export default {
   methods: {
     getTextTitle() {
       if (this.id !== null) {
-        return 'Modifier un post-it';
+        return this.$t('board.addPostit.titleEdit');
       }
 
-      return 'Ajouter un post-it';
+      return this.$t('board.addPostit.titleAdd');
     },
     getTextButtonTitle() {
       if (this.id) {
-        return 'Modifier';
+        return this.$t('common.edit');
       }
 
-      return 'Ajouter';
+      return this.$t('common.add');
     },
     confirmDelete() {
       this.$emit('delete', this.id);
@@ -231,6 +235,55 @@ textarea {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .modal-content {
+    box-sizing: border-box;
+    max-width: min(464px, calc(100vw - 2rem));
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .post-it-header {
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .delete-btn {
+    margin-top: 0;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  textarea,
+  select {
+    box-sizing: border-box;
+  }
+
+  textarea {
+    padding: 0.5rem;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1.25rem;
+  }
+
+  .post-it-header-title {
+    font-size: 1.15rem;
+  }
+
+  .modal-actions {
+    gap: 0.75rem;
   }
 }
 </style>

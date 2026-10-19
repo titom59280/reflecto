@@ -1,22 +1,24 @@
 <template>
   <div class="admin-header">
-    <router-link to="/admin" class="back-admin-button"> ← Retour </router-link>
-    <h1 class="page-title">Gérer les sprints</h1>
+    <router-link to="/admin" class="back-admin-button">← {{ $t('common.back') }}</router-link>
+    <h1 class="page-title">{{ $t('admin.sprints.title') }}</h1>
   </div>
   <AdminTabs :tabs="tabLabels">
     <template #tab-0>
       <div class="sprint-form form-container tab-content-animated">
         <p v-if="messageError" class="message">{{ messageError }}</p>
         <div class="form-group">
-          <label>Numéro du sprint</label>
+          <label>{{ $t('admin.sprints.number') }}</label>
           <input v-model="newSprint.name" type="text" required />
         </div>
-        <button type="submit" class="btn-submit" @click="createSprint">Créer le sprint</button>
+        <button type="submit" class="btn-submit" @click="createSprint">
+          {{ $t('admin.sprints.createSubmit') }}
+        </button>
       </div>
     </template>
     <template #tab-1>
       <div class="sprint-form tab-content-animated">
-        <div v-if="sprints.length === 0" class="no-access">Aucun sprint pour le moment.</div>
+        <div v-if="sprints.length === 0" class="no-access">{{ $t('admin.sprints.empty') }}</div>
         <div v-else class="sprints-grid">
           <div
             v-for="sprint in sortedSprints"
@@ -26,9 +28,15 @@
           >
             <div class="sprint-header">
               <h3 class="sprint-header-title">{{ sprint.name }}</h3>
-              <span v-if="sprint.isClosed" title="Sprint fermé">🔒</span>
-              <span v-if="!sprint.isClosed && sprint.isRetroDone" title="Sprint terminé">✅</span>
-              <span v-if="!sprint.isClosed && !sprint.isRetroDone" title="Sprint actif ou à venir"
+              <span v-if="sprint.isClosed" :title="$t('admin.sprints.status.closed')">🔒</span>
+              <span
+                v-if="!sprint.isClosed && sprint.isRetroDone"
+                :title="$t('admin.sprints.status.done')"
+                >✅</span
+              >
+              <span
+                v-if="!sprint.isClosed && !sprint.isRetroDone"
+                :title="$t('admin.sprints.status.active')"
                 >⏳</span
               >
               <div class="action">
@@ -63,10 +71,15 @@ export default {
         name: '',
         isActive: false,
       },
-      tabLabels: [{ label: 'Créer un sprint' }, { label: 'Liste des sprints' }],
     };
   },
   computed: {
+    tabLabels() {
+      return [
+        { label: this.$t('admin.sprints.tabs.create') },
+        { label: this.$t('admin.sprints.tabs.list') },
+      ];
+    },
     sortedSprints() {
       return [...this.sprints].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
@@ -79,12 +92,12 @@ export default {
       try {
         const resultSprints = await AdminService.getSprints();
         if (!resultSprints.isSuccess) {
-          this.$root.showToast(resultSprints.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultSprints), 'error');
           return;
         }
         this.sprints = resultSprints.result;
       } catch (error) {
-        this.$root.showToast('Erreur lors du chargement des sprints', 'error');
+        this.$root.showToast(this.$t('admin.sprints.toast.loadError'), 'error');
       }
     },
     async createSprint() {
@@ -92,28 +105,28 @@ export default {
         this.newSprint.name = 'Sprint ' + this.newSprint.name;
         const resultCreate = await AdminService.createSprint(this.newSprint);
         if (!resultCreate.isSuccess) {
-          this.$root.showToast(resultCreate.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultCreate), 'error');
           return;
         }
         this.newSprint.name = '';
         this.newSprint.isActive = false;
-        this.$root.showToast('Le sprint a été créé', 'success');
+        this.$root.showToast(this.$t('admin.sprints.toast.created'), 'success');
         await this.fetchSprints();
       } catch (err) {
-        this.$root.showToast('Erreur de lors de la création du sprints', 'error');
+        this.$root.showToast(this.$t('admin.sprints.toast.createError'), 'error');
       }
     },
     async deleteSprint(id) {
       try {
         const resultDelete = await AdminService.deleteSprint(id);
         if (!resultDelete.isSuccess) {
-          this.$root.showToast(resultDelete.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultDelete), 'error');
           return;
         }
-        this.$root.showToast('Le sprint a été supprimé', 'success');
+        this.$root.showToast(this.$t('admin.sprints.toast.deleted'), 'success');
         this.fetchSprints();
       } catch (err) {
-        this.$root.showToast(err.response.data.error, 'error');
+        this.$root.showToast(this.$apiMessage(err.response?.data), 'error');
       }
     },
   },
@@ -312,5 +325,53 @@ button:not(.delete):hover {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .form-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .sprint-header {
+    gap: 0.5rem;
+  }
+
+  .sprint-header-title {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .action {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .action button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .form-group input {
+    min-height: 40px;
+  }
+
+  .no-access {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0.75rem;
+  }
+
+  .btn-submit {
+    justify-self: stretch;
+    min-height: 44px;
+  }
 }
 </style>

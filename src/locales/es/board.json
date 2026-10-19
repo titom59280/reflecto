@@ -1,0 +1,68 @@
+{
+  "board": {
+    "retroBoard": {
+      "postitColor": "Color de las notas",
+      "readyToStart": "La retro está lista: haz clic en «Iniciar» cuando todos los participantes estén listos.",
+      "noActiveSprint": "El equipo aún no tiene ningún sprint en curso.",
+      "fetchErrorMessage": "Error al cargar los datos.",
+      "action": {
+        "initialize": "Inicializar",
+        "start": "Iniciar",
+        "finish": "Finalizar"
+      },
+      "toast": {
+        "sprintFinished": "Sprint finalizado correctamente",
+        "sprintCloseError": "Error al cerrar el sprint",
+        "unexpectedAction": "Acción no prevista",
+        "postitDeleted": "Nota eliminada",
+        "postitUpdateError": "Error al modificar la nota",
+        "annotationError": "Error al añadir la anotación",
+        "colorChangeError": "Error al cambiar el color de las notas",
+        "postitAdded": "Nota añadida",
+        "postitAddError": "Error al añadir la nota",
+        "fetchError": "Error al recuperar los datos"
+      }
+    },
+    "addPostit": {
+      "titleAdd": "Añadir una nota",
+      "titleEdit": "Modificar la nota",
+      "messageLabel": "Mensaje:",
+      "messagePlaceholder": "Describe tu punto...",
+      "categoryLabel": "Categoría:",
+      "categoryPlaceholder": "Elige una categoría"
+    },
+    "readPostit": {
+      "annotationLabel": "Anotación:",
+      "next": "Siguiente"
+    },
+    "deletePostit": {
+      "title": "Eliminar la nota",
+      "question": "¿Quieres eliminar esta nota?"
+    },
+    "colorPicker": {
+      "title": "Color de mis notas",
+      "colorLabel": "Color:",
+      "choose": "Elegir"
+    },
+    "closeRetro": {
+      "title": "Cerrar la retro",
+      "question": "¿Quieres cerrar esta retro?",
+      "confirm": "Cerrar"
+    },
+    "closeSprint": {
+      "title": "Finalizar la retro",
+      "question": "¿Quieres finalizar este sprint?",
+      "nextSprint": "Próximo sprint detectado: {name}",
+      "noNextSprint": "El próximo sprint no se ha vinculado a ninguna retro.",
+      "noNextSprintHint": "No olvides hacerlo para que los miembros puedan crear sus notas.",
+      "confirm": "Finalizar"
+    },
+    "startRetro": {
+      "title": "Iniciar la retro",
+      "noMorePostits": "No se podrán añadir más {postit}.",
+      "postit": "notas",
+      "question": "¿Quieres iniciar la retro?",
+      "confirm": "Iniciar"
+    }
+  }
+}

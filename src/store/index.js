@@ -5,6 +5,7 @@ const store = createStore({
     isShowBack: false,
     showFormConnection: false,
     showFormCompany: false,
+    memberColor: '#FFF89A',
   },
   mutations: {
     SET_SHOW_FORM_COMPANY(state, value) {
@@ -15,6 +16,9 @@ const store = createStore({
     },
     SET_TOGGLE(state, value) {
       state.isShowBack = value;
+    },
+    SET_MEMBER_COLOR(state, color) {
+      state.memberColor = color;
     },
   },
   actions: {
@@ -34,6 +38,9 @@ const store = createStore({
     },
     toggleShowBack({ commit, state }) {
       commit('SET_TOGGLE', !state.isShowBack);
+    },
+    updateMemberColor({ commit }, color) {
+      commit('SET_MEMBER_COLOR', color);
     },
   },
   getters: {

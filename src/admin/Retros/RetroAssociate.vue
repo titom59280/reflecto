@@ -1,17 +1,17 @@
 <template>
   <div class="retro-form retro-container">
     <div class="form-group">
-      <label>Rétro</label>
+      <label>{{ $t('adminRetros.associate.retro') }}</label>
       <select v-model="selectedRetroId">
-        <option disabled value="">Choisir une rétro</option>
+        <option disabled value="">{{ $t('adminRetros.associate.selectRetro') }}</option>
         <option v-for="retro in retros" :key="retro.id" :value="retro.id">{{ retro.name }}</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label>Sprint</label>
+      <label>{{ $t('adminRetros.associate.sprint') }}</label>
       <select v-model="selectedSprintId">
-        <option disabled value="">Choisir un sprint</option>
+        <option disabled value="">{{ $t('adminRetros.associate.selectSprint') }}</option>
         <option
           v-for="sprint in sprints.filter((s) => !s.isRetroDone)"
           :key="sprint.id"
@@ -23,14 +23,14 @@
     </div>
 
     <div class="form-group">
-      <label>Équipe</label>
+      <label>{{ $t('adminRetros.associate.team') }}</label>
       <select v-model="selectedTeamId">
-        <option disabled value="">Choisir une équipe</option>
+        <option disabled value="">{{ $t('adminRetros.associate.selectTeam') }}</option>
         <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
       </select>
     </div>
   </div>
-  <button @click="associateRetro">Associer</button>
+  <button @click="associateRetro">{{ $t('adminRetros.associate.submit') }}</button>
 </template>
 
 <script>
@@ -62,7 +62,7 @@ export default {
   methods: {
     async associateRetro() {
       if (!this.selectedRetroId || !this.selectedSprintId || !this.selectedTeamId) {
-        this.$root.showToast('Veuillez sélectionner tous les champs', 'error');
+        this.$root.showToast(this.$t('adminRetros.associate.missingFields'), 'error');
         return;
       }
 
@@ -71,11 +71,7 @@ export default {
       );
 
       if (alreadyLinked) {
-        this.$root.showToast(
-          'Une rétro est déjà associée à cette équipe pour ce sprint',
-          'error',
-          5000
-        );
+        this.$root.showToast(this.$t('adminRetros.shared.alreadyLinked'), 'error', 5000);
         return;
       }
 
@@ -89,9 +85,15 @@ export default {
         this.selectedRetroId = '';
         this.selectedSprintId = '';
         this.selectedTeamId = '';
-        this.$root.showToast('Rétro associée au sprint', 'success');
+        this.$root.showToast(this.$t('adminRetros.associate.success'), 'success');
       } catch (err) {
-        this.$root.showToast(err.response?.data?.message || "Erreur d'association", 'error', 5000);
+        this.$root.showToast(
+          err.response?.data?.code
+            ? this.$apiMessage(err.response.data)
+            : err.response?.data?.message || this.$t('adminRetros.associate.error'),
+          'error',
+          5000
+        );
       }
     },
   },
@@ -357,5 +359,36 @@ button:not(.delete):hover {
 .panel-content {
   padding: 10px;
   background: #fff;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* Les 3 listes déroulantes passent sur une colonne quand la place manque */
+  .retro-container {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: 0 1rem;
+  }
+
+  .form-group {
+    min-width: 0;
+  }
+
+  /* 16px évite le zoom automatique d'iOS au focus */
+  .form-group select {
+    font-size: 16px;
+    min-height: 40px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  button {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  button {
+    width: 100%;
+  }
 }
 </style>

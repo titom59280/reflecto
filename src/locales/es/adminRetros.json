@@ -1,0 +1,65 @@
+{
+  "adminRetros": {
+    "shared": {
+      "alreadyLinked": "Ya hay una retro asociada a este equipo para este sprint",
+      "deleteError": "Error al eliminar"
+    },
+    "create": {
+      "retroName": "Nombre de la retro",
+      "categoryName": "Nombre",
+      "categoryDescription": "Descripción",
+      "categoryImage": "Imagen",
+      "removeCategory": "Eliminar la categoría",
+      "addCategory": "Añadir una categoría",
+      "submit": "Crear la retro",
+      "success": "Retro creada correctamente",
+      "error": "Error al crear la retro."
+    },
+    "list": {
+      "empty": "Todavía no hay ninguna retro.",
+      "untitled": "Retro sin título",
+      "deleted": "La retro se ha eliminado"
+    },
+    "associate": {
+      "retro": "Retro",
+      "selectRetro": "Elegir una retro",
+      "sprint": "Sprint",
+      "selectSprint": "Elegir un sprint",
+      "team": "Equipo",
+      "selectTeam": "Elegir un equipo",
+      "submit": "Asociar",
+      "missingFields": "Selecciona todos los campos",
+      "success": "Retro asociada al sprint",
+      "error": "Error al asociar"
+    },
+    "links": {
+      "hideDone": "Ocultar las retros realizadas",
+      "showAll": "Ver todas las asociaciones",
+      "retroDone": "Retro realizada",
+      "sprintLabel": "Sprint:",
+      "retroLabel": "Retro:",
+      "startRetroOfRetro": "Hacer la retro de la retro",
+      "activate": "Activar la asociación",
+      "unknownRetro": "Desconocida",
+      "unknownSprint": "Desconocido",
+      "noLinkAll": "Ninguna retro asociada a este equipo.",
+      "noLinkUpcoming": "Ninguna retro asociada al sprint actual o a los próximos para este equipo.",
+      "activated": "La asociación se ha activado",
+      "activateError": "Error al activar",
+      "removed": "La asociación se ha eliminado"
+    },
+    "previous": {
+      "empty": "Todavía no hay ninguna retro completada.",
+      "teamLabel": "Equipo:",
+      "sprintLabel": "Sprint:",
+      "viewTickets": "Ver las notas",
+      "noTickets": "No hay notas para esta retro.",
+      "notAvailable": "N/D",
+      "noteLabel": "Nota:",
+      "unknownRetro": "Retro desconocida",
+      "unknownTeam": "Equipo desconocido",
+      "unknownSprint": "Sprint desconocido",
+      "loadError": "Error al cargar las notas"
+    }
+  }
+}

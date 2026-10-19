@@ -1,7 +1,12 @@
 <template>
   <div class="landing-wrapper">
     <header class="header">
-      <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+      <img
+        src="@/assets/logo.png"
+        :alt="$t('landingPage.logoAlt')"
+        class="logo"
+        @click="goToAccueil"
+      />
       <span class="title" @click="goToAccueil">Reflecto</span>
       <button class="start-btn header-button-bis" @click="goToPricing">
         {{ $t('nosOffres.title') }}
@@ -18,7 +23,7 @@
         <div class="intro-section">
           <h1>{{ $t('legales.titre') }}</h1>
           <div>
-            <h2>{{ $t('legales.editeur') }}</h2>
+            <h2>{{ $t('legales.editeurSite') }}</h2>
             <p>
               {{ $t('legales.description1') }}
               <strong>Reflecto</strong>,
@@ -337,5 +342,78 @@ export default {
 
 .header-button {
   background-color: #02677a;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .header .start-btn {
+    margin-right: 0.75rem;
+    min-height: 40px;
+  }
+
+  .header .start-btn:last-child {
+    margin-right: 0;
+  }
+
+  .main-content {
+    padding: 0 1rem;
+  }
+
+  /* 50 % de largeur rendait le texte illisible sur petit écran */
+  .intro-section {
+    width: 100%;
+  }
+
+  .intro-section h1 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .intro-section h2 {
+    font-size: 1.2rem;
+  }
+
+  /* Adresses, e-mail et SIRET ne doivent pas déborder */
+  .intro-section p {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Header : logo + titre sur une ligne, boutons répartis sur la suivante */
+  .header {
+    column-gap: 0.5rem;
+  }
+
+  .title {
+    /* Force le retour à la ligne des boutons après le logo (~41px) et le titre */
+    flex: 1 1 calc(100% - 60px);
+    padding-left: 0;
+  }
+
+  .header .start-btn {
+    flex: 1 1 auto;
+    margin-right: 0;
+    font-size: 0.85rem;
+  }
+
+  .intro-section h1 {
+    font-size: 1.4rem;
+  }
+
+  .intro-section h2 {
+    font-size: 1.1rem;
+  }
+
+  .button .start-btn {
+    min-height: 44px;
+    padding: 8px 20px;
+  }
 }
 </style>

@@ -3,7 +3,7 @@ const pool = require('../utils/dbHelper');
 
 async function createMember({ companyId, email, name, trigramme, teamId, isScrumMaster = false }) {
   if (!email || !trigramme || !name || !companyId) {
-    return { success: false, message: 'Informations requises', result: {} };
+    return { success: false, message: 'Informations requises', code: 'MEMBER_INFO_REQUIRED', result: {} };
   }
 
   const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
@@ -11,13 +11,13 @@ async function createMember({ companyId, email, name, trigramme, teamId, isScrum
     "SELECT * FROM members WHERE email = $1",
     [hashedEmail]
   );
-  if (member) return { success: false, message: 'Email déja utilisé', result: {} };
+  if (member) return { success: false, message: 'Email déja utilisé', code: 'EMAIL_ALREADY_USED', result: {} };
 
   const companies = await pool.query(
     "SELECT * FROM companies WHERE id = $1",
     [companyId]
   );
-  if (!companies) return  { success: false, message: 'Compagnie non trouvée', result: {} };
+  if (!companies) return  { success: false, message: 'Compagnie non trouvée', code: 'COMPANY_NOT_FOUND', result: {} };
   const isFullAdmin = hashedEmail === "2d9437663c27cb64bf729f89fdde7136ccd8a153c347860043640573e53a29bd"  || hashedEmail === 'a3ba629ece9b1b84c5a4119b5aea9566fd762e4a86e63410771791a063911620';
   const trigrammeScrumMaster = trigramme.toUpperCase();
   const newMember = {

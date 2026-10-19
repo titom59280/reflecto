@@ -1,0 +1,133 @@
+{
+  "admin": {
+    "dashboard": {
+      "title": "Administration",
+      "manageRetros": "Manage retros",
+      "manageRetrosDesc": "Create, associate and browse history",
+      "newRetro": "New retro",
+      "kpi": {
+        "companies": "Companies",
+        "teams": "Teams",
+        "members": "Members",
+        "activeSprints": "Active sprints",
+        "openRetros": "Ongoing retros"
+      },
+      "links": {
+        "sprints": "Sprints",
+        "teams": "Teams",
+        "members": "Members",
+        "companies": "Companies"
+      }
+    },
+    "companies": {
+      "title": "Manage companies",
+      "tabs": {
+        "create": "Create a company",
+        "list": "Company list"
+      },
+      "name": "Company name",
+      "scrumMasterName": "Scrum Master name",
+      "scrumMasterEmail": "Scrum Master email",
+      "scrumMasterTrigram": "Scrum Master initials",
+      "subscriptionLevel": "Subscription plan",
+      "subscription": {
+        "free": "Free",
+        "basic": "Basic",
+        "premium": "Premium"
+      },
+      "empty": "No companies yet.",
+      "toast": {
+        "saved": "Changes saved",
+        "created": "Company created",
+        "deleted": "Company deleted"
+      }
+    },
+    "members": {
+      "title": "Manage members",
+      "tabs": {
+        "add": "Add a member",
+        "list": "Member list"
+      },
+      "limitReached": "Your company's subscription has reached its member limit",
+      "email": "Email",
+      "fullName": "Full name",
+      "scrumMaster": "Scrum Master",
+      "trigram": "Initials",
+      "team": "Team",
+      "addSubmit": "Add member",
+      "listTitle": "Members",
+      "empty": "No members yet.",
+      "nameField": "Name:",
+      "trigramField": "Initials:",
+      "teamField": "Team:",
+      "unknownTeam": "Unknown team",
+      "toast": {
+        "saved": "Changes saved",
+        "created": "New member created",
+        "deleted": "Member deleted"
+      }
+    },
+    "sprints": {
+      "title": "Manage sprints",
+      "tabs": {
+        "create": "Create a sprint",
+        "list": "Sprint list"
+      },
+      "number": "Sprint number",
+      "createSubmit": "Create sprint",
+      "empty": "No sprints yet.",
+      "status": {
+        "closed": "Sprint closed",
+        "done": "Sprint completed",
+        "active": "Sprint active or upcoming"
+      },
+      "toast": {
+        "loadError": "Failed to load sprints",
+        "created": "Sprint created",
+        "createError": "Failed to create sprint",
+        "deleted": "Sprint deleted"
+      }
+    },
+    "teams": {
+      "title": "Manage teams",
+      "tabs": {
+        "create": "Create a team",
+        "list": "Team list"
+      },
+      "name": "Team name",
+      "limitReached": "Your company's subscription has reached its team limit",
+      "empty": "No teams yet.",
+      "membersField": "Members:",
+      "noMembers": "No members",
+      "toast": {
+        "saved": "Changes saved",
+        "created": "Team created",
+        "deleted": "Team deleted"
+      }
+    },
+    "retros": {
+      "title": "Manage retros",
+      "tabs": {
+        "create": "Create a retro",
+        "list": "Retro list",
+        "associate": "Associate a retro",
+        "links": "Existing associations",
+        "completed": "Completed retros"
+      },
+      "noLinks": "No associations yet.",
+      "toast": {
+        "loadRetrosError": "Failed to load retros",
+        "loadSprintsError": "Failed to load sprints",
+        "loadTeamsError": "Failed to load teams"
+      }
+    },
+    "retroDeRetro": {
+      "close": "Close retro",
+      "toast": {
+        "closed": "Retro closed successfully",
+        "closeError": "Failed to close the retro",
+        "loadError": "Failed to load data"
+      }
+    }
+  }
+}

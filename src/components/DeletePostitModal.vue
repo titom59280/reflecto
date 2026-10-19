@@ -2,12 +2,12 @@
   <transition name="fade">
     <div v-if="visible" class="overlay">
       <div class="modal">
-        <h2>Supprimer le post-it</h2>
-        <p>Souhaitez-vous supprimer ce post-it ?</p>
+        <h2>{{ $t('board.deletePostit.title') }}</h2>
+        <p>{{ $t('board.deletePostit.question') }}</p>
 
         <div class="buttons">
-          <button class="btn cancel" @click="$emit('cancel')">Annuler</button>
-          <button class="btn confirm" @click="confirmDelete">Supprimer</button>
+          <button class="btn cancel" @click="$emit('cancel')">{{ $t('common.cancel') }}</button>
+          <button class="btn confirm" @click="confirmDelete">{{ $t('common.delete') }}</button>
         </div>
       </div>
     </div>
@@ -105,5 +105,41 @@ input {
   background-color: white;
   color: #444;
   border: 1px solid #aaa;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .modal {
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .buttons {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    box-sizing: border-box;
+    width: calc(100vw - 2rem);
+    max-width: 400px;
+    padding: 1.25rem;
+  }
+
+  .modal h2 {
+    font-size: 1.25rem;
+    margin-top: 0;
+  }
+
+  .btn {
+    flex: 1 1 auto;
+  }
 }
 </style>

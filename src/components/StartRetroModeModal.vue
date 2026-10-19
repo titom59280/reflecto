@@ -2,17 +2,23 @@
   <transition name="fade">
     <div v-if="visible" class="overlay">
       <div class="modal">
-        <h2>Démarrer la rétro</h2>
+        <h2>{{ $t('board.startRetro.title') }}</h2>
 
         <p>
-          Aucun autre <strong>post-it</strong> ne pourra être ajouté.<br />
-          Comment souhaitez-vous afficher les post-its ?
+          <i18n-t keypath="board.startRetro.noMorePostits" tag="span">
+            <template #postit>
+              <strong>{{ $t('board.startRetro.postit') }}</strong>
+            </template>
+          </i18n-t>
+          <br />
+          {{ $t('board.startRetro.question') }}
         </p>
         <div class="options">
-          <button class="btn" @click="$emit('select', 'all')">Afficher tous</button>
-          <button class="btn" @click="$emit('select', 'oneByOne')">Un par un</button>
+          <button class="btn" @click="$emit('confirm')">
+            {{ $t('board.startRetro.confirm') }}
+          </button>
         </div>
-        <button class="cancel" @click="$emit('cancel')">Annuler</button>
+        <button class="cancel" @click="$emit('cancel')">{{ $t('common.cancel') }}</button>
       </div>
     </div>
   </transition>
@@ -23,7 +29,7 @@ export default {
   props: {
     visible: Boolean,
   },
-  emits: ['select', 'cancel'],
+  emits: ['confirm', 'cancel'],
 };
 </script>
 
@@ -76,5 +82,38 @@ export default {
   color: #777;
   border: none;
   cursor: pointer;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .modal {
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .cancel {
+    min-height: 44px;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Largeur fixe de 350px + padding : débordait sous ~415px */
+  .modal {
+    box-sizing: border-box;
+    width: calc(100vw - 2rem);
+    max-width: 350px;
+    padding: 1.25rem;
+  }
+
+  .modal h2 {
+    font-size: 1.25rem;
+    margin-top: 0;
+  }
 }
 </style>

@@ -1,0 +1,164 @@
+{
+  "landingPage": {
+    "logoAlt": "Reflecto logo",
+    "hero": {
+      "badge": "Free for 1 team and 3 members",
+      "title": "Retrospectives that actually move your team forward",
+      "subtitle": "Prepare, run and close your retros online. Formats that fit your team and a history sprint after sprint: your ideas never get lost again.",
+      "ctaPrimary": "Create my team for free",
+      "reassurance": "No credit card · Available in English, French and Spanish"
+    },
+    "demo": {
+      "col1": "What went well",
+      "col2": "To improve",
+      "col3": "Actions",
+      "note1": "Shorter dailies",
+      "note2": "Great teamwork on the release",
+      "note3": "Too many meetings",
+      "note4": "Specs arrived late",
+      "note5": "Specs workshop at sprint start",
+      "retro1": "Avengers retro",
+      "retro2": "Weather retro",
+      "retro3": "Sailboat retro"
+    },
+    "why": {
+      "title": "Why Reflecto?",
+      "subtitle": "Everything you need for lively retros, without the paper-wall logistics.",
+      "custom": {
+        "title": "Retros that look like you",
+        "text": "Build your own formats: categories, descriptions, images and sticky note colors. Every team keeps its own style."
+      },
+      "facilitation": {
+        "title": "Smooth facilitation",
+        "text": "The Scrum Master prepares the retro, starts it when everyone is ready, annotates sticky notes and closes the sprint in one click."
+      },
+      "memory": {
+        "title": "A team memory",
+        "text": "Every retro is kept. Find the sticky notes and annotations from previous sprints to follow up on your actions."
+      }
+    },
+    "steps": {
+      "title": "How it works",
+      "step1": {
+        "title": "Create your team",
+        "text": "Sign up your company and invite your members."
+      },
+      "step2": {
+        "title": "Collect ideas",
+        "text": "Everyone adds sticky notes to the retro categories."
+      },
+      "step3": {
+        "title": "Decide and act",
+        "text": "Start the retro, discuss, annotate and close the sprint."
+      }
+    },
+    "showcase": {
+      "badge": "Retro of retros",
+      "title": "Your action items no longer fall through the cracks",
+      "text": "Before starting a new sprint, look back at previous retros and check what really changed.",
+      "point1": "History of every retro, per team",
+      "point2": "Sticky notes and annotations kept",
+      "point3": "Several teams in one workspace"
+    },
+    "pricingTeaser": {
+      "title": "Start for free",
+      "text": "The free plan covers 1 team and 3 members. Need more? Paid plans start at {price} per month.",
+      "cta": "See pricing"
+    },
+    "finalCta": {
+      "title": "Your next retro can be your best one",
+      "text": "Create your team and run your first retro today.",
+      "cta": "Get started for free"
+    }
+  },
+  "contact": {
+    "button": "Contact",
+    "titre": "A question? An idea? We’re all ears!",
+    "description1": "Our team is ready to support you on your Reflecto journey.",
+    "description2": "Whether it’s a request for information, a suggestion for improvement or a potential partnership, we’ll get back to you as soon as possible.",
+    "description3": "Together, let’s make your retrospectives a driver of continuous improvement!",
+    "restonsEnContact": "Let’s keep in touch",
+    "nom": "Name",
+    "email": "Email",
+    "message": "Message",
+    "envoyer": "Send"
+  },
+  "nosOffres": {
+    "title": "Pricing",
+    "mensuel": "Monthly",
+    "annuel": "Yearly",
+    "monthes": "months",
+    "freeLabel": "free",
+    "free": "Free",
+    "standard": "Standard",
+    "pro": "Pro",
+    "membres": "members",
+    "ideal": "Perfect for trying it out",
+    "petitesStructures": "For small organizations",
+    "illimite": "The whole app, unlimited",
+    "essayer": "Try it",
+    "contacter": "Contact us",
+    "multiEquipes": "Multiple teams",
+    "membresIllimites": "Unlimited members",
+    "imageCategories": "Images in categories",
+    "support": "Priority support",
+    "remise": "Discount",
+    "nbEquipes": "{count} team | {count} teams",
+    "nbMembres": "{count} member | {count} members"
+  },
+  "connection": {
+    "titre": "Join the Reflecto adventure",
+    "description1": "Simplify your agile retrospectives, engage your teams and turn every sprint into an opportunity for continuous improvement.",
+    "description2": "Create a free account now, or log in if you already have access to a Reflecto workspace.",
+    "description3": "Once you’re convinced by our tool, contact us to bring it to your whole team.",
+    "sessionExpired": "Your session has expired",
+    "sessionExpiredDesc": "Please log in again."
+  },
+  "formulaireConnection": {
+    "titre": "Welcome to Reflecto",
+    "connection": "Log in",
+    "inscriptionUtilisateur": "User sign-up",
+    "inscriptionEntreprise": "Company sign-up",
+    "email": "Email",
+    "motDePasse": "Password",
+    "confirmerMotDePasse": "Confirm password",
+    "nomEntreprise": "Company name",
+    "nomEquipe": "Team name",
+    "emailScrumMaster": "Scrum Master email",
+    "nomScrumMaster": "Scrum Master name",
+    "trigrammeScrumMaster": "Scrum Master initials (3 letters)",
+    "inscription": "Sign up",
+    "erreurConnexion": "Login failed",
+    "motsDePasseDifferents": "Passwords do not match.",
+    "erreurInscription": "Sign-up failed."
+  },
+  "legales": {
+    "titre": "Legal notice",
+    "editeurSite": "Website publisher",
+    "description1": "This website,",
+    "description1bis": "is published by:",
+    "nom": "Name:",
+    "adresse": "Address:",
+    "email": "Email:",
+    "SIRET": "SIRET:",
+    "hebergement": "Hosting",
+    "description2": "The website is hosted by:",
+    "nomHebergeur": "Host name:",
+    "adresseHebergeur": "Host address:",
+    "proprieteIntellectuelle": "Intellectual property",
+    "description3": "All content on this website (text, images, logos, illustrations, videos) is protected by applicable intellectual property laws and remains the exclusive property of Reflecto, unless otherwise stated. Any reproduction or use without prior authorization is prohibited.",
+    "donneespersonnelles": "Personal data",
+    "description4": "Personal data collected through this website is used solely for the Reflecto service and is never sold to third parties. In accordance with the GDPR, you may request access to, rectification or erasure of your data by contacting us through the contact form: ",
+    "responsabilite": "Liability",
+    "description5": "Reflecto makes every effort to ensure that the information published on this website is accurate and up to date. However, we cannot be held liable for any errors or omissions."
+  },
+  "equipe": "team",
+  "membres": "members",
+  "retour": "Back",
+  "tousDroitsReserves": "All rights reserved",
+  "accueil": "Home",
+  "mentionLegale": "Legal notice",
+  "seConnecter": "Log in",
+  "commencer": "Get started",
+  "demanderDemo": "Request a demo"
+}

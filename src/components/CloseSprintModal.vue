@@ -2,25 +2,29 @@
   <transition name="fade">
     <div v-if="visible" class="overlay">
       <div class="modal">
-        <h2>Terminer la rétro</h2>
-        <p>Souhaitez-vous terminer ce sprint ?</p>
+        <h2>{{ $t('board.closeSprint.title') }}</h2>
+        <p>{{ $t('board.closeSprint.question') }}</p>
 
         <div v-if="sprintName !== ''">
-          <p>
-            Prochain sprint détecté : <strong>{{ sprintName }}</strong>
-          </p>
+          <i18n-t keypath="board.closeSprint.nextSprint" tag="p">
+            <template #name>
+              <strong>{{ sprintName }}</strong>
+            </template>
+          </i18n-t>
         </div>
 
         <div v-else>
           <p>
-            Le prochain sprint n'a pas été lié à une rétro.<br />
-            N'oubliez pas de le faire pour que les membres puissent créer leurs tickets.
+            {{ $t('board.closeSprint.noNextSprint') }}<br />
+            {{ $t('board.closeSprint.noNextSprintHint') }}
           </p>
         </div>
 
         <div class="buttons">
-          <button class="btn cancel" @click="$emit('cancel')">Annuler</button>
-          <button class="btn confirm" @click="confirmClosure">Terminer</button>
+          <button class="btn cancel" @click="$emit('cancel')">{{ $t('common.cancel') }}</button>
+          <button class="btn confirm" @click="confirmClosure">
+            {{ $t('board.closeSprint.confirm') }}
+          </button>
         </div>
       </div>
     </div>
@@ -132,5 +136,46 @@ input {
   background-color: white;
   color: #444;
   border: 1px solid #aaa;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .modal {
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .buttons {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    box-sizing: border-box;
+    width: calc(100vw - 2rem);
+    max-width: 400px;
+    padding: 1.25rem;
+  }
+
+  .modal h2 {
+    font-size: 1.25rem;
+    margin-top: 0;
+  }
+
+  /* Le nom du sprint peut être long */
+  .modal p {
+    overflow-wrap: anywhere;
+  }
+
+  .btn {
+    flex: 1 1 auto;
+  }
 }
 </style>

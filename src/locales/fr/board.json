@@ -1,0 +1,68 @@
+{
+  "board": {
+    "retroBoard": {
+      "postitColor": "Couleur des post-its",
+      "readyToStart": "La rétro est prête : cliquez sur « Démarrer » quand tous les participants sont prêts.",
+      "noActiveSprint": "L'équipe n'a pas encore de sprint en cours.",
+      "fetchErrorMessage": "Erreur de récupération des données.",
+      "action": {
+        "initialize": "Initialiser",
+        "start": "Démarrer",
+        "finish": "Terminer"
+      },
+      "toast": {
+        "sprintFinished": "Sprint terminé avec succès",
+        "sprintCloseError": "Erreur lors de la clôture du sprint",
+        "unexpectedAction": "Action non prévue",
+        "postitDeleted": "Post-it supprimé",
+        "postitUpdateError": "Erreur lors de la modification du post-it",
+        "annotationError": "Erreur lors de l'ajout de l'annotation",
+        "colorChangeError": "Erreur lors du changement de la couleur des post-its",
+        "postitAdded": "Post-it ajouté",
+        "postitAddError": "Erreur lors de l'ajout du post-it",
+        "fetchError": "Erreur lors de la récupération des données"
+      }
+    },
+    "addPostit": {
+      "titleAdd": "Ajouter un post-it",
+      "titleEdit": "Modifier un post-it",
+      "messageLabel": "Message :",
+      "messagePlaceholder": "Décrivez votre point...",
+      "categoryLabel": "Catégorie :",
+      "categoryPlaceholder": "Choisissez une catégorie"
+    },
+    "readPostit": {
+      "annotationLabel": "Annotation :",
+      "next": "Suivant"
+    },
+    "deletePostit": {
+      "title": "Supprimer le post-it",
+      "question": "Souhaitez-vous supprimer ce post-it ?"
+    },
+    "colorPicker": {
+      "title": "Couleur de mes post-its",
+      "colorLabel": "Couleur :",
+      "choose": "Choisir"
+    },
+    "closeRetro": {
+      "title": "Clôturer la rétro",
+      "question": "Souhaitez-vous clôturer cette rétro ?",
+      "confirm": "Clôturer"
+    },
+    "closeSprint": {
+      "title": "Terminer la rétro",
+      "question": "Souhaitez-vous terminer ce sprint ?",
+      "nextSprint": "Prochain sprint détecté : {name}",
+      "noNextSprint": "Le prochain sprint n'a pas été lié à une rétro.",
+      "noNextSprintHint": "N'oubliez pas de le faire pour que les membres puissent créer leurs tickets.",
+      "confirm": "Terminer"
+    },
+    "startRetro": {
+      "title": "Démarrer la rétro",
+      "noMorePostits": "Aucun autre {postit} ne pourra être ajouté.",
+      "postit": "post-it",
+      "question": "Voulez-vous démarrer la rétro ?",
+      "confirm": "Démarrer"
+    }
+  }
+}

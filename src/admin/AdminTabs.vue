@@ -67,4 +67,42 @@ export default {
 .switch-content {
   padding: 20px;
 }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* Barre d'onglets défilable horizontalement plutôt que d'écraser le texte */
+  .switch-button {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .tab-button {
+    flex: 1 0 auto;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .switch-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-switch {
+    border-radius: 10px;
+  }
+
+  .tab-button {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .switch-content {
+    padding: 12px;
+  }
+}
 </style>

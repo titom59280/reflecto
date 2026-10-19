@@ -2,13 +2,22 @@
   <div class="landing-wrapper">
     <header class="header">
       <div class="header-left">
-        <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+        <img
+          src="@/assets/logo.png"
+          :alt="$t('landingPage.logoAlt')"
+          class="logo"
+          @click="goToAccueil"
+        />
         <span class="title" @click="goToAccueil">Reflecto</span>
       </div>
       <button class="start-btn header-button-bis" @click="goToContact">
         {{ $t('demanderDemo') }}
       </button>
     </header>
+    <div v-if="showSessionExpiredMsg" class="session-expired-banner">
+      <strong>⚠️ {{ $t('connection.sessionExpired') }}</strong>
+      <p>{{ $t('connection.sessionExpiredDesc') }}</p>
+    </div>
     <div class="main-content">
       <div class="form-section">
         <div class="left-form">
@@ -45,7 +54,19 @@ export default {
     return {
       honeypot: '',
       form: { name: '', email: '', message: '' },
+      showSessionExpiredMsg: false,
     };
+  },
+  mounted() {
+    // Check if session expired and show message
+    if (sessionStorage.getItem('session-expired') === 'true') {
+      this.showSessionExpiredMsg = true;
+      sessionStorage.removeItem('session-expired');
+      // Auto-hide message after 5 seconds
+      setTimeout(() => {
+        this.showSessionExpiredMsg = false;
+      }, 5000);
+    }
   },
   methods: {
     goToLandingPageAndConnect() {
@@ -73,10 +94,10 @@ export default {
     async sendContact() {
       const res = await services.sendContact(this.form.name, this.form.email, this.form.message);
       if (!res.isSuccess) {
-        this.$root.showToast(res.message, 'error');
+        this.$root.showToast(this.$apiMessage(res), 'error');
         return;
       }
-      this.$root.showToast(res.message, 'success');
+      this.$root.showToast(this.$apiMessage(res), 'success');
     },
   },
 };
@@ -187,5 +208,82 @@ export default {
   display: flex;
   flex: 1;
   justify-content: center;
+}
+
+.session-expired-banner {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 12px 16px;
+  margin: 0;
+  text-align: center;
+}
+
+.session-expired-banner strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.session-expired-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .header .start-btn {
+    margin-right: 0;
+    min-height: 40px;
+  }
+
+  /* Contenu empilé plus haut que l'écran : sans ça, le centrage vertical
+     coupait le haut du texte (zone non atteignable au scroll) */
+  .main-content {
+    padding: 0 1rem;
+    align-items: flex-start;
+    flex: 1 0 auto;
+  }
+
+  /* Les min-width de 425px provoquaient un débordement horizontal : on empile */
+  .left-form,
+  .right-form {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .left-form {
+    padding-top: 1.5rem;
+    overflow-wrap: anywhere;
+  }
+
+  .login-form {
+    margin: 24px 0 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left {
+    font-size: 1.3rem;
+  }
+
+  .header .start-btn {
+    font-size: 0.85rem;
+  }
+
+  .left-form h2 {
+    font-size: 1.3rem;
+  }
+
+  .button-action .start-btn {
+    min-height: 44px;
+    padding: 8px 20px;
+  }
 }
 </style>

@@ -14,7 +14,7 @@ exports.getMine = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'POSTITS_FETCH_ERROR');
   }
 };
 
@@ -31,7 +31,7 @@ exports.getAllByLink = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'SPRINT_POSTITS_FETCH_ERROR');
   }
 };
 
@@ -39,13 +39,13 @@ exports.create = async (req, res) => {
   try{
     const { message, categoryName,sprintRetroTeamLinkId } = req.body;
 
-    if (!message || !categoryName || !sprintRetroTeamLinkId) return resultRequest(res, false, 'Champs requis manquants', { });
+    if (!message || !categoryName || !sprintRetroTeamLinkId) return resultRequest(res, false, 'Champs requis manquants', { }, 'FIELDS_REQUIRED');
 
     const member = await pool.queryOne(
       "SELECT * FROM members WHERE id = $1",
       [req.user?.id]
     );
-    if (!member) return resultRequest(res, false, 'Membre introuvable', { });
+    if (!member) return resultRequest(res, false, 'Membre introuvable', { }, 'MEMBER_NOT_FOUND');
 
     const newPostit = {
       id: crypto.randomUUID(),
@@ -67,7 +67,7 @@ exports.create = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'POSTIT_CREATE_ERROR');
   }
 };
 
@@ -78,7 +78,7 @@ exports.update = async (req, res) => {
       `SELECT id, message, categoryname as "categoryName", sprintretroteamlinkid as "sprintRetroTeamLinkId", trigramme, memberid as "memberId", annotation FROM postits WHERE id = $1`,
       [id]
     );
-    if (!postIt) return resultRequest(res, false, 'Post-it introuvable', { });
+    if (!postIt) return resultRequest(res, false, 'Post-it introuvable', { }, 'POSTIT_NOT_FOUND');
 
     postIt.categoryName = categoryName;
     postIt.message = message ?? postIt.message;
@@ -94,7 +94,7 @@ exports.update = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message,  { });
+    resultRequest(res, false, message,  { }, 'POSTIT_UPDATE_ERROR');
   }
 };
 
@@ -110,6 +110,6 @@ exports.remove = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'POSTIT_DELETE_ERROR');
   }
 };

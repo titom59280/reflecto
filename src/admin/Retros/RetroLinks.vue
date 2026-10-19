@@ -2,7 +2,7 @@
   <div class="retros-grid tab-content-animated">
     <div class="button-hide">
       <button @click="toggleViewAll">
-        {{ viewAllLink ? 'Masquer les retros faites' : 'Voir toutes les associations' }}
+        {{ viewAllLink ? $t('adminRetros.links.hideDone') : $t('adminRetros.links.showAll') }}
       </button>
     </div>
 
@@ -22,23 +22,33 @@
             <div v-for="link in getLinksForTeam(team.id)" :key="link.id" class="retro-card">
               <div class="sprint">
                 <div class="infos">
-                  <span v-if="link.isRetroDone" class="badge">✅ Rétro faite</span>
+                  <span v-if="link.isRetroDone" class="badge"
+                    >✅ {{ $t('adminRetros.links.retroDone') }}</span
+                  >
                 </div>
                 <div class="retro-header">
                   <div>
-                    <p><strong>Sprint :</strong> {{ getSprintName(link.sprintId) }}</p>
-                    <p><strong>Rétro :</strong> {{ getRetroName(link.retroId) }}</p>
+                    <p>
+                      <strong>{{ $t('adminRetros.links.sprintLabel') }}</strong>
+                      {{ getSprintName(link.sprintId) }}
+                    </p>
+                    <p>
+                      <strong>{{ $t('adminRetros.links.retroLabel') }}</strong>
+                      {{ getRetroName(link.retroId) }}
+                    </p>
                   </div>
                   <div class="actions">
                     <button
                       v-if="link.isRetroDone && !link.isClosed"
                       @click="$emit('start-retro', link.id)"
                     >
-                      Faire la rétro de rétro
+                      {{ $t('adminRetros.links.startRetroOfRetro') }}
                     </button>
                     <button
                       v-if="!link.isRetroDone && !link.isActif"
                       class="delete"
+                      :aria-label="$t('common.delete')"
+                      :title="$t('common.delete')"
                       @click="removeLink(link.id)"
                     >
                       🗑️
@@ -46,6 +56,8 @@
                     <button
                       v-if="!link.isRetroDone && !link.isActif"
                       class="badge"
+                      :aria-label="$t('adminRetros.links.activate')"
+                      :title="$t('adminRetros.links.activate')"
                       @click="activate(link.id)"
                     >
                       ✅
@@ -130,37 +142,37 @@ export default {
     },
     getRetroName(retroId) {
       const retro = this.retros.find((r) => r.id === retroId);
-      return retro ? retro.name : 'Inconnue';
+      return retro ? retro.name : this.$t('adminRetros.links.unknownRetro');
     },
     getSprintName(sprintId) {
       const sprint = this.sprints.find((s) => s.id === sprintId);
-      return sprint ? sprint.name : 'Inconnu';
+      return sprint ? sprint.name : this.$t('adminRetros.links.unknownSprint');
     },
     getMessageNoLinkTeam() {
       return this.viewAllLink
-        ? 'Aucune rétro associée à cette équipe.'
-        : 'Aucune rétro associée pour le sprint en cours ou à venir pour cette équipe.';
+        ? this.$t('adminRetros.links.noLinkAll')
+        : this.$t('adminRetros.links.noLinkUpcoming');
     },
     async activate(linkId) {
       try {
         await AdminService.activateSprint(linkId);
         this.$emit('refresh-links');
-        this.$root.showToast("L'association a été activé", 'success');
+        this.$root.showToast(this.$t('adminRetros.links.activated'), 'success');
       } catch (err) {
         if (err.status === 400) {
-          this.$root.showToast(err.response.data.error, 'error');
+          this.$root.showToast(this.$apiMessage(err.response?.data), 'error');
           return;
         }
-        this.$root.showToast("Erreur lors de l'activation", 'error');
+        this.$root.showToast(this.$t('adminRetros.links.activateError'), 'error');
       }
     },
     async removeLink(linkId) {
       try {
         await AdminService.deleteRetroFromSprint(linkId);
         this.$emit('refresh-links');
-        this.$root.showToast("L'association a été supprimée", 'success');
+        this.$root.showToast(this.$t('adminRetros.links.removed'), 'success');
       } catch (err) {
-        this.$root.showToast('Erreur lors de la suppression', 'error');
+        this.$root.showToast(this.$t('adminRetros.shared.deleteError'), 'error');
       }
     },
   },
@@ -437,5 +449,82 @@ button:not(.delete):hover {
 .panel-content {
   padding: 10px;
   background: #fff;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* Panneaux d'équipes : une seule colonne si la largeur est insuffisante */
+  .retro-container {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 0.75rem;
+  }
+
+  .retro-list {
+    padding: 0.75rem 0;
+  }
+
+  .team-panel {
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .team-header {
+    gap: 0.5rem;
+    min-height: 44px;
+  }
+
+  .team-header-title {
+    margin: 0;
+    font-size: 1.05rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .retro-card {
+    padding: 0.75rem;
+  }
+
+  /* Infos et actions : passage à la ligne quand la place manque */
+  .retro-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .retro-header > div:first-child {
+    min-width: 0;
+    flex: 1 1 180px;
+    overflow-wrap: anywhere;
+  }
+
+  .actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .actions button {
+    margin-bottom: 0;
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .button-hide button {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .retro-header > div:first-child {
+    flex-basis: 100%;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .button-hide button {
+    width: 100%;
+  }
 }
 </style>

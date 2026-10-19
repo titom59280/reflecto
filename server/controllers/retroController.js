@@ -8,7 +8,7 @@ const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const retros = await pool.query(
       `SELECT id, companyid as "companyId", name, createdat as "createdAt" FROM retros WHERE companyid = $1`,
@@ -20,13 +20,13 @@ exports.getAll = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'RETROS_FETCH_ERROR');
   }
 };
 
 exports.getCategories = async(req, res) =>{
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const categories = await pool.query(
       `SELECT id, name, description, image FROM retrocategories WHERE retroid = $1`,
@@ -38,17 +38,17 @@ exports.getCategories = async(req, res) =>{
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'CATEGORIES_FETCH_ERROR');
   }
 };
 
 exports.create = async (req, res) => {
   const retroId = crypto.randomUUID();
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const body = qs.parse(req.body);
     const sprintAssetsPath = `retros/${retroId}`;
-    if (!body.name || !Array.isArray(body.categories) || body.categories.length < 2) return resultRequest(res, false, 'Nom requis et au moins 2 catégories', { });
+    if (!body.name || !Array.isArray(body.categories) || body.categories.length < 2) return resultRequest(res, false, 'Nom requis et au moins 2 catégories', { }, 'RETRO_NAME_CATEGORIES_REQUIRED');
 
     const retroName = body.name.trim();
     const retro = await pool.queryOne(
@@ -56,14 +56,14 @@ exports.create = async (req, res) => {
       [retroName]
     );
 
-    if (retro) return resultRequest(res, false, "Une rétro avec ce nom existe déjà.", { });
+    if (retro) return resultRequest(res, false, "Une rétro avec ce nom existe déjà.", { }, 'RETRO_NAME_EXISTS');
     
     const company = await pool.queryOne(
       "SELECT * FROM companies WHERE id = $1",
       [req.user.companyId]
     );
 
-    if (!company) return resultRequest(res, false, 'Compagnie non trouvé', { });
+    if (!company) return resultRequest(res, false, 'Compagnie non trouvé', { }, 'COMPANY_NOT_FOUND');
     
     await pool.query(
       "INSERT INTO retros (id, companyid, name, createdat) VALUES ($1, $2, $3, $4)",
@@ -114,27 +114,27 @@ exports.create = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'RETRO_CREATE_ERROR');
   }
 };
 
 
 exports.remove = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const retroId = req.params.id;
     const retro = await pool.queryOne(
       "SELECT * FROM retros where id = $1",
       [retroId]
     );
     const sprintAssetsPath = `retros/${retroId}`;
-    if (!retro) return resultRequest(res, false, 'Rétro non trouvée', { });
+    if (!retro) return resultRequest(res, false, 'Rétro non trouvée', { }, 'RETRO_NOT_FOUND');
 
     const link = await pool.queryOne(
       "SELECT * FROM sprintsretrosteams WHERE retroid = $1 AND isretrodone= false AND isclosed= false",
       [retroId]
     );
-    if (link) return resultRequest(res, false, "Une équipe a déja un sprint en cours avec cette retro.", { });
+    if (link) return resultRequest(res, false, "Une équipe a déja un sprint en cours avec cette retro.", { }, 'RETRO_IN_USE');
     const { data: files, error: listError } = await supabase.storage
       .from('uploads')
       .list(sprintAssetsPath, { limit: 1000 });
@@ -165,6 +165,6 @@ exports.remove = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'RETRO_DELETE_ERROR');
   }
 };

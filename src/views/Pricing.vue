@@ -2,7 +2,12 @@
   <div class="landing-wrapper">
     <header class="header">
       <div class="header-left">
-        <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+        <img
+          src="@/assets/logo.png"
+          :alt="$t('landingPage.logoAlt')"
+          class="logo"
+          @click="goToAccueil"
+        />
         <span class="title" @click="goToAccueil">Reflecto</span>
       </div>
       <button class="start-btn header-button-bis" @click="goToContact">
@@ -30,7 +35,7 @@
               @click="changeOffer(false)"
             >
               {{ $t('nosOffres.annuel') }}
-              <span class="btn-badge" aria-label="discount">
+              <span class="btn-badge" :aria-label="$t('nosOffres.remise')">
                 2 {{ $t('nosOffres.monthes') }} <br />
                 {{ $t('nosOffres.freeLabel') }}
               </span>
@@ -42,8 +47,8 @@
               <h3>0€</h3>
               <p>{{ $t('nosOffres.ideal') }}</p>
               <ul>
-                <li class="aval">1 {{ $t('equipe') }}</li>
-                <li class="aval">3 {{ $t('nosOffres.membres') }}</li>
+                <li class="aval">{{ $t('nosOffres.nbEquipes', 1) }}</li>
+                <li class="aval">{{ $t('nosOffres.nbMembres', 3) }}</li>
                 <li class="unaval">{{ $t('nosOffres.imageCategories') }}</li>
                 <li class="unaval">{{ $t('nosOffres.support') }}</li>
               </ul>
@@ -58,8 +63,8 @@
               <h3>{{ getAmount(true) }}</h3>
               <p>{{ $t('nosOffres.petitesStructures') }}</p>
               <ul>
-                <li class="aval">1 {{ $t('equipe') }}</li>
-                <li class="aval">5 {{ $t('nosOffres.membres') }}</li>
+                <li class="aval">{{ $t('nosOffres.nbEquipes', 1) }}</li>
+                <li class="aval">{{ $t('nosOffres.nbMembres', 5) }}</li>
                 <li class="unaval">{{ $t('nosOffres.imageCategories') }}</li>
                 <li class="unaval">{{ $t('nosOffres.support') }}</li>
               </ul>
@@ -413,5 +418,141 @@ export default {
 
 .button {
   margin-top: 2rem;
+}
+
+/* ===== Responsive ===== */
+/* Placé en fin de bloc pour ne pas être écrasé par les règles de base ci-dessus */
+@media (max-width: 768px) {
+  .intro-section h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-pricing {
+    margin-bottom: 2rem;
+  }
+
+  .tabPriceLink {
+    width: auto;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .tabLeft,
+  .tabRight {
+    flex: 1;
+  }
+
+  .btn-badge {
+    position: static;
+    display: block;
+    margin-top: 8px;
+    top: auto;
+    right: auto;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .offres {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  /* Largeur bornée : 2 cartes par ligne sur tablette, 1 sur téléphone */
+  .card {
+    max-width: 330px;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .card-1,
+  .card-2,
+  .card-3 {
+    transform: scale(1) !important;
+  }
+
+  .card h2 {
+    font-size: 1.2rem;
+  }
+
+  .card h3 {
+    font-size: 2rem;
+  }
+
+  .card ul {
+    padding: 0 20px;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 0.7rem 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .header-left {
+    width: 100%;
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  /* margin-right à 0 : la marge globale de .header-button-bis (2rem) débordait */
+  .header-button,
+  .header-button-bis {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    min-height: 40px;
+  }
+
+  .button {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro-section h1 {
+    font-size: 1.4rem;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+    padding: 15px 0;
+  }
+
+  .card h3 {
+    font-size: 1.5rem;
+    margin: 20px 0 8px;
+  }
+
+  .card p {
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+  }
+
+  .card ul {
+    padding: 0 15px;
+  }
+
+  .card ul li {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+
+  .pricing-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+
+  .start-btn {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
 }
 </style>

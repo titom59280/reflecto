@@ -1,0 +1,68 @@
+{
+  "board": {
+    "retroBoard": {
+      "postitColor": "Sticky note color",
+      "readyToStart": "The retro is ready: click \"Start\" once all participants are ready.",
+      "noActiveSprint": "The team has no sprint in progress yet.",
+      "fetchErrorMessage": "Could not load data.",
+      "action": {
+        "initialize": "Initialize",
+        "start": "Start",
+        "finish": "Finish"
+      },
+      "toast": {
+        "sprintFinished": "Sprint finished successfully",
+        "sprintCloseError": "Error while closing the sprint",
+        "unexpectedAction": "Unexpected action",
+        "postitDeleted": "Sticky note deleted",
+        "postitUpdateError": "Error while updating the sticky note",
+        "annotationError": "Error while adding the annotation",
+        "colorChangeError": "Error while changing the sticky note color",
+        "postitAdded": "Sticky note added",
+        "postitAddError": "Error while adding the sticky note",
+        "fetchError": "Error while loading data"
+      }
+    },
+    "addPostit": {
+      "titleAdd": "Add a sticky note",
+      "titleEdit": "Edit sticky note",
+      "messageLabel": "Message:",
+      "messagePlaceholder": "Describe your point...",
+      "categoryLabel": "Category:",
+      "categoryPlaceholder": "Choose a category"
+    },
+    "readPostit": {
+      "annotationLabel": "Annotation:",
+      "next": "Next"
+    },
+    "deletePostit": {
+      "title": "Delete sticky note",
+      "question": "Do you want to delete this sticky note?"
+    },
+    "colorPicker": {
+      "title": "My sticky note color",
+      "colorLabel": "Color:",
+      "choose": "Choose"
+    },
+    "closeRetro": {
+      "title": "Close the retro",
+      "question": "Do you want to close this retro?",
+      "confirm": "Close"
+    },
+    "closeSprint": {
+      "title": "Finish the retro",
+      "question": "Do you want to finish this sprint?",
+      "nextSprint": "Next sprint detected: {name}",
+      "noNextSprint": "The next sprint has not been linked to a retro.",
+      "noNextSprintHint": "Don't forget to do it so members can create their sticky notes.",
+      "confirm": "Finish"
+    },
+    "startRetro": {
+      "title": "Start the retro",
+      "noMorePostits": "No more {postit} can be added.",
+      "postit": "sticky notes",
+      "question": "Do you want to start the retro?",
+      "confirm": "Start"
+    }
+  }
+}

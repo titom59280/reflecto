@@ -2,7 +2,12 @@
   <div class="landing-wrapper">
     <header class="header">
       <div class="header-left">
-        <img src="@/assets/logo.png" alt="Reflecto Logo" class="logo" @click="goToAccueil" />
+        <img
+          src="@/assets/logo.png"
+          :alt="$t('landingPage.logoAlt')"
+          class="logo"
+          @click="goToAccueil"
+        />
         <span class="title" @click="goToAccueil">Reflecto</span>
       </div>
       <button class="start-btn header-button-bis" @click="goToPricing">
@@ -96,10 +101,10 @@ export default {
     async sendContact() {
       const res = await services.sendContact(this.form.name, this.form.email, this.form.message);
       if (!res.isSuccess) {
-        this.$root.showToast(res.message, 'error');
+        this.$root.showToast(this.$apiMessage(res), 'error');
         return;
       }
-      this.$root.showToast(res.message, 'success');
+      this.$root.showToast(this.$apiMessage(res), 'success');
     },
   },
 };
@@ -209,5 +214,75 @@ export default {
   display: flex;
   flex: 1;
   justify-content: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .header .start-btn {
+    margin-right: 0.75rem;
+    min-height: 40px;
+  }
+
+  .header .start-btn:last-child {
+    margin-right: 0;
+  }
+
+  /* Contenu empilé plus haut que l'écran : sans ça, le centrage vertical
+     coupait le haut du texte (zone non atteignable au scroll) */
+  .main-content {
+    padding: 0 1rem;
+    align-items: flex-start;
+    flex: 1 0 auto;
+  }
+
+  /* Les min-width de 425px provoquaient un débordement horizontal : on empile */
+  .left-form,
+  .right-form {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .left-form {
+    padding-top: 1.5rem;
+    overflow-wrap: anywhere;
+  }
+
+  .login-form {
+    margin: 24px 0 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    column-gap: 0.5rem;
+  }
+
+  .header-left {
+    flex: 1 1 100%;
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  .header .start-btn {
+    flex: 1 1 auto;
+    margin-right: 0;
+    font-size: 0.85rem;
+  }
+
+  .left-form h2 {
+    font-size: 1.3rem;
+  }
+
+  .button-action .start-btn {
+    min-height: 44px;
+    padding: 8px 20px;
+  }
 }
 </style>

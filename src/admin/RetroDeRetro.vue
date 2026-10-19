@@ -25,7 +25,9 @@
     </div>
 
     <div class="add-button-container">
-      <button class="add-postit-btn" @click="closeRetroModalVisible = true">Clôturer</button>
+      <button class="add-postit-btn" @click="closeRetroModalVisible = true">
+        {{ $t('admin.retroDeRetro.close') }}
+      </button>
     </div>
   </div>
   <ReadPostitModal
@@ -94,10 +96,10 @@ export default {
     async cloturer() {
       try {
         await AdminService.closeLinkRetro(this.currentLinkId);
-        this.$root.showToast('La rétro a été clôturé avec succès', 'success');
+        this.$root.showToast(this.$t('admin.retroDeRetro.toast.closed'), 'success');
         this.$emit('close');
       } catch (err) {
-        this.$root.showToast('Erreur lors de la récupération des données', 'error');
+        this.$root.showToast(this.$t('admin.retroDeRetro.toast.closeError'), 'error');
       }
     },
     async fetchLinkData() {
@@ -106,12 +108,12 @@ export default {
         const resultlinks = await AdminService.getSprintRetroLinks();
 
         if (!resultlinks.isSuccess) {
-          this.$root.showToast(resultlinks.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultlinks), 'error');
           return;
         }
 
         if (!resultRetros.isSuccess) {
-          this.$root.showToast(resultRetros.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultRetros), 'error');
           return;
         }
         this.currentLink = resultlinks.result.find((link) => link.id === this.currentLinkId);
@@ -119,21 +121,21 @@ export default {
         const resultCategories = await AdminService.getCategories(this.currentLink.retroId);
 
         if (!resultCategories.isSuccess) {
-          this.$root.showToast(resultCategories.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultCategories), 'error');
           return;
         }
 
         this.categories = resultCategories.result;
         this.fetchPostIts();
       } catch (err) {
-        this.$root.showToast('Erreur lors de la récupération des données', 'error');
-        this.noRetroMessage = 'Erreur de récupération des données.';
+        this.$root.showToast(this.$t('admin.retroDeRetro.toast.loadError'), 'error');
+        this.noRetroMessage = this.$t('admin.retroDeRetro.toast.loadError');
       }
     },
     async fetchPostIts() {
       const resultPostId = await retroService.getPostitsByLink(this.currentLinkId);
       if (!resultPostId.isSuccess) {
-        this.$root.showToast(resultPostId.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultPostId), 'error');
         return;
       }
       this.postits = resultPostId.result;
@@ -437,5 +439,78 @@ export default {
   color: #555;
   text-align: right;
   margin-top: 4px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* On laisse la page défiler naturellement plutôt que des scrolls imbriqués */
+  .retro-page,
+  .retro-columns {
+    height: auto;
+    overflow: visible;
+  }
+
+  .retro-columns {
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  }
+
+  .retro-column {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .retro-column h3 {
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .category-image {
+    height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  .description {
+    font-size: 1.05rem;
+  }
+
+  .post-it-container {
+    width: 100%;
+  }
+
+  .postit-list {
+    padding: 0.75rem;
+  }
+
+  .add-button-container {
+    margin-top: 1.25rem;
+  }
+
+  .add-postit-btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .retro-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .category-image {
+    height: 64px;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .postit-list {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 10px;
+    padding: 0.5rem;
+  }
+
+  .add-postit-btn {
+    width: 100%;
+  }
 }
 </style>

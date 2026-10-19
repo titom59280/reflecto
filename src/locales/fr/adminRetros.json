@@ -1,0 +1,65 @@
+{
+  "adminRetros": {
+    "shared": {
+      "alreadyLinked": "Une rétro est déjà associée à cette équipe pour ce sprint",
+      "deleteError": "Erreur lors de la suppression"
+    },
+    "create": {
+      "retroName": "Nom de la rétro",
+      "categoryName": "Nom",
+      "categoryDescription": "Description",
+      "categoryImage": "Image",
+      "removeCategory": "Supprimer la catégorie",
+      "addCategory": "Ajouter une catégorie",
+      "submit": "Créer la rétro",
+      "success": "Rétro créée avec succès",
+      "error": "Erreur lors de la création de la rétro."
+    },
+    "list": {
+      "empty": "Aucune rétro pour le moment.",
+      "untitled": "Rétro sans titre",
+      "deleted": "La rétro a été supprimée"
+    },
+    "associate": {
+      "retro": "Rétro",
+      "selectRetro": "Choisir une rétro",
+      "sprint": "Sprint",
+      "selectSprint": "Choisir un sprint",
+      "team": "Équipe",
+      "selectTeam": "Choisir une équipe",
+      "submit": "Associer",
+      "missingFields": "Veuillez sélectionner tous les champs",
+      "success": "Rétro associée au sprint",
+      "error": "Erreur d'association"
+    },
+    "links": {
+      "hideDone": "Masquer les rétros faites",
+      "showAll": "Voir toutes les associations",
+      "retroDone": "Rétro faite",
+      "sprintLabel": "Sprint :",
+      "retroLabel": "Rétro :",
+      "startRetroOfRetro": "Faire la rétro de rétro",
+      "activate": "Activer l'association",
+      "unknownRetro": "Inconnue",
+      "unknownSprint": "Inconnu",
+      "noLinkAll": "Aucune rétro associée à cette équipe.",
+      "noLinkUpcoming": "Aucune rétro associée pour le sprint en cours ou à venir pour cette équipe.",
+      "activated": "L'association a été activée",
+      "activateError": "Erreur lors de l'activation",
+      "removed": "L'association a été supprimée"
+    },
+    "previous": {
+      "empty": "Aucune rétro complétée pour le moment.",
+      "teamLabel": "Équipe :",
+      "sprintLabel": "Sprint :",
+      "viewTickets": "Voir les tickets",
+      "noTickets": "Aucun ticket pour cette rétro.",
+      "notAvailable": "N/A",
+      "noteLabel": "Note :",
+      "unknownRetro": "Rétro inconnue",
+      "unknownTeam": "Équipe inconnue",
+      "unknownSprint": "Sprint inconnu",
+      "loadError": "Erreur lors du chargement des tickets"
+    }
+  }
+}

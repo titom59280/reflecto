@@ -123,6 +123,7 @@ body {
 
 
 
+
 .dropdown {
   background-color: white;
   border: 1px solid #ddd;
@@ -223,6 +224,13 @@ body {
   transition: background-color 0.3s ease;
 }
 
+a.back-admin-button {
+    cursor: pointer;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+  }
+
 .back-admin-button:hover {
   background-color: #a71d2a;
 }
@@ -258,4 +266,34 @@ body {
   cursor: pointer;
   transition: background 0.3s ease;
   font-family: 'Segoe UI', sans-serif;
+}
+
+/* En-têtes de pages admin : le bouton retour passe au-dessus du titre */
+@media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .back-admin-button {
+    position: static;
+    align-self: flex-start;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.3rem;
+  }
+
+  .page-title::after {
+    width: 60px;
+    margin-top: 8px;
+  }
 }

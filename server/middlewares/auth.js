@@ -3,13 +3,13 @@ const SECRET = process.env.JWT_SECRET;
 
 module.exports = function requireAuth(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token requis' });
+  if (!token) return res.status(401).json({ error: 'Token requis', code: 'TOKEN_REQUIRED' });
 
   try {
     const decoded = jwt.verify(token, SECRET);
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(403).json({ error: 'Token invalide' });
+    res.status(403).json({ error: 'Token invalide', code: 'TOKEN_INVALID' });
   }
 }

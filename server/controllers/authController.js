@@ -14,7 +14,7 @@ exports.contact = async (req, res) => {
 
     // Vérification basique
     if (!name || !email || !message) {
-      return res.status(400).json({ error: 'Tous les champs sont requis.' });
+      return res.status(400).json({ error: 'Tous les champs sont requis.', code: 'FIELDS_REQUIRED' });
     }
 
     // Configuration du transporteur SMTP
@@ -49,20 +49,20 @@ ${message}
 
     // Envoi de l'email
     await transporter.sendMail(mailOptions);
-    resultRequest(res, true, 'Message envoyé', { });
+    resultRequest(res, true, 'Message envoyé', { }, 'MESSAGE_SENT');
   }catch(err){
     let message = "Erreur lors de l'envoi du message";
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'MESSAGE_SEND_ERROR');
   }
 }
 
 exports.login = async (req, res) => {
   try{
     const { email, password } = req.body;
-    if (!email || !password) return resultRequest(res, false, 'Champs requis');
+    if (!email || !password) return resultRequest(res, false, 'Champs requis', undefined, 'FIELDS_REQUIRED');
     
     const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
     
@@ -71,14 +71,14 @@ exports.login = async (req, res) => {
       [hashedEmail]
     ); 
     
-    if (!user) return resultRequest(res, false, 'Identifiants invalides');
+    if (!user) return resultRequest(res, false, 'Identifiants invalides', undefined, 'INVALID_CREDENTIALS');
 
     const isMatch = await bcrypt.compare(password, user.password);
     
-    if (!isMatch) return resultRequest(res, false, 'Identifiants invalides');
+    if (!isMatch) return resultRequest(res, false, 'Identifiants invalides', undefined, 'INVALID_CREDENTIALS');
 
     if(!user.teamId && !user.isScrumMaster) {
-      return resultRequest(res, false, 'Aucune équipe affectée. Rapprochez vous de votre Scrum Master');
+      return resultRequest(res, false, 'Aucune équipe affectée. Rapprochez vous de votre Scrum Master', undefined, 'NO_TEAM_ASSIGNED');
     }
     
     const team = await pool.queryOne(
@@ -93,6 +93,6 @@ exports.login = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message , { });
+    resultRequest(res, false, message , { }, 'AUTH_ERROR');
   }
 };

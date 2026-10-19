@@ -1,52 +1,52 @@
 <template>
   <div class="admin-header">
-    <router-link to="/admin" class="back-admin-button"> ← Retour </router-link>
-    <h1 class="page-title">Gérer les membres</h1>
+    <router-link to="/admin" class="back-admin-button">← {{ $t('common.back') }}</router-link>
+    <h1 class="page-title">{{ $t('admin.members.title') }}</h1>
   </div>
   <AdminTabs :tabs="tabLabels">
     <template #tab-0>
       <div v-if="!canAddMembers" class="no-access">
-        <span>Le nombre de membres a été atteint pour l'abonnement de votre entreprise</span>
+        <span>{{ $t('admin.members.limitReached') }}</span>
       </div>
       <div v-else class="tab-content-animated">
         <form class="form-container" @submit.prevent="addMember">
           <div class="form-group">
-            <label>Email</label>
+            <label>{{ $t('admin.members.email') }}</label>
             <input v-model="newMember.email" type="email" required />
           </div>
           <div class="form-group">
-            <label>Nom complet</label>
+            <label>{{ $t('admin.members.fullName') }}</label>
             <input v-model="newMember.name" type="text" required />
           </div>
           <div class="form-regroup">
             <div class="form-group">
-              <label for="scrum">Scrum Master</label>
+              <label for="scrum">{{ $t('admin.members.scrumMaster') }}</label>
               <div class="check-div">
                 <input id="scrum" v-model="newMember.isScrumMaster" type="checkbox" />
               </div>
             </div>
             <div class="form-group">
-              <label>Trigramme</label>
+              <label>{{ $t('admin.members.trigram') }}</label>
               <input v-model="newMember.trigramme" required />
             </div>
           </div>
 
           <div class="form-group">
-            <label>Équipe</label>
+            <label>{{ $t('admin.members.team') }}</label>
             <select v-model="newMember.teamId" required>
               <option v-for="team in teams" :key="team.id" :value="team.id">
                 {{ team.name }}
               </option>
             </select>
           </div>
-          <button type="submit">Ajouter le membre</button>
+          <button type="submit">{{ $t('admin.members.addSubmit') }}</button>
         </form>
       </div>
     </template>
     <template #tab-1>
       <div class="team-form tab-content-animated">
-        <h2>Membres</h2>
-        <div v-if="members.length === 0">Aucun membre pour le moment.</div>
+        <h2>{{ $t('admin.members.listTitle') }}</h2>
+        <div v-if="members.length === 0">{{ $t('admin.members.empty') }}</div>
         <div v-else class="members-grid">
           <div v-for="member in members" :key="member.id" class="member-card">
             <div class="membre-header">
@@ -80,17 +80,23 @@
                 </button>
               </div>
             </div>
-            <p v-if="!editingMember"><strong>Nom :</strong> {{ member.name }}</p>
-            <p v-if="!editingMember"><strong>Trigramme :</strong> {{ member.trigramme }}</p>
-            <p v-if="!editingMember"><strong>Équipe :</strong> {{ getTeamName(member.teamId) }}</p>
+            <p v-if="!editingMember">
+              <strong>{{ $t('admin.members.nameField') }}</strong> {{ member.name }}
+            </p>
+            <p v-if="!editingMember">
+              <strong>{{ $t('admin.members.trigramField') }}</strong> {{ member.trigramme }}
+            </p>
+            <p v-if="!editingMember">
+              <strong>{{ $t('admin.members.teamField') }}</strong> {{ getTeamName(member.teamId) }}
+            </p>
             <!-- Formulaire d'édition conditionnel -->
             <div v-if="editingMember && editingMember.id === member.id" class="edit-form">
               <div class="form-group">
-                <label>Nom Complet</label>
+                <label>{{ $t('admin.members.fullName') }}</label>
                 <input v-model="editingMember.name" />
               </div>
               <div class="form-group">
-                <label>Équipe</label>
+                <label>{{ $t('admin.members.team') }}</label>
                 <select v-model="editingMember.teamId">
                   <option v-for="team in teams" :key="team.id" :value="team.id">
                     {{ team.name }}
@@ -132,8 +138,15 @@ export default {
         teamId: '',
         isScrumMaster: false,
       },
-      tabLabels: [{ label: 'Ajouter un membre' }, { label: 'Liste des membres' }],
     };
+  },
+  computed: {
+    tabLabels() {
+      return [
+        { label: this.$t('admin.members.tabs.add') },
+        { label: this.$t('admin.members.tabs.list') },
+      ];
+    },
   },
   mounted() {
     this.fetchData();
@@ -147,14 +160,14 @@ export default {
     },
     async saveMemberEdit() {
       await AdminService.updateMember(this.editingMember);
-      this.$root.showToast('Les informations ont été enregistrées', 'success');
+      this.$root.showToast(this.$t('admin.members.toast.saved'), 'success');
       await this.fetchData(); // rafraîchit la liste
       this.editingMember = null;
     },
     async fetchMembers() {
       const resultMembers = await AdminService.getMembers();
       if (!resultMembers.isSuccess) {
-        this.$root.showToast(resultMembers.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultMembers), 'error');
         return;
       }
 
@@ -164,7 +177,7 @@ export default {
     async fetchData() {
       const resultTeams = await AdminService.getTeams();
       if (!resultTeams.isSuccess) {
-        this.$root.showToast(resultTeams.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultTeams), 'error');
         return;
       }
       this.teams = resultTeams.result;
@@ -174,27 +187,27 @@ export default {
       const resultCreateMember = await AdminService.createMember(this.newMember);
 
       if (!resultCreateMember.isSuccess) {
-        this.$root.showToast(resultCreateMember.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultCreateMember), 'error');
         return;
       }
 
-      this.$root.showToast('Le nouveau membre a été créé', 'success');
+      this.$root.showToast(this.$t('admin.members.toast.created'), 'success');
       this.newMember = { email: '', trigramme: '', teamId: '', name: '' };
       this.fetchData();
     },
     async deleteMember(id) {
       const resultDelete = await AdminService.deleteMember(id);
       if (!resultDelete.isSuccess) {
-        this.$root.showToast(resultDelete.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultDelete), 'error');
         return;
       }
 
-      this.$root.showToast('Le membre a été supprimé', 'success');
+      this.$root.showToast(this.$t('admin.members.toast.deleted'), 'success');
       this.fetchData();
     },
     getTeamName(teamId) {
       const team = this.teams.find((t) => t.id === teamId);
-      return team ? team.name : 'Équipe inconnue';
+      return team ? team.name : this.$t('admin.members.unknownTeam');
     },
   },
 };
@@ -421,5 +434,67 @@ button:not(.delete):hover {
   width: 130px;
   display: flex;
   justify-content: space-around;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .form-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .membre-header {
+    gap: 0.5rem;
+  }
+
+  .membre-header-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .membre-actions {
+    width: auto;
+    flex-shrink: 0;
+    gap: 0.5rem;
+  }
+
+  .membre-actions button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .form-group input:not([type='checkbox']),
+  .form-group select {
+    min-height: 40px;
+  }
+
+  .check-div {
+    align-items: center;
+  }
+
+  .check-div input[type='checkbox'] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .no-access {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0.75rem;
+  }
+
+  .members-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-container button[type='submit'] {
+    justify-self: stretch;
+    min-height: 44px;
+  }
 }
 </style>

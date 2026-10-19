@@ -2,10 +2,12 @@
   <div>
     <div class="admin-header">
       <router-link v-if="!currentLinkId" to="/admin" class="back-admin-button">
-        ← Retour
+        ← {{ $t('common.back') }}
       </router-link>
-      <a v-else class="back-admin-button" @click="currentLinkId = null"> ← Retour </a>
-      <h1 class="page-title">Gérer les rétros</h1>
+      <a v-else class="back-admin-button" @click="currentLinkId = null"
+        >← {{ $t('common.back') }}</a
+      >
+      <h1 class="page-title">{{ $t('admin.retros.title') }}</h1>
     </div>
     <RetroDeRetro v-if="currentLinkId" :current-link-id="currentLinkId" @close="closeRetro" />
     <AdminTabs v-else :tabs="tabLabels">
@@ -34,7 +36,7 @@
         />
       </template>
       <template #tab-3>
-        <div v-if="links.length === 0" class="no-access">Aucunes associations pour le moment.</div>
+        <div v-if="links.length === 0" class="no-access">{{ $t('admin.retros.noLinks') }}</div>
         <div v-else class="retros-grid tab-content-animated">
           <RetroLinks
             :teams="teams"
@@ -45,6 +47,15 @@
             @start-retro="doRetroRetro"
           />
         </div>
+      </template>
+      <template #tab-4>
+        <RetroPreviousList
+          :retros="retros"
+          :teams="teams"
+          :sprints="sprints"
+          :links="links"
+          @refresh="fetchLinks"
+        />
       </template>
     </AdminTabs>
   </div>
@@ -58,6 +69,7 @@ import RetroAssociate from './Retros/RetroAssociate.vue';
 import RetroCreate from './Retros/RetroCreate.vue';
 import RetroLinks from './Retros/RetroLinks.vue';
 import RetroList from './Retros/RetroList.vue';
+import RetroPreviousList from './Retros/RetroPreviousList.vue';
 export default {
   components: {
     AdminTabs,
@@ -66,6 +78,7 @@ export default {
     RetroList,
     RetroAssociate,
     RetroLinks,
+    RetroPreviousList,
   },
   props: {
     selectedTeamId: {
@@ -85,21 +98,23 @@ export default {
       selectedTeamIdForRetroSprint: '',
       viewAllLink: true,
       selectedSprintId: '',
-      messageBoutonListLink: 'Masquer les retros faites',
       selectedRetroId: '',
       newRetro: {
         name: '',
         categories: [{ name: '', description: '', image: null }],
       },
-      tabLabels: [
-        { label: 'Créer une rétro' },
-        { label: 'Liste des rétros' },
-        { label: 'Associer une rétro' },
-        { label: 'Associations existantes' },
-      ],
     };
   },
   computed: {
+    tabLabels() {
+      return [
+        { label: this.$t('admin.retros.tabs.create') },
+        { label: this.$t('admin.retros.tabs.list') },
+        { label: this.$t('admin.retros.tabs.associate') },
+        { label: this.$t('admin.retros.tabs.links') },
+        { label: this.$t('admin.retros.tabs.completed') },
+      ];
+    },
     retrosByTeam() {
       const grouped = {};
       for (const retro of this.retros) {
@@ -129,30 +144,30 @@ export default {
       try {
         const resultRetros = await AdminService.getRetros();
         if (!resultRetros.isSuccess) {
-          this.$root.showToast(resultRetros.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultRetros), 'error');
           return;
         }
         this.retros = resultRetros.result;
       } catch (error) {
-        this.$root.showToast('Erreur lors de la récupération des rétros', 'error');
+        this.$root.showToast(this.$t('admin.retros.toast.loadRetrosError'), 'error');
       }
     },
     async fetchSprints() {
       try {
         const resultSprints = await AdminService.getSprints();
         if (!resultSprints.isSuccess) {
-          this.$root.showToast(resultSprints.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultSprints), 'error');
           return;
         }
         this.sprints = resultSprints.result.filter((s) => !s.isRetroDone);
       } catch (error) {
-        this.$root.showToast('Erreur lors de la récupération des sprints', 'error');
+        this.$root.showToast(this.$t('admin.retros.toast.loadSprintsError'), 'error');
       }
     },
     async fetchLinks() {
       const resultRetroLinks = await AdminService.getSprintRetroLinks();
       if (!resultRetroLinks.isSuccess) {
-        this.$root.showToast(resultRetroLinks.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultRetroLinks), 'error');
         return;
       }
 
@@ -162,7 +177,7 @@ export default {
       try {
         const resultTeams = await AdminService.getTeams();
         if (!resultTeams.isSuccess) {
-          this.$root.showToast(resultTeams.message, 'error');
+          this.$root.showToast(this.$apiMessage(resultTeams), 'error');
           return;
         }
         this.teams = resultTeams.result;
@@ -170,7 +185,7 @@ export default {
           this.openTeams[eq.id] = false;
         });
       } catch (error) {
-        this.$root.showToast('Erreur lors de la récupération des équipes', 'error');
+        this.$root.showToast(this.$t('admin.retros.toast.loadTeamsError'), 'error');
       }
     },
   },
@@ -453,5 +468,27 @@ button:not(.delete):hover {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .no-access {
+    text-align: center;
+  }
+
+  /* Le style scopé .retro-container (1fr 1fr) s'applique aussi à la racine de
+     RetroAssociate : on reprend ici son comportement responsive */
+  .retro-container {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: 0 1rem;
+  }
+
+  /* Le lien « Retour » (balise a sans href) doit rester cliquable au doigt */
+  a.back-admin-button {
+    cursor: pointer;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 </style>

@@ -1,0 +1,164 @@
+{
+  "landingPage": {
+    "logoAlt": "Logo Reflecto",
+    "hero": {
+      "badge": "Gratuit pour 1 équipe et 3 membres",
+      "title": "Des rétrospectives qui font vraiment avancer votre équipe",
+      "subtitle": "Préparez, animez et clôturez vos rétros en ligne. Des formats à votre image, un historique sprint après sprint : vos idées ne se perdent plus.",
+      "ctaPrimary": "Créer mon équipe gratuitement",
+      "reassurance": "Sans carte bancaire · Disponible en français, anglais et espagnol"
+    },
+    "demo": {
+      "col1": "Ce qui a marché",
+      "col2": "À améliorer",
+      "col3": "Actions",
+      "note1": "Daily plus courts",
+      "note2": "Super entraide sur la mise en prod",
+      "note3": "Trop de réunions",
+      "note4": "Specs arrivées tard",
+      "note5": "Atelier specs en début de sprint",
+      "retro1": "Rétro Avengers",
+      "retro2": "Rétro Météo",
+      "retro3": "Rétro Voilier"
+    },
+    "why": {
+      "title": "Pourquoi Reflecto ?",
+      "subtitle": "Tout ce qu’il faut pour des rétros vivantes, sans la logistique des murs de papier.",
+      "custom": {
+        "title": "Des rétros à votre image",
+        "text": "Créez vos propres formats : catégories, descriptions, images et couleurs de post-its. Chaque équipe garde son style."
+      },
+      "facilitation": {
+        "title": "Une animation fluide",
+        "text": "Le Scrum Master prépare la rétro, la lance quand tout le monde est prêt, annote les post-its et clôture le sprint en un clic."
+      },
+      "memory": {
+        "title": "Une mémoire d’équipe",
+        "text": "Chaque rétro est conservée. Retrouvez les post-its et les annotations des sprints précédents pour suivre vos actions."
+      }
+    },
+    "steps": {
+      "title": "Comment ça fonctionne",
+      "step1": {
+        "title": "Créez votre équipe",
+        "text": "Inscrivez votre entreprise et invitez vos membres."
+      },
+      "step2": {
+        "title": "Collectez les idées",
+        "text": "Chacun ajoute ses post-its dans les catégories de la rétro."
+      },
+      "step3": {
+        "title": "Décidez et agissez",
+        "text": "Lancez la rétro, échangez, annotez et clôturez le sprint."
+      }
+    },
+    "showcase": {
+      "badge": "Rétro de rétro",
+      "title": "Vos actions ne tombent plus dans l’oubli",
+      "text": "Avant de démarrer un nouveau sprint, revenez sur les rétros précédentes et vérifiez ce qui a vraiment changé.",
+      "point1": "Historique de toutes les rétros par équipe",
+      "point2": "Post-its et annotations conservés",
+      "point3": "Plusieurs équipes dans un même espace"
+    },
+    "pricingTeaser": {
+      "title": "Commencez gratuitement",
+      "text": "L’offre gratuite couvre 1 équipe et 3 membres. Besoin de plus ? Les offres payantes démarrent à {price} par mois.",
+      "cta": "Voir les offres"
+    },
+    "finalCta": {
+      "title": "Votre prochaine rétro peut être la meilleure",
+      "text": "Créez votre équipe et lancez votre première rétro dès aujourd’hui.",
+      "cta": "Commencer gratuitement"
+    }
+  },
+  "contact": {
+    "button": "Contact",
+    "titre": "Une question ? Une idée ? Nous sommes à l’écoute !",
+    "description1": "Notre équipe se tient prête à vous accompagner dans votre aventure avec Reflecto.",
+    "description2": "Que ce soit pour une demande d’information, une suggestion d’amélioration, ou une partenariat potentiel, nous vous répondrons dans les plus brefs délais.",
+    "description3": "Ensemble, faisons de vos rétrospectives un moteur de progrès continu !",
+    "restonsEnContact": "Restons en contact",
+    "nom": "Nom",
+    "email": "Email",
+    "message": "Message",
+    "envoyer": "Envoyer"
+  },
+  "nosOffres": {
+    "title": "Nos offres",
+    "mensuel": "Mensuel",
+    "annuel": "Annuel",
+    "monthes": "mois",
+    "freeLabel": "gratuits",
+    "free": "Gratuit",
+    "standard": "Standard",
+    "pro": "Pro",
+    "membres": "membres",
+    "ideal": "Idéal pour essayer",
+    "petitesStructures": "Pour les petites structures",
+    "illimite": "Toute l’application en illimité",
+    "essayer": "Essayer",
+    "contacter": "Nous contacter",
+    "multiEquipes": "Multi-équipes",
+    "membresIllimites": "Membres illimités",
+    "imageCategories": "Image dans les catégories",
+    "support": "Support prioritaire",
+    "remise": "Réduction",
+    "nbEquipes": "{count} équipe | {count} équipes",
+    "nbMembres": "{count} membre | {count} membres"
+  },
+  "connection": {
+    "titre": "Rejoignez l’aventure Reflecto",
+    "description1": "Simplifiez vos rétrospectives agiles, engagez vos équipes, et transformez chaque sprint en opportunité d’amélioration continue.",
+    "description2": "Créez un compte gratuitement dès maintenant ou connectez-vous si vous avez déjà accès à un espace Reflecto.",
+    "description3": "Une fois convaincu par notre outil, contactez-nous pour en faire profiter toute votre équipe.",
+    "sessionExpired": "Votre session a expiré",
+    "sessionExpiredDesc": "Veuillez vous reconnecter."
+  },
+  "formulaireConnection": {
+    "titre": "Bienvenue sur Reflecto",
+    "connection": "Connexion",
+    "inscriptionUtilisateur": "Inscription utilisateur",
+    "inscriptionEntreprise": "Inscription entreprise",
+    "email": "Email",
+    "motDePasse": "Mot de passe",
+    "confirmerMotDePasse": "Confirmer le mot de passe",
+    "nomEntreprise": "Nom de l’entreprise",
+    "nomEquipe": "Nom de l’équipe",
+    "emailScrumMaster": "Email du Scrum Master",
+    "nomScrumMaster": "Nom du Scrum Master",
+    "trigrammeScrumMaster": "Trigramme du Scrum Master",
+    "inscription": "S’inscrire",
+    "erreurConnexion": "Erreur de connexion",
+    "motsDePasseDifferents": "Les mots de passe ne correspondent pas.",
+    "erreurInscription": "Erreur lors de l’inscription."
+  },
+  "legales": {
+    "titre": "Mentions légales",
+    "editeurSite": "Éditeur du site",
+    "description1": "Le présent site,",
+    "description1bis": "est édité par :",
+    "nom": "Nom :",
+    "adresse": "Adresse :",
+    "email": "Email :",
+    "SIRET": "SIRET :",
+    "hebergement": "Hébergement",
+    "description2": "Le site est hébergé par :",
+    "nomHebergeur": "Nom de l’hébergeur :",
+    "adresseHebergeur": "Adresse de l’hébergeur :",
+    "proprieteIntellectuelle": "Propriété intellectuelle",
+    "description3": "L’ensemble des contenus présents sur ce site (textes, images, logos, illustrations, vidéos) sont protégés par les lois en vigueur sur la propriété intellectuelle et restent la propriété exclusive de Reflecto, sauf mention contraire. Toute reproduction ou utilisation sans autorisation préalable est interdite.",
+    "donneespersonnelles": "Données personnelles",
+    "description4": "Les données personnelles collectées via ce site sont utilisées uniquement dans le cadre du service Reflecto et ne sont jamais revendues à des tiers. Conformément au RGPD, vous pouvez demander la consultation, la modification ou la suppression de vos données en nous contactant via le formulaire de contact : ",
+    "responsabilite": "Responsabilité",
+    "description5": "Reflecto met tout en œuvre pour assurer l’exactitude et la mise à jour des informations diffusées sur ce site. Toutefois, nous ne saurions être tenus responsables des éventuelles erreurs ou omissions."
+  },
+  "equipe": "équipe",
+  "membres": "membres",
+  "retour": "Retour",
+  "tousDroitsReserves": "Tous droits réservés",
+  "accueil": "Accueil",
+  "mentionLegale": "Mentions légales",
+  "seConnecter": "Se connecter",
+  "commencer": "Commencer",
+  "demanderDemo": "Demander une démo"
+}

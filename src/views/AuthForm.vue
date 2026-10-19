@@ -107,7 +107,7 @@ export default {
       try {
         const res = await services.login(this.email, this.password);
         if (!res.isSuccess) {
-          this.$root.showToast(res.message, 'error');
+          this.$root.showToast(this.$apiMessage(res), 'error');
           return;
         }
         authService.saveUser(res.result.user, res.result.token);
@@ -115,39 +115,44 @@ export default {
         this.$store.dispatch('updateMemberColor', res.result.user.color);
         this.$router.push('/retro');
       } catch (err) {
-        this.$root.showToast(err.response?.data?.error || 'Erreur de connexion', 'error');
+        this.$root.showToast(
+          err.response?.data?.code
+            ? this.$apiMessage(err.response.data)
+            : this.$t('formulaireConnection.erreurConnexion'),
+          'error'
+        );
       }
     },
     async register() {
       try {
         if (this.password !== this.confirmMotDepasse) {
-          this.$root.showToast('Les mots de passe ne correspondent pas.', 'error');
+          this.$root.showToast(this.$t('formulaireConnection.motsDePasseDifferents'), 'error');
           return;
         }
         const res = await services.checkMemberEmail(this.email, false);
         if (!res.isSuccess) {
-          this.$root.showToast(res.message, 'error');
+          this.$root.showToast(this.$apiMessage(res), 'error');
           return;
         }
 
         const resUser = await services.updateMemberPassword(this.email, this.password);
 
         if (!resUser.isSuccess) {
-          this.$root.showToast(resUser.message, 'error');
+          this.$root.showToast(this.$apiMessage(resUser), 'error');
           return;
         }
 
         authService.saveUser(resUser.result.user, resUser.result.token);
         this.$router.push('/retro');
       } catch (err) {
-        this.$root.showToast("Erreur lors de l'inscription.", 'error');
+        this.$root.showToast(this.$t('formulaireConnection.erreurInscription'), 'error');
       }
     },
     async registerCompany() {
       try {
         const res = await services.checkMemberEmail(this.scrumMasterEmail, true);
         if (!res.isSuccess) {
-          this.$root.showToast(res.message, 'error');
+          this.$root.showToast(this.$apiMessage(res), 'error');
           return;
         }
 
@@ -160,7 +165,7 @@ export default {
         });
 
         if (!resCreateCompany.isSuccess) {
-          this.$root.showToast(res.message, 'error');
+          this.$root.showToast(this.$apiMessage(resCreateCompany), 'error');
           return;
         }
 
@@ -171,9 +176,9 @@ export default {
         this.teamName = '';
         this.tab = 'register';
 
-        this.$root.showToast(resCreateCompany.message, 'success');
+        this.$root.showToast(this.$apiMessage(resCreateCompany), 'success');
       } catch (err) {
-        this.$root.showToast("Erreur lors de l'inscription.", 'error');
+        this.$root.showToast(this.$t('formulaireConnection.erreurInscription'), 'error');
       }
     },
     changeTab(element) {
@@ -195,5 +200,22 @@ export default {
   flex: 1;
   flex-direction: column;
   display: flex;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* Libellés d'onglets longs ("Inscription entreprise") : retour à la ligne propre */
+  .tab-button {
+    min-height: 44px;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-button {
+    font-size: 0.9rem;
+  }
 }
 </style>

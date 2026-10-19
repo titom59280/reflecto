@@ -1,0 +1,30 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "save": "Save",
+    "edit": "Edit",
+    "back": "Back",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "add": "Add",
+    "create": "Create",
+    "loading": "Loading…",
+    "genericError": "Something went wrong",
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "fr": "Français",
+      "es": "Español"
+    }
+  },
+  "header": {
+    "retro": "Retro",
+    "administration": "Administration",
+    "logout": "Log out",
+    "menu": "Menu",
+    "unknownTeam": "Unknown"
+  }
+}

@@ -7,7 +7,7 @@ const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
-   if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+   if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const members = await pool.query(
       `SELECT id, name, email, trigramme, isscrummaster as "isScrumMaster", isfulladmin as "isFullAdmin", teamid as "teamId", companyid as "companyId" FROM members WHERE companyId = $1`,
@@ -29,13 +29,13 @@ exports.getAll = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, err);
+    resultRequest(res, false, message, err, 'MEMBERS_FETCH_ERROR');
   }
 };
 
 exports.create = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const datas = {
       companyId: req.user.companyId,
       email: req.body.email,
@@ -47,7 +47,7 @@ exports.create = async (req, res) => {
     const result = await createMember(datas);
     
     if (!result.success) {
-      resultRequest(res, false, result.message, { test: datas });
+      resultRequest(res, false, result.message, { test: datas }, result.code);
       return;
     }
 
@@ -57,7 +57,7 @@ exports.create = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'MEMBER_CREATE_ERROR');
   }
 };
 
@@ -67,7 +67,7 @@ exports.chooseColorPostIt = async (req, res) => {
       "SELECT * FROM members WHERE id = $1",
       [req.user?.id]
     );
-    if (!member) return resultRequest(res, false, 'Membre introuvable', {  user: req.user });
+    if (!member) return resultRequest(res, false, 'Membre introuvable', {  user: req.user }, 'MEMBER_NOT_FOUND');
 
     const { color } = req.body;
     await pool.query('UPDATE members SET color = $1 WHERE id = $2', [color, req.user.id]);
@@ -78,7 +78,7 @@ exports.chooseColorPostIt = async (req, res) => {
     if(process.env.LOG_STATUS == "all") {
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'COLOR_UPDATE_ERROR');
   }
 }
 
@@ -86,13 +86,13 @@ exports.update = async (req, res) => {
   try{
     const id = req.params.id;
     const updatedFields = req.body;
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const user = await pool.queryOne(
       `SELECT id, name, email, trigramme, isscrummaster as "isScrumMaster", isfulladmin as "isFullAdmin", teamid as "teamId", companyid as "companyId"  FROM members WHERE id = $1`,
       [id]
     );
-    if (!user) return resultRequest(res, false, 'Membre introuvable', { });
+    if (!user) return resultRequest(res, false, 'Membre introuvable', { }, 'MEMBER_NOT_FOUND');
     
     user.email = updatedFields.email;
     user.trigramme = updatedFields.trigramme;
@@ -110,13 +110,13 @@ exports.update = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'MEMBER_UPDATE_ERROR');
   }
 };
 
 exports.remove = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const id = req.params.id;
     await pool.query(
       "DELETE FROM members WHERE id = $1",
@@ -129,7 +129,7 @@ exports.remove = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'MEMBER_DELETE_ERROR');
   }
 };
 
@@ -145,13 +145,13 @@ exports.checkEmail = async (req, res) => {
       [hashedEmail]
     );
     
-    if (!forCompagnie && !user) return resultRequest(res, false, 'Adresse non reconnue. Veuillez contacter votre Scrum Master', { });
-    if (forCompagnie && user) return resultRequest(res, false, 'Adresse déjà inscrite. Veuillez entrer une nouvelle adresse email', { });
+    if (!forCompagnie && !user) return resultRequest(res, false, 'Adresse non reconnue. Veuillez contacter votre Scrum Master', { }, 'EMAIL_NOT_RECOGNIZED');
+    if (forCompagnie && user) return resultRequest(res, false, 'Adresse déjà inscrite. Veuillez entrer une nouvelle adresse email', { }, 'EMAIL_ALREADY_REGISTERED_NEW');
 
     if(forCompagnie && !user) return resultRequest(res, true, '', { });
     const alreadyRegister = !!user.password;
     if (alreadyRegister) {
-      return resultRequest(res, false, 'Adresse déjà inscrite. Veuillez vous connecter.', { });
+      return resultRequest(res, false, 'Adresse déjà inscrite. Veuillez vous connecter.', { }, 'EMAIL_ALREADY_REGISTERED_LOGIN');
     }
     resultRequest(res, true, '', { });
   }catch(err){
@@ -159,7 +159,7 @@ exports.checkEmail = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, err.message, { });
+    resultRequest(res, false, message, { }, 'EMAIL_CHECK_ERROR');
   }
 };
 
@@ -169,14 +169,14 @@ exports.updatePassword = async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password || password.length < 6) {
-      return resultRequest(res, false, 'Email et mot de passe (6+ caractères) requis', { });
+      return resultRequest(res, false, 'Email et mot de passe (6+ caractères) requis', { }, 'EMAIL_PASSWORD_REQUIRED');
     }
     const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');    
     const user = await pool.queryOne(
       `SELECT id, name, email, trigramme, isscrummaster as "isScrumMaster", isfulladmin as "isFullAdmin", teamid as "teamId", companyid as "companyId"  FROM members WHERE email = $1`,
       [hashedEmail]
     );
-    if (!user) return resultRequest(res, false, 'Utilisateur non trouvé', { });
+    if (!user) return resultRequest(res, false, 'Utilisateur non trouvé', { }, 'USER_NOT_FOUND');
     
     user.password = await bcrypt.hash(password, 10);
 
@@ -197,6 +197,6 @@ exports.updatePassword = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'PASSWORD_UPDATE_ERROR');
   }
 };

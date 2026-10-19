@@ -18,7 +18,9 @@ instance.interceptors.response.use(
     ) {
       localStorage.removeItem(tokenKey);
       localStorage.removeItem(userKey);
-      window.location.href = '/';
+      // Store a flag to show message on next page load
+      sessionStorage.setItem('session-expired', 'true');
+      window.location.href = '/connection';
     }
     return Promise.reject(error);
   }

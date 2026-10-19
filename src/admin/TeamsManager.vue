@@ -1,24 +1,24 @@
 <template>
   <div class="admin-header">
-    <router-link to="/admin" class="back-admin-button"> ← Retour </router-link>
-    <h1 class="page-title">Gérer les équipes</h1>
+    <router-link to="/admin" class="back-admin-button">← {{ $t('common.back') }}</router-link>
+    <h1 class="page-title">{{ $t('admin.teams.title') }}</h1>
   </div>
   <AdminTabs :tabs="tabLabels">
     <template #tab-0>
       <div v-if="canAddTeam" class="team-form form-container tab-content-animated">
         <div class="form-group">
-          <label>Nom de l'équipe</label>
+          <label>{{ $t('admin.teams.name') }}</label>
           <input v-model="newTeamName" type="text" />
         </div>
-        <button class="btn-submit" @click="createTeam">Ajouter</button>
+        <button class="btn-submit" @click="createTeam">{{ $t('common.add') }}</button>
       </div>
       <div v-else class="no-access">
-        <span>Le nombre d'équipe a été atteint pour l'abonnement de votre entreprise</span>
+        <span>{{ $t('admin.teams.limitReached') }}</span>
       </div>
     </template>
     <template #tab-1>
       <div class="team-form">
-        <div v-if="teams.length === 0">Aucune équipe pour le moment.</div>
+        <div v-if="teams.length === 0">{{ $t('admin.teams.empty') }}</div>
         <div v-else class="team-grid tab-content-animated">
           <div v-for="team in teams" :key="team.id" class="team-card">
             <div class="team-header">
@@ -41,17 +41,17 @@
               </div>
             </div>
             <div v-if="editingTeamId === team.id" class="form-group">
-              <label>Nom de l'équipe</label>
+              <label>{{ $t('admin.teams.name') }}</label>
               <input v-model="editedTeamName" type="text" />
             </div>
             <div v-if="editingTeamId !== team.id" class="members">
-              <p class="members-title">Membres :</p>
+              <p class="members-title">{{ $t('admin.teams.membersField') }}</p>
               <ul v-if="team.members?.length">
                 <li v-for="member in team.members" :key="member.id">
                   {{ member.name }} - {{ member.trigramme }}
                 </li>
               </ul>
-              <p v-else class="empty-text">Aucun membre</p>
+              <p v-else class="empty-text">{{ $t('admin.teams.noMembers') }}</p>
             </div>
           </div>
         </div>
@@ -81,8 +81,15 @@ export default {
       editingTeamId: null,
       editedTeamName: '',
       teams: [],
-      tabLabels: [{ label: 'Créer une équipe' }, { label: 'Liste des équipes' }],
     };
+  },
+  computed: {
+    tabLabels() {
+      return [
+        { label: this.$t('admin.teams.tabs.create') },
+        { label: this.$t('admin.teams.tabs.list') },
+      ];
+    },
   },
   mounted() {
     this.fetchTeams();
@@ -101,7 +108,7 @@ export default {
 
       team.name = this.editedTeamName.trim();
       await AdminService.updateTeam(team);
-      this.$root.showToast('Les informations ont été enregistrées', 'success');
+      this.$root.showToast(this.$t('admin.teams.toast.saved'), 'success');
       this.cancelTeamEdit();
     },
     hasMembers(members) {
@@ -110,7 +117,7 @@ export default {
     async fetchTeams() {
       const resultTeams = await AdminService.getTeamsWithMembers();
       if (!resultTeams.isSuccess) {
-        this.$root.showToast(resultTeams.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultTeams), 'error');
         return;
       }
       this.teams = resultTeams.result.teams;
@@ -120,21 +127,21 @@ export default {
       if (!this.newTeamName.trim()) return;
       const resultAddCreateTeam = await AdminService.createTeam(this.newTeamName);
       if (!resultAddCreateTeam.isSuccess) {
-        this.$root.showToast(resultAddCreateTeam.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultAddCreateTeam), 'error');
         return;
       }
 
-      this.$root.showToast("L'équipe a été créée", 'success');
+      this.$root.showToast(this.$t('admin.teams.toast.created'), 'success');
       this.newTeamName = '';
       this.fetchTeams();
     },
     async deleteTeam(teamId) {
       const resultDelete = await AdminService.deleteTeam(teamId);
       if (!resultDelete.isSuccess) {
-        this.$root.showToast(resultDelete.message, 'error');
+        this.$root.showToast(this.$apiMessage(resultDelete), 'error');
         return;
       }
-      this.$root.showToast("L'équipe a été supprimée", 'success');
+      this.$root.showToast(this.$t('admin.teams.toast.deleted'), 'success');
       this.fetchTeams();
     },
   },
@@ -313,5 +320,57 @@ button.disabled {
   color: #666;
   cursor: not-allowed;
   border: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .form-container {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .team-header {
+    gap: 0.5rem;
+  }
+
+  .team-header-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .team-actions {
+    width: auto;
+    flex-shrink: 0;
+    gap: 0.5rem;
+  }
+
+  .team-actions button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .form-group input {
+    min-height: 40px;
+  }
+
+  .no-access {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0.75rem;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-submit {
+    justify-self: stretch;
+    min-height: 44px;
+  }
 }
 </style>

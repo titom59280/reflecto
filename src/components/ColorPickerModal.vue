@@ -3,9 +3,9 @@
     <div v-if="visible" class="modal-overlay">
       <div class="modal-content">
         <div class="color-header">
-          <h3 class="color-header-title">Couleur de mes post-its</h3>
+          <h3 class="color-header-title">{{ $t('board.colorPicker.title') }}</h3>
         </div>
-        <label for="message">couleur :</label>
+        <label for="message">{{ $t('board.colorPicker.colorLabel') }}</label>
         <div class="swatch-container">
           <div
             v-for="color in colors"
@@ -16,8 +16,8 @@
           />
         </div>
         <div class="modal-actions">
-          <button class="btn cancel" @click="close">Annuler</button>
-          <button class="btn submit" @click="submit">Choisir</button>
+          <button class="btn cancel" @click="close">{{ $t('common.cancel') }}</button>
+          <button class="btn submit" @click="submit">{{ $t('board.colorPicker.choose') }}</button>
         </div>
       </div>
     </div>
@@ -248,5 +248,50 @@ textarea {
   gap: 12px;
   margin-bottom: 1.5rem;
   padding: 0.5rem 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .modal-content {
+    box-sizing: border-box;
+    max-width: min(464px, calc(100vw - 2rem));
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  /* Pastilles plus grandes pour le tactile */
+  .swatch {
+    width: 40px;
+    height: 40px;
+  }
+
+  .swatch-container {
+    justify-content: center;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1.25rem;
+  }
+
+  .color-header-title {
+    font-size: 1.15rem;
+  }
+
+  .swatch-container {
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .modal-actions {
+    gap: 0.75rem;
+  }
 }
 </style>

@@ -1,12 +1,21 @@
 <template>
   <div>
-    <div v-if="retros.length === 0" class="no-access">Aucune rétro pour le moment.</div>
+    <div v-if="retros.length === 0" class="no-access">
+      {{ $t('adminRetros.list.empty') }}
+    </div>
     <div v-else class="retros-grid tab-content-animated">
       <div class="retro-list">
         <div v-for="retro in retros" :key="retro.id" class="retro-card">
           <div class="retro-header">
-            <h3 class="retro-header-title">{{ retro.name || 'Rétro sans titre' }}</h3>
-            <button class="delete" @click="deleteRetro(retro.id)">🗑️</button>
+            <h3 class="retro-header-title">{{ retro.name || $t('adminRetros.list.untitled') }}</h3>
+            <button
+              class="delete"
+              :aria-label="$t('common.delete')"
+              :title="$t('common.delete')"
+              @click="deleteRetro(retro.id)"
+            >
+              🗑️
+            </button>
           </div>
           <ul class="retro-categories">
             <li v-for="(cat, idx) in retro.categories" :key="idx">
@@ -35,15 +44,17 @@ export default {
       try {
         const result = await AdminService.deleteRetro(id);
         if (!result.isSuccess) {
-          this.$root.showToast(result.message, 'error');
+          this.$root.showToast(this.$apiMessage(result), 'error');
           return;
         }
-        this.$root.showToast('La rétro a été supprimée', 'success');
+        this.$root.showToast(this.$t('adminRetros.list.deleted'), 'success');
         this.$emit('refresh');
       } catch (err) {
         console.error(err);
         this.$root.showToast(
-          err.response?.data?.message || 'Erreur lors de la suppression',
+          err.response?.data?.code
+            ? this.$apiMessage(err.response.data)
+            : err.response?.data?.message || this.$t('adminRetros.shared.deleteError'),
           'error'
         );
       }
@@ -330,5 +341,49 @@ button:not(.delete):hover {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .retro-list {
+    padding: 0.75rem 0;
+  }
+
+  .retro-card {
+    padding: 0.75rem;
+  }
+
+  .retro-header {
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  /* Les titres longs ne doivent pas pousser le bouton hors de la carte */
+  .retro-header-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .retro-header .delete {
+    flex-shrink: 0;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .retro-categories li {
+    overflow-wrap: anywhere;
+    margin-bottom: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .retro-header-title {
+    font-size: 1.05rem;
+  }
+
+  .retro-categories {
+    padding-left: 1.1rem;
+  }
 }
 </style>

@@ -1,0 +1,164 @@
+{
+  "landingPage": {
+    "logoAlt": "Logotipo de Reflecto",
+    "hero": {
+      "badge": "Gratis para 1 equipo y 3 miembros",
+      "title": "Retrospectivas que de verdad hacen avanzar a tu equipo",
+      "subtitle": "Prepara, dinamiza y cierra tus retros en línea. Formatos a tu medida y un historial sprint tras sprint: tus ideas ya no se pierden.",
+      "ctaPrimary": "Crear mi equipo gratis",
+      "reassurance": "Sin tarjeta bancaria · Disponible en español, inglés y francés"
+    },
+    "demo": {
+      "col1": "Lo que funcionó",
+      "col2": "A mejorar",
+      "col3": "Acciones",
+      "note1": "Dailies más cortas",
+      "note2": "Gran ayuda mutua en la puesta en producción",
+      "note3": "Demasiadas reuniones",
+      "note4": "Especificaciones tardías",
+      "note5": "Taller de especificaciones al inicio del sprint",
+      "retro1": "Retro Vengadores",
+      "retro2": "Retro Meteo",
+      "retro3": "Retro Velero"
+    },
+    "why": {
+      "title": "¿Por qué Reflecto?",
+      "subtitle": "Todo lo que necesitas para retros dinámicas, sin la logística de las paredes de papel.",
+      "custom": {
+        "title": "Retros a tu imagen",
+        "text": "Crea tus propios formatos: categorías, descripciones, imágenes y colores de notas. Cada equipo mantiene su estilo."
+      },
+      "facilitation": {
+        "title": "Una dinámica fluida",
+        "text": "El Scrum Master prepara la retro, la lanza cuando todos están listos, anota las notas y cierra el sprint con un clic."
+      },
+      "memory": {
+        "title": "La memoria del equipo",
+        "text": "Cada retro se conserva. Recupera las notas y anotaciones de los sprints anteriores para dar seguimiento a tus acciones."
+      }
+    },
+    "steps": {
+      "title": "Cómo funciona",
+      "step1": {
+        "title": "Crea tu equipo",
+        "text": "Registra tu empresa e invita a tus miembros."
+      },
+      "step2": {
+        "title": "Recoge las ideas",
+        "text": "Cada uno añade sus notas en las categorías de la retro."
+      },
+      "step3": {
+        "title": "Decide y actúa",
+        "text": "Lanza la retro, conversa, anota y cierra el sprint."
+      }
+    },
+    "showcase": {
+      "badge": "Retro de retros",
+      "title": "Tus acciones ya no caen en el olvido",
+      "text": "Antes de empezar un nuevo sprint, repasa las retros anteriores y comprueba qué ha cambiado de verdad.",
+      "point1": "Historial de todas las retros por equipo",
+      "point2": "Notas y anotaciones conservadas",
+      "point3": "Varios equipos en un mismo espacio"
+    },
+    "pricingTeaser": {
+      "title": "Empieza gratis",
+      "text": "El plan gratuito cubre 1 equipo y 3 miembros. ¿Necesitas más? Los planes de pago empiezan en {price} al mes.",
+      "cta": "Ver los planes"
+    },
+    "finalCta": {
+      "title": "Tu próxima retro puede ser la mejor",
+      "text": "Crea tu equipo y lanza tu primera retro hoy mismo.",
+      "cta": "Empezar gratis"
+    }
+  },
+  "contact": {
+    "button": "Contacto",
+    "titre": "¿Una pregunta? ¿Una idea? ¡Te escuchamos!",
+    "description1": "Nuestro equipo está listo para acompañarte en tu aventura con Reflecto.",
+    "description2": "Ya sea una solicitud de información, una sugerencia de mejora o una posible colaboración, te responderemos lo antes posible.",
+    "description3": "¡Juntos, hagamos de tus retrospectivas un motor de mejora continua!",
+    "restonsEnContact": "Sigamos en contacto",
+    "nom": "Nombre",
+    "email": "Correo electrónico",
+    "message": "Mensaje",
+    "envoyer": "Enviar"
+  },
+  "nosOffres": {
+    "title": "Nuestros planes",
+    "mensuel": "Mensual",
+    "annuel": "Anual",
+    "monthes": "meses",
+    "freeLabel": "gratis",
+    "free": "Gratis",
+    "standard": "Estándar",
+    "pro": "Pro",
+    "membres": "miembros",
+    "ideal": "Ideal para probar",
+    "petitesStructures": "Para pequeñas organizaciones",
+    "illimite": "Toda la aplicación sin límites",
+    "essayer": "Probar",
+    "contacter": "Contáctanos",
+    "multiEquipes": "Varios equipos",
+    "membresIllimites": "Miembros ilimitados",
+    "imageCategories": "Imágenes en las categorías",
+    "support": "Soporte prioritario",
+    "remise": "Descuento",
+    "nbEquipes": "{count} equipo | {count} equipos",
+    "nbMembres": "{count} miembro | {count} miembros"
+  },
+  "connection": {
+    "titre": "Únete a la aventura Reflecto",
+    "description1": "Simplifica tus retrospectivas ágiles, involucra a tus equipos y convierte cada sprint en una oportunidad de mejora continua.",
+    "description2": "Crea una cuenta gratis ahora mismo o inicia sesión si ya tienes acceso a un espacio Reflecto.",
+    "description3": "Cuando te hayas convencido de nuestra herramienta, contáctanos para que todo tu equipo pueda aprovecharla.",
+    "sessionExpired": "Tu sesión ha caducado",
+    "sessionExpiredDesc": "Vuelve a iniciar sesión."
+  },
+  "formulaireConnection": {
+    "titre": "Bienvenido a Reflecto",
+    "connection": "Iniciar sesión",
+    "inscriptionUtilisateur": "Registro de usuario",
+    "inscriptionEntreprise": "Registro de empresa",
+    "email": "Correo electrónico",
+    "motDePasse": "Contraseña",
+    "confirmerMotDePasse": "Confirmar contraseña",
+    "nomEntreprise": "Nombre de la empresa",
+    "nomEquipe": "Nombre del equipo",
+    "emailScrumMaster": "Correo electrónico del Scrum Master",
+    "nomScrumMaster": "Nombre del Scrum Master",
+    "trigrammeScrumMaster": "Iniciales del Scrum Master (3 letras)",
+    "inscription": "Registrarse",
+    "erreurConnexion": "Error al iniciar sesión",
+    "motsDePasseDifferents": "Las contraseñas no coinciden.",
+    "erreurInscription": "Error durante el registro."
+  },
+  "legales": {
+    "titre": "Aviso legal",
+    "editeurSite": "Editor del sitio",
+    "description1": "El presente sitio,",
+    "description1bis": "está editado por:",
+    "nom": "Nombre:",
+    "adresse": "Dirección:",
+    "email": "Correo electrónico:",
+    "SIRET": "SIRET:",
+    "hebergement": "Alojamiento",
+    "description2": "El sitio está alojado por:",
+    "nomHebergeur": "Nombre del proveedor de alojamiento:",
+    "adresseHebergeur": "Dirección del proveedor de alojamiento:",
+    "proprieteIntellectuelle": "Propiedad intelectual",
+    "description3": "Todos los contenidos de este sitio (textos, imágenes, logotipos, ilustraciones, vídeos) están protegidos por la legislación vigente en materia de propiedad intelectual y son propiedad exclusiva de Reflecto, salvo indicación contraria. Queda prohibida cualquier reproducción o uso sin autorización previa.",
+    "donneespersonnelles": "Datos personales",
+    "description4": "Los datos personales recogidos a través de este sitio se utilizan únicamente en el marco del servicio Reflecto y nunca se venden a terceros. De conformidad con el RGPD, puedes solicitar el acceso, la rectificación o la supresión de tus datos poniéndote en contacto con nosotros mediante el formulario de contacto: ",
+    "responsabilite": "Responsabilidad",
+    "description5": "Reflecto hace todo lo posible para garantizar la exactitud y la actualización de la información publicada en este sitio. No obstante, no podemos hacernos responsables de posibles errores u omisiones."
+  },
+  "equipe": "equipo",
+  "membres": "miembros",
+  "retour": "Volver",
+  "tousDroitsReserves": "Todos los derechos reservados",
+  "accueil": "Inicio",
+  "mentionLegale": "Aviso legal",
+  "seConnecter": "Iniciar sesión",
+  "commencer": "Empezar",
+  "demanderDemo": "Solicitar una demo"
+}

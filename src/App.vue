@@ -15,6 +15,7 @@
           <p class="footer-p">© {{ getYear() }} Reflecto. {{ $t('tousDroitsReserves') }}.</p>
         </div>
         <div class="footer-links">
+          <LanguageSelector />
           <span @click="navigate('Landing')">{{ $t('accueil') }}</span>
           <span @click="navigate('Contact')">{{ $t('contact.button') }}</span>
           <span @click="navigate('Legales')">{{ $t('legales.titre') }}</span>
@@ -30,8 +31,11 @@
 </template>
 
 <script>
+import LanguageSelector from '@/components/LanguageSelector.vue';
+
 export default {
   name: 'App',
+  components: { LanguageSelector },
   data() {
     return {
       toast: {
@@ -146,18 +150,47 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem 1.5rem;
   max-width: 1200px;
   margin: auto;
+  padding: 0.25rem 1.5rem;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
 }
 .footer-links span {
   color: white;
-  margin-left: 1rem;
   text-decoration: none;
   transition: color 0.3s;
   cursor: pointer;
+  white-space: nowrap;
 }
-.footer-links a:hover {
-  color: #fffcf3;
+.footer-links span:hover {
+  color: #94d2bd;
+}
+
+@media (max-width: 600px) {
+  .footer-container {
+    flex-direction: column-reverse;
+    padding: 0.75rem 1rem;
+    text-align: center;
+  }
+  .footer-links {
+    justify-content: center;
+  }
+  .footer-p {
+    margin: 4px 8px;
+    font-size: 0.85rem;
+  }
+  .toast {
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    box-sizing: border-box;
+    text-align: center;
+  }
 }
 .logo {
   height: 30px;

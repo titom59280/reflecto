@@ -4,7 +4,7 @@ const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const teams = await pool.query(
       `SELECT id, name, companyid as "companyId" FROM teams WHERE companyid = $1`,
@@ -16,14 +16,14 @@ exports.getAll = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message , { });
+    resultRequest(res, false, message , { }, 'TEAMS_FETCH_ERROR');
   }
 };
 
 exports.getAllWithMembers = async (req, res) => {
   try {
 
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const teams = await pool.query(
       `SELECT id, name, companyid as "companyId" FROM teams WHERE companyid = $1`,
@@ -59,21 +59,21 @@ exports.getAllWithMembers = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'TEAMS_FETCH_ERROR');
   }
 };
 
 exports.create = async (req, res) => {
   try{    
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     
     const { name } = req.body;
-    if (!name) return resultRequest(res, false, 'Nom obligatoire', { });
+    if (!name) return resultRequest(res, false, 'Nom obligatoire', { }, 'NAME_REQUIRED');
     const team = await pool.queryOne(
       "SELECT * FROM teams WHERE name = $1 AND companyid = $2",
       [name, req.user.companyId]
     );
-    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { });
+    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { }, 'TEAM_NAME_EXISTS');
     
     const newTeam = { id: crypto.randomUUID(), name, companyId: req.user.companyId };
     await pool.query(
@@ -86,19 +86,19 @@ exports.create = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'TEAM_CREATE_ERROR');
   }
 };
 
 exports.update = async (req, res) => {
   try{
     const updatedTeam = req.body;
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const team = await pool.queryOne(
       "SELECT * FROM teams WHERE id = $1",
       [req.params.id]
     );
-    if (!team) return resultRequest(res, false, 'Équipe non trouvée', { });
+    if (!team) return resultRequest(res, false, 'Équipe non trouvée', { }, 'TEAM_NOT_FOUND');
     
     team.name = updatedTeam.name;
     await pool.query(
@@ -111,18 +111,18 @@ exports.update = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'TEAM_UPDATE_ERROR');
   }
 };
 
 exports.remove = async (req, res) => {
   try{
-    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { });
+    if (req.user === undefined || req.user === null) return resultRequest(res, false, 'Methode non accessible', { }, 'METHOD_NOT_ALLOWED');
     const members = await pool.query(
       "SELECT * FROM members WHERE teamid = $1",
       [req.params.id]
     );
-    if (members.length > 0) return resultRequest(res, false, 'Impossible de supprimer une équipe avec des membres', { });
+    if (members.length > 0) return resultRequest(res, false, 'Impossible de supprimer une équipe avec des membres', { }, 'TEAM_HAS_MEMBERS');
     
     await pool.query(
       "DELETE FROM teams WHERE id = $1",
@@ -134,6 +134,6 @@ exports.remove = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'TEAM_DELETE_ERROR');
   }
 };

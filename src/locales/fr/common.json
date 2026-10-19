@@ -1,0 +1,30 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "add": "Ajouter",
+    "create": "Créer",
+    "loading": "Chargement…",
+    "genericError": "Une erreur est survenue",
+    "language": "Langue",
+    "languages": {
+      "en": "English",
+      "fr": "Français",
+      "es": "Español"
+    }
+  },
+  "header": {
+    "retro": "Rétro",
+    "administration": "Administration",
+    "logout": "Déconnexion",
+    "menu": "Menu",
+    "unknownTeam": "Inconnue"
+  }
+}

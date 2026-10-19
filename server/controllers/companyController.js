@@ -15,7 +15,7 @@ exports.getAll = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'COMPANIES_FETCH_ERROR');
   }
 };
 
@@ -31,7 +31,7 @@ exports.getCompanieForUser = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'COMPANY_FETCH_ERROR');
   }
 };
 
@@ -39,7 +39,7 @@ exports.create = async (req, res) => {
   try{
     const { companyName, scrumMasterEmail, scrumMasterName, scrumMasterTrigramme, subscriptionLevel, teamName } = req.body;
     if (!companyName || !scrumMasterEmail || !scrumMasterName || !scrumMasterTrigramme || !teamName) {
-      return resultRequest(res, false, "informations entreprise équipe ou scrumMaster manquantes.", { });
+      return resultRequest(res, false, "informations entreprise équipe ou scrumMaster manquantes.", { }, 'COMPANY_SIGNUP_FIELDS_MISSING');
     }
     let subscriptionLevelCompany = "0";
 
@@ -51,7 +51,7 @@ exports.create = async (req, res) => {
       "SELECT * FROM companies WHERE name = $1",
       [companyName]
     );
-    if (company) return resultRequest(res, false, 'Une entreprise avec ce nom existe déjà', { });
+    if (company) return resultRequest(res, false, 'Une entreprise avec ce nom existe déjà', { }, 'COMPANY_NAME_EXISTS');
     
     const idCompany = crypto.randomUUID();
     const idTeam = crypto.randomUUID();
@@ -79,7 +79,7 @@ exports.create = async (req, res) => {
       "SELECT * FROM teams WHERE name = $1",
       [teamName]
     );
-    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { });
+    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { }, 'TEAM_NAME_EXISTS');
 
     await pool.query(
       "INSERT INTO teams (id, companyid, name) VALUES ($1, $2, $3)",
@@ -101,17 +101,17 @@ exports.create = async (req, res) => {
       );
 
 
-      resultRequest(res, false, result.message, { datas });
+      resultRequest(res, false, result.message, { datas }, result.code);
       return;
     }
     
-    resultRequest(res, true, "Inscription effectuée, le scrum Master peut désormais s'inscrire à son tour", newCompany);
+    resultRequest(res, true, "Inscription effectuée, le scrum Master peut désormais s'inscrire à son tour", newCompany, 'COMPANY_SIGNUP_SUCCESS');
   } catch(err) {
     let message = "Erreur lors de la création de la compagnie";
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, err.message, {});
+    resultRequest(res, false, message, {}, 'COMPANY_CREATE_ERROR');
   }
 };
 
@@ -119,14 +119,14 @@ exports.update = async (req, res) => {
   try{
     const { companyId, companyName, subscriptionLevel } = req.body;
     if (!companyId || !companyName || !subscriptionLevel) {
-      return resultRequest(res, false, "informations entreprise ou niveau manquantes.", { });
+      return resultRequest(res, false, "informations entreprise ou niveau manquantes.", { }, 'COMPANY_UPDATE_FIELDS_MISSING');
     }
 
     const company = await pool.queryOne(
       `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies where id = $1`,
       [companyId]
     );
-    if (!company) return resultRequest(res, false, 'Compagnie non trouvée', { });
+    if (!company) return resultRequest(res, false, 'Compagnie non trouvée', { }, 'COMPANY_NOT_FOUND');
     
     company.subscriptionLevel = subscriptionLevel;
     await pool.query(
@@ -139,7 +139,7 @@ exports.update = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'COMPANY_UPDATE_ERROR');
   }
 };
 
@@ -156,6 +156,6 @@ exports.remove = async (req, res) => {
     if (process.env.LOG_STATUS == "all"){
       message = err.message;
     }
-    resultRequest(res, false, message, { });
+    resultRequest(res, false, message, { }, 'COMPANY_DELETE_ERROR');
   }
 };

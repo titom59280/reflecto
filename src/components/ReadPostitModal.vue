@@ -11,10 +11,12 @@
           <span class="trigram">{{ post.trigramme }}</span>
         </div>
         <div class="annotation-section">
-          <label>Annotation :</label>
+          <label>{{ $t('board.readPostit.annotationLabel') }}</label>
           <textarea v-model="annotationText" rows="3" />
           <div class="modal-actions">
-            <button v-if="!isRetroRetro" class="btn annotate-btn" @click="next">Suivant</button>
+            <button v-if="!isRetroRetro" class="btn annotate-btn" @click="next">
+              {{ $t('board.readPostit.next') }}
+            </button>
           </div>
         </div>
       </div>
@@ -255,6 +257,53 @@ export default {
   to {
     transform: scale(0.4);
     opacity: 0;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  /* 50% de largeur est trop étroit sur tablette / mobile */
+  .postit-modal {
+    box-sizing: border-box;
+    width: 80%;
+    max-width: calc(100vw - 2rem);
+    height: 60%;
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
+
+  .close {
+    min-width: 40px;
+    min-height: 40px;
+    top: 2px;
+    right: 2px;
+  }
+
+  .annotation-section textarea {
+    font-size: 1rem;
+  }
+
+  .btn {
+    flex: 0 1 auto;
+    min-width: 40%;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .postit-modal {
+    width: calc(100vw - 2rem);
+    height: 75vh;
+    height: 75dvh;
+    padding: 0.75rem;
+  }
+
+  .annotation-section {
+    margin-top: 0.75rem;
+  }
+
+  .btn {
+    flex: 1 1 100%;
   }
 }
 </style>
