@@ -12,4 +12,4 @@ module.exports = function requireAuth(req, res, next) {
   } catch (err) {
     res.status(403).json({ error: 'Token invalide', code: 'TOKEN_INVALID' });
   }
-}
+};

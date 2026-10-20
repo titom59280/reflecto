@@ -152,39 +152,39 @@ export default {
 }
 
 .dashboard {
-  max-width: 820px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
   animation: fadeUp 0.35s ease;
 }
 
 /* ===== KPI ===== */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 1rem;
 }
 
 .kpi-card {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
   background: #ffffff;
   border: 1px solid #ece7da;
-  border-radius: 14px;
-  padding: 0.9rem 1rem;
+  border-radius: 15px;
+  padding: 1.15rem 1.3rem;
 }
 
 .kpi-label {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   color: #6b7678;
 }
 
 .kpi-value {
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #003d47;
   line-height: 1.1;
@@ -194,14 +194,14 @@ export default {
 .bento {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr;
-  grid-auto-rows: minmax(84px, auto);
-  gap: 0.75rem;
+  grid-auto-rows: minmax(115px, auto);
+  gap: 1rem;
 }
 
 .hero-card,
 .tile-card {
   text-decoration: none;
-  border-radius: 14px;
+  border-radius: 16px;
   transition: all 0.25s ease;
 }
 
@@ -213,7 +213,7 @@ export default {
   gap: 1.5rem;
   background: #003d47;
   color: #ffffff;
-  padding: 1.25rem;
+  padding: 1.6rem;
 }
 
 .hero-card:hover {
@@ -223,14 +223,14 @@ export default {
 
 .hero-title {
   display: block;
-  font-size: 1.2rem;
+  font-size: 1.45rem;
   font-weight: 700;
 }
 
 .hero-desc {
   display: block;
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  font-size: 0.98rem;
   color: #b8cfd2;
 }
 
@@ -238,22 +238,22 @@ export default {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   background: #ffffff;
   color: #003d47;
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
+  padding: 0.5rem 0.95rem;
+  border-radius: 10px;
 }
 
 .tile-card {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 1rem;
   background: #ffffff;
   border: 1px solid #ece7da;
-  padding: 1rem 1.1rem;
+  padding: 1.25rem 1.4rem;
   color: #003d47;
 }
 
@@ -270,7 +270,7 @@ export default {
 .tile-title {
   flex: 1;
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.18rem;
 }
 
 .tile-arrow {
@@ -286,13 +286,13 @@ export default {
 
 /* ===== Icônes ===== */
 .icon-tile {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   flex-shrink: 0;
 }
 
@@ -327,6 +327,40 @@ export default {
   }
   .tile-card.wide {
     grid-column: auto;
+  }
+  .dashboard {
+    padding: 1rem 0;
+    gap: 1rem;
+  }
+  .kpi-grid,
+  .bento {
+    gap: 0.75rem;
+  }
+  .bento {
+    grid-auto-rows: minmax(84px, auto);
+  }
+  .kpi-card {
+    padding: 1rem 1.1rem;
+  }
+  .kpi-value {
+    font-size: 1.8rem;
+  }
+  .hero-card {
+    padding: 1.5rem;
+  }
+  .hero-title {
+    font-size: 1.35rem;
+  }
+  .tile-card {
+    padding: 1rem 1.25rem;
+  }
+  .tile-title {
+    font-size: 1.1rem;
+  }
+  .icon-tile {
+    width: 46px;
+    height: 46px;
+    font-size: 1.25rem;
   }
 }
 

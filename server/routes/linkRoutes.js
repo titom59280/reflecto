@@ -9,7 +9,7 @@ router.get('/user/:userId', auth, controller.getForUser);
 router.get('/team/:teamId', auth, controller.getForTeam);
 router.get('/getNextSprintName/:currentLinkId/:teamId', auth, controller.getNextSprintName);
 router.post('/', auth, requireScrumMaster, controller.create);
-router.post('/activate', auth, requireScrumMaster, controller.activate)
+router.post('/activate', auth, requireScrumMaster, controller.activate);
 router.delete('/:id', auth, requireScrumMaster, controller.remove);
 
 router.put('/StartRetro/', auth, requireScrumMaster, controller.markRetroStart);

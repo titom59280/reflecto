@@ -8,13 +8,14 @@ const MAIL_PASS = process.env.MAIL_PASS;
 const MAIL_USER = process.env.MAIL_USER;
 const MAIL_RECEIVER = process.env.MAIL_RECEIVER;
 exports.contact = async (req, res) => {
-  try{
-
+  try {
     const { name, email, message } = req.body;
 
     // Vérification basique
     if (!name || !email || !message) {
-      return res.status(400).json({ error: 'Tous les champs sont requis.', code: 'FIELDS_REQUIRED' });
+      return res
+        .status(400)
+        .json({ error: 'Tous les champs sont requis.', code: 'FIELDS_REQUIRED' });
     }
 
     // Configuration du transporteur SMTP
@@ -24,8 +25,8 @@ exports.contact = async (req, res) => {
       secure: false, // true pour 465, false pour autres ports
       auth: {
         user: MAIL_USER, // depuis .env
-        pass: MAIL_PASS
-      }
+        pass: MAIL_PASS,
+      },
     });
 
     // Contenu de l'email
@@ -44,55 +45,64 @@ ${message}
         <p><strong>Nom :</strong> ${name}</p>
         <p><strong>Email :</strong> ${email}</p>
         <p><strong>Message :</strong><br>${message}</p>
-      `
+      `,
     };
 
     // Envoi de l'email
     await transporter.sendMail(mailOptions);
-    resultRequest(res, true, 'Message envoyé', { }, 'MESSAGE_SENT');
-  }catch(err){
+    resultRequest(res, true, 'Message envoyé', {}, 'MESSAGE_SENT');
+  } catch (err) {
     let message = "Erreur lors de l'envoi du message";
-    if (process.env.LOG_STATUS == "all"){
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
-    resultRequest(res, false, message, { }, 'MESSAGE_SEND_ERROR');
+    resultRequest(res, false, message, {}, 'MESSAGE_SEND_ERROR');
   }
-}
+};
 
 exports.login = async (req, res) => {
-  try{
+  try {
     const { email, password } = req.body;
-    if (!email || !password) return resultRequest(res, false, 'Champs requis', undefined, 'FIELDS_REQUIRED');
-    
+    if (!email || !password)
+      return resultRequest(res, false, 'Champs requis', undefined, 'FIELDS_REQUIRED');
+
     const hashedEmail = crypto.createHash('sha256').update(email.toLowerCase()).digest('hex');
-    
+
     const user = await pool.queryOne(
       `SELECT id, name, email, password, trigramme, isscrummaster AS "isScrumMaster", isfulladmin AS "isFullAdmin", teamid AS "teamId", companyid AS "companyId", color FROM members WHERE email = $1`,
       [hashedEmail]
-    ); 
-    
-    if (!user) return resultRequest(res, false, 'Identifiants invalides', undefined, 'INVALID_CREDENTIALS');
+    );
+
+    if (!user)
+      return resultRequest(res, false, 'Identifiants invalides', undefined, 'INVALID_CREDENTIALS');
 
     const isMatch = await bcrypt.compare(password, user.password);
-    
-    if (!isMatch) return resultRequest(res, false, 'Identifiants invalides', undefined, 'INVALID_CREDENTIALS');
 
-    if(!user.teamId && !user.isScrumMaster) {
-      return resultRequest(res, false, 'Aucune équipe affectée. Rapprochez vous de votre Scrum Master', undefined, 'NO_TEAM_ASSIGNED');
+    if (!isMatch)
+      return resultRequest(res, false, 'Identifiants invalides', undefined, 'INVALID_CREDENTIALS');
+
+    if (!user.teamId && !user.isScrumMaster) {
+      return resultRequest(
+        res,
+        false,
+        'Aucune équipe affectée. Rapprochez vous de votre Scrum Master',
+        undefined,
+        'NO_TEAM_ASSIGNED'
+      );
     }
-    
+
     const team = await pool.queryOne(
       `SELECT id, name, companyid as "companyId" FROM teams WHERE id = $1`,
       [user.teamId]
     );
-    
+
     const token = generateToken(user);
     resultRequest(res, true, '', { user: { ...user, password: undefined, team: team }, token });
-  }catch(err){
+  } catch (err) {
     let message = "Erreur lors de l'authentification";
-    if (process.env.LOG_STATUS == "all"){
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
-    resultRequest(res, false, message , { }, 'AUTH_ERROR');
+    resultRequest(res, false, message, {}, 'AUTH_ERROR');
   }
 };

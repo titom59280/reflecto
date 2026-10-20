@@ -12,5 +12,5 @@ async function query(text, params) {
 
 module.exports = {
   queryOne,
-  query
+  query,
 };

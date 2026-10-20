@@ -4,67 +4,91 @@ const { createMember } = require('../utils/memberUtils');
 const { resultRequest } = require('../utils/requestUtils');
 
 exports.getAll = async (req, res) => {
-  try{
+  try {
     const companies = await pool.query(
       `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies`,
       []
     );
     resultRequest(res, true, '', companies);
-  }catch(err){
-    let message = "Erreur lors de la récupération des entreprises";
-    if (process.env.LOG_STATUS == "all"){
+  } catch (err) {
+    let message = 'Erreur lors de la récupération des entreprises';
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
-    resultRequest(res, false, message, { }, 'COMPANIES_FETCH_ERROR');
+    resultRequest(res, false, message, {}, 'COMPANIES_FETCH_ERROR');
   }
 };
 
 exports.getCompanieForUser = async (req, res) => {
-  try{
+  try {
     const companie = await pool.queryOne(
       `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies where id = $1`,
       [req.user.companyId]
     );
     resultRequest(res, true, '', companie);
-  }catch(err){
+  } catch (err) {
     let message = "Erreur lors de la récupération de l'entreprise";
-    if (process.env.LOG_STATUS == "all"){
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
-    resultRequest(res, false, message, { }, 'COMPANY_FETCH_ERROR');
+    resultRequest(res, false, message, {}, 'COMPANY_FETCH_ERROR');
   }
 };
 
 exports.create = async (req, res) => {
-  try{
-    const { companyName, scrumMasterEmail, scrumMasterName, scrumMasterTrigramme, subscriptionLevel, teamName } = req.body;
-    if (!companyName || !scrumMasterEmail || !scrumMasterName || !scrumMasterTrigramme || !teamName) {
-      return resultRequest(res, false, "informations entreprise équipe ou scrumMaster manquantes.", { }, 'COMPANY_SIGNUP_FIELDS_MISSING');
+  try {
+    const {
+      companyName,
+      scrumMasterEmail,
+      scrumMasterName,
+      scrumMasterTrigramme,
+      subscriptionLevel,
+      teamName,
+    } = req.body;
+    if (
+      !companyName ||
+      !scrumMasterEmail ||
+      !scrumMasterName ||
+      !scrumMasterTrigramme ||
+      !teamName
+    ) {
+      return resultRequest(
+        res,
+        false,
+        'informations entreprise équipe ou scrumMaster manquantes.',
+        {},
+        'COMPANY_SIGNUP_FIELDS_MISSING'
+      );
     }
-    let subscriptionLevelCompany = "0";
+    let subscriptionLevelCompany = '0';
 
     if (subscriptionLevel) {
       subscriptionLevelCompany = subscriptionLevel;
     }
 
-    const company = await pool.queryOne(
-      "SELECT * FROM companies WHERE name = $1",
-      [companyName]
-    );
-    if (company) return resultRequest(res, false, 'Une entreprise avec ce nom existe déjà', { }, 'COMPANY_NAME_EXISTS');
-    
+    const company = await pool.queryOne('SELECT * FROM companies WHERE name = $1', [companyName]);
+    if (company)
+      return resultRequest(
+        res,
+        false,
+        'Une entreprise avec ce nom existe déjà',
+        {},
+        'COMPANY_NAME_EXISTS'
+      );
+
     const idCompany = crypto.randomUUID();
     const idTeam = crypto.randomUUID();
     const newCompany = {
       id: idCompany,
       name: companyName,
-      subscriptionLevel: subscriptionLevelCompany
+      subscriptionLevel: subscriptionLevelCompany,
     };
 
-    await pool.query(
-      "INSERT INTO companies (id, name, subscriptionlevel) VALUES ($1, $2, $3)",
-      [idCompany, companyName, subscriptionLevelCompany]
-    );
+    await pool.query('INSERT INTO companies (id, name, subscriptionlevel) VALUES ($1, $2, $3)', [
+      idCompany,
+      companyName,
+      subscriptionLevelCompany,
+    ]);
 
     const datas = {
       companyId: idCompany,
@@ -72,43 +96,40 @@ exports.create = async (req, res) => {
       teamId: idTeam,
       name: scrumMasterName,
       trigramme: scrumMasterTrigramme,
-      isScrumMaster: true
+      isScrumMaster: true,
     };
 
-    const team = await pool.queryOne(
-      "SELECT * FROM teams WHERE name = $1",
-      [teamName]
-    );
-    if (team) return resultRequest(res, false, 'Une équipe porte déjà ce nom', { }, 'TEAM_NAME_EXISTS');
+    const team = await pool.queryOne('SELECT * FROM teams WHERE name = $1', [teamName]);
+    if (team)
+      return resultRequest(res, false, 'Une équipe porte déjà ce nom', {}, 'TEAM_NAME_EXISTS');
 
-    await pool.query(
-      "INSERT INTO teams (id, companyid, name) VALUES ($1, $2, $3)",
-      [idTeam, idCompany,  teamName]
-    );
-    
-    
+    await pool.query('INSERT INTO teams (id, companyid, name) VALUES ($1, $2, $3)', [
+      idTeam,
+      idCompany,
+      teamName,
+    ]);
+
     const result = await createMember(datas);
 
     if (!result.success) {
-      await pool.query(
-        "DELETE FROM teams where id = $1",
-        [idTeam]
-      );
+      await pool.query('DELETE FROM teams where id = $1', [idTeam]);
 
-      await pool.query(
-        "DELETE FROM companies where id = $1",
-        [idCompany]
-      );
-
+      await pool.query('DELETE FROM companies where id = $1', [idCompany]);
 
       resultRequest(res, false, result.message, { datas }, result.code);
       return;
     }
-    
-    resultRequest(res, true, "Inscription effectuée, le scrum Master peut désormais s'inscrire à son tour", newCompany, 'COMPANY_SIGNUP_SUCCESS');
-  } catch(err) {
-    let message = "Erreur lors de la création de la compagnie";
-    if (process.env.LOG_STATUS == "all"){
+
+    resultRequest(
+      res,
+      true,
+      "Inscription effectuée, le scrum Master peut désormais s'inscrire à son tour",
+      newCompany,
+      'COMPANY_SIGNUP_SUCCESS'
+    );
+  } catch (err) {
+    let message = 'Erreur lors de la création de la compagnie';
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
     resultRequest(res, false, message, {}, 'COMPANY_CREATE_ERROR');
@@ -116,46 +137,47 @@ exports.create = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  try{
+  try {
     const { companyId, companyName, subscriptionLevel } = req.body;
     if (!companyId || !companyName || !subscriptionLevel) {
-      return resultRequest(res, false, "informations entreprise ou niveau manquantes.", { }, 'COMPANY_UPDATE_FIELDS_MISSING');
+      return resultRequest(
+        res,
+        false,
+        'informations entreprise ou niveau manquantes.',
+        {},
+        'COMPANY_UPDATE_FIELDS_MISSING'
+      );
     }
 
     const company = await pool.queryOne(
       `SELECT id, name, subscriptionlevel AS "subscriptionLevel" FROM companies where id = $1`,
       [companyId]
     );
-    if (!company) return resultRequest(res, false, 'Compagnie non trouvée', { }, 'COMPANY_NOT_FOUND');
-    
+    if (!company)
+      return resultRequest(res, false, 'Compagnie non trouvée', {}, 'COMPANY_NOT_FOUND');
+
     company.subscriptionLevel = subscriptionLevel;
-    await pool.query(
-      "UPDATE companies SET subscriptionlevel = $1",
-      [subscriptionLevel]
-    );
+    await pool.query('UPDATE companies SET subscriptionlevel = $1', [subscriptionLevel]);
     resultRequest(res, true, '', company);
-  } catch(err) {
-    let message = "Erreur de la mise a jour de la compagnie";
-    if (process.env.LOG_STATUS == "all"){
+  } catch (err) {
+    let message = 'Erreur de la mise a jour de la compagnie';
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
-    resultRequest(res, false, message, { }, 'COMPANY_UPDATE_ERROR');
+    resultRequest(res, false, message, {}, 'COMPANY_UPDATE_ERROR');
   }
 };
 
 exports.remove = async (req, res) => {
-  try{
+  try {
     const id = req.params.id;
-    await pool.query(
-      "DELETE FROM companies WHERE id = $1",
-      [id]
-    );
-    resultRequest(res, true, '', { });
-  } catch(err) {
-    let message = "Erreur de la suppression de la compagnie";
-    if (process.env.LOG_STATUS == "all"){
+    await pool.query('DELETE FROM companies WHERE id = $1', [id]);
+    resultRequest(res, true, '', {});
+  } catch (err) {
+    let message = 'Erreur de la suppression de la compagnie';
+    if (process.env.LOG_STATUS == 'all') {
       message = err.message;
     }
-    resultRequest(res, false, message, { }, 'COMPANY_DELETE_ERROR');
+    resultRequest(res, false, message, {}, 'COMPANY_DELETE_ERROR');
   }
 };

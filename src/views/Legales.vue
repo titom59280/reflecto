@@ -32,8 +32,8 @@
               <strong>{{ $t('legales.nom') }}</strong> Thomas Graveleine<br />
               <strong>{{ $t('legales.adresse') }}</strong>
               606 rue neuve, 18230 Saint-doulchard, France<br />
-              <strong>{{ $t('legales.email') }}</strong> contact@reflecto.com<br />
-              <strong>{{ $t('legales.SIRET') }}</strong> 821 086 683 00033
+              <strong>{{ $t('legales.email') }}</strong> reflectoscrum@gmail.com<br />
+              <strong>{{ $t('legales.SIRET') }}</strong> 821 086 683 00041
             </p>
           </div>
 
