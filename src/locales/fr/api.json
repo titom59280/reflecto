@@ -62,6 +62,7 @@
     "POSTITS_FETCH_ERROR": "Erreur lors de la récupération de vos post-its",
     "RETRO_ACTIVATE_ERROR": "Erreur lors de l'activation de la rétro",
     "RETRO_ARCHIVE_ERROR": "Erreur lors de l’archivage de la rétro.",
+    "RETRO_ARCHIVED": "Cette rétro est archivée : réactivez-la avant de la planifier.",
     "RETRO_CREATE_ERROR": "Erreur lors de la création de la rétro",
     "RETRO_DELETE_ERROR": "Erreur lors de la suppression de la rétro",
     "RETRO_HAS_HISTORY": "Cette rétro a déjà été utilisée : archivez-la plutôt que de la supprimer.",

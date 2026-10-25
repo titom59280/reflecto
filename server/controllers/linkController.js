@@ -25,9 +25,16 @@ exports.getForUser = async (req, res) => {
     if (req.user === undefined || req.user === null)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
 
+    // Équipe relue en base : la session peut dater d'avant un changement d'équipe
+    const member = await pool.queryOne(
+      'SELECT teamid FROM members WHERE id = $1 AND companyid = $2',
+      [req.user.id, req.user.companyId]
+    );
+    if (!member) return resultRequest(res, true, '', []);
+
     const result = await pool.query(
-      `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "teamId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.isretrodone= false AND s.isclosed= false`,
-      [req.user.teamId]
+      `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "teamId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.companyid = $2 AND s.isretrodone= false AND s.isclosed= false`,
+      [member.teamid, req.user.companyId]
     );
 
     resultRequest(res, true, '', result);
@@ -45,8 +52,16 @@ exports.getForTeam = async (req, res) => {
     if (req.user === undefined || req.user === null)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
     const teamId = req.params.teamId;
-    const team = await pool.queryOne('SELECT * FROM teams WHERE id = $1', [teamId]);
+    const team = await pool.queryOne('SELECT * FROM teams WHERE id = $1 AND companyid = $2', [
+      teamId,
+      req.user.companyId,
+    ]);
     if (!team) return resultRequest(res, false, 'Équipe non trouvé', {}, 'TEAM_NOT_FOUND');
+    if (!req.user.isScrumMaster) {
+      const member = await pool.queryOne('SELECT teamid FROM members WHERE id = $1', [req.user.id]);
+      if (member?.teamid !== teamId)
+        return resultRequest(res, false, 'Équipe non trouvé', {}, 'TEAM_NOT_FOUND');
+    }
 
     const result = await pool.query(
       `SELECT s.id, s.retroid AS "retroId", s.sprintid AS "sprintId", s.teamid AS "teamId", s.companyid AS "companyId", s.isactif AS "isActif", s.isclosed AS "isClosed", s.isretroinprogress AS "isRetroInProgress", s.isretrodone AS "isRetroDone", t.name AS "teamName", r.name AS "retroName", sp.name AS "sprintName" FROM sprintsretrosteams S JOIN teams t ON t.id = s.teamid JOIN retros r ON r.id = s.retroid JOIN sprints sp ON sp.id = s.sprintid WHERE s.teamid = $1 AND s.isretrodone= false AND s.isclosed= false`,
@@ -77,9 +92,19 @@ exports.create = async (req, res) => {
       );
     }
 
-    const sprint = await pool.queryOne('SELECT * FROM sprints WHERE id = $1', [sprintId]);
-    const retro = await pool.queryOne('SELECT * FROM retros WHERE id = $1', [retroId]);
-    const team = await pool.queryOne('SELECT * FROM teams WHERE id = $1', [teamId]);
+    const companyId = req.user.companyId;
+    const sprint = await pool.queryOne('SELECT * FROM sprints WHERE id = $1 AND companyid = $2', [
+      sprintId,
+      companyId,
+    ]);
+    const retro = await pool.queryOne('SELECT * FROM retros WHERE id = $1 AND companyid = $2', [
+      retroId,
+      companyId,
+    ]);
+    const team = await pool.queryOne('SELECT * FROM teams WHERE id = $1 AND companyid = $2', [
+      teamId,
+      companyId,
+    ]);
 
     if (!sprint || !retro || !team)
       return resultRequest(
@@ -90,9 +115,13 @@ exports.create = async (req, res) => {
         'SPRINT_RETRO_TEAM_NOT_FOUND'
       );
 
+    if (retro.isarchived)
+      return resultRequest(res, false, 'Cette rétro est archivée', {}, 'RETRO_ARCHIVED');
+
+    // Une seule rétro par équipe et par sprint
     const link = await pool.queryOne(
-      'SELECT * FROM sprintsretrosteams WHERE sprintid = $1 AND retroid = $2 AND teamId = $3',
-      [sprintId, retroId, teamId]
+      'SELECT id FROM sprintsretrosteams WHERE sprintid = $1 AND teamid = $2',
+      [sprintId, teamId]
     );
     if (link)
       return resultRequest(
@@ -133,7 +162,10 @@ exports.remove = async (req, res) => {
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
     const id = req.params.id;
-    const link = await pool.queryOne('SELECT *  FROM sprintsretrosteams WHERE id = $1', [id]);
+    const link = await pool.queryOne(
+      'SELECT * FROM sprintsretrosteams WHERE id = $1 AND companyid = $2',
+      [id, req.user.companyId]
+    );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 
     // Colonne en minuscules : link.isRetroDone valait undefined
@@ -146,7 +178,10 @@ exports.remove = async (req, res) => {
         'LINK_DELETE_DONE_FORBIDDEN'
       );
 
-    await pool.query('DELETE FROM sprintsretrosteams WHERE id = $1', [id]);
+    await pool.query('DELETE FROM sprintsretrosteams WHERE id = $1 AND companyid = $2', [
+      id,
+      req.user.companyId,
+    ]);
     resultRequest(res, true, '', {});
   } catch (err) {
     let message = 'Erreur de la suppression du lien rétro-sprint';
@@ -161,13 +196,14 @@ exports.getNextSprintName = async (req, res) => {
   try {
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
-    const teamId = req.params.teamId;
     const currentLinkId = req.params.currentLinkId;
 
-    const link = await pool.queryOne('SELECT * FROM sprintsretrosteams where id = $1', [
-      currentLinkId,
-    ]);
+    const link = await pool.queryOne(
+      'SELECT * FROM sprintsretrosteams where id = $1 AND companyid = $2',
+      [currentLinkId, req.user.companyId]
+    );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
+    const teamId = link.teamid;
 
     // Colonne en minuscules (sprintid) ; on prend la prochaine rétro planifiée de l'équipe
     const currentSprintId = link.sprintid;
@@ -190,10 +226,10 @@ exports.markRetroDone = async (req, res) => {
   try {
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
-    const { currentLinkId, nextSprintId, teamId } = req.body;
+    const { currentLinkId, nextSprintId } = req.body;
     const link = await pool.queryOne(
-      `SELECT id, isactif AS "isActif", retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isclosed AS "isClosed", isretrodone AS "isRetroDone", isretroinprogress AS "isRetroInProgress" FROM sprintsretrosteams where id = $1`,
-      [currentLinkId]
+      `SELECT id, isactif AS "isActif", retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isclosed AS "isClosed", isretrodone AS "isRetroDone", isretroinprogress AS "isRetroInProgress" FROM sprintsretrosteams where id = $1 AND companyid = $2`,
+      [currentLinkId, req.user.companyId]
     );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 
@@ -220,7 +256,7 @@ exports.markRetroDone = async (req, res) => {
       // nextSprintId est l'id du SPRINT suivant : on cherche le lien de l'équipe pour ce sprint
       const nextLink = await pool.queryOne(
         'SELECT * FROM sprintsretrosteams WHERE sprintid = $1 AND teamid = $2 AND isretrodone= false',
-        [nextSprintId, teamId]
+        [nextSprintId, link.teamId]
       );
       if (!nextLink)
         return resultRequest(
@@ -250,12 +286,13 @@ exports.markClosed = async (req, res) => {
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
     const { currentLinkId } = req.body;
 
-    const link = await pool.queryOne('SELECT * FROM sprintsretrosteams where id = $1', [
-      currentLinkId,
-    ]);
+    const link = await pool.queryOne(
+      'SELECT * FROM sprintsretrosteams where id = $1 AND companyid = $2',
+      [currentLinkId, req.user.companyId]
+    );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 
-    await pool.query('UPDATE sprintsretrosteams SET isclosed= true WHERE id = $1', [currentLinkId]);
+    await pool.query('UPDATE sprintsretrosteams SET isclosed= true WHERE id = $1', [link.id]);
     resultRequest(res, true, '', {});
   } catch (err) {
     let message = 'Erreur lors de la mise à jour du statut du lien';
@@ -308,8 +345,8 @@ exports.markRetroStart = async (req, res) => {
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
     const { currentLinkId } = req.body;
     const link = await pool.queryOne(
-      `SELECT id, isactif AS "isActif", retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isclosed AS "isClosed", isretrodone AS "isRetroDone", isretroinprogress AS "isRetroInProgress" FROM sprintsretrosteams where id = $1`,
-      [currentLinkId]
+      `SELECT id, isactif AS "isActif", retroid AS "retroId", sprintid AS "sprintId", teamid AS "teamId", companyid AS "companyId", isclosed AS "isClosed", isretrodone AS "isRetroDone", isretroinprogress AS "isRetroInProgress" FROM sprintsretrosteams where id = $1 AND companyid = $2`,
+      [currentLinkId, req.user.companyId]
     );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 

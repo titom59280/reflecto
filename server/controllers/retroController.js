@@ -65,9 +65,10 @@ exports.create = async (req, res) => {
       );
 
     const retroName = body.name.trim();
-    const retro = await pool.queryOne('SELECT * FROM retros WHERE UPPER(name) = UPPER($1)', [
-      retroName,
-    ]);
+    const retro = await pool.queryOne(
+      'SELECT id FROM retros WHERE UPPER(name) = UPPER($1) AND companyid = $2',
+      [retroName, req.user.companyId]
+    );
 
     if (retro)
       return resultRequest(

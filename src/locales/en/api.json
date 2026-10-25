@@ -62,6 +62,7 @@
     "POSTITS_FETCH_ERROR": "Error loading your sticky notes",
     "RETRO_ACTIVATE_ERROR": "Error activating the retro",
     "RETRO_ARCHIVE_ERROR": "Couldn’t archive the retro.",
+    "RETRO_ARCHIVED": "This retro is archived: restore it before planning it.",
     "RETRO_CREATE_ERROR": "Error creating the retro",
     "RETRO_DELETE_ERROR": "Error deleting the retro",
     "RETRO_HAS_HISTORY": "This retro has already been used. Archive it instead of deleting it.",
