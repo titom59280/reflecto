@@ -5,6 +5,7 @@ const auth = require('../middlewares/auth');
 
 router.get('/me/:linkId', auth, controller.getMine);
 router.get('/all/:linkId', auth, controller.getAllByLink);
+router.get('/stats/:linkId', auth, controller.getStats);
 
 router.post('/', auth, controller.create);
 router.put('/', auth, controller.update);

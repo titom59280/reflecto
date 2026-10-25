@@ -68,6 +68,15 @@ export default {
       return this.user && this.teams.length > 0 && !this.$route.path.startsWith('/admin');
     },
   },
+  watch: {
+    '$route.query.team'() {
+      const teamId = this.teamFromRoute();
+      if (teamId && teamId !== this.selectedTeamId) {
+        this.selectedTeamId = teamId;
+        this.emitTeamChange();
+      }
+    },
+  },
   async created() {
     if (!this.user) {
       this.logout();
@@ -86,13 +95,18 @@ export default {
       return;
     }
 
-    this.selectedTeamId = this.user.teamId;
+    // Équipe demandée dans l'URL (« Ouvrir le tableau » depuis la gestion des rétros)
+    this.selectedTeamId = this.teamFromRoute() || this.user.teamId;
     this.emitTeamChange();
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
+    teamFromRoute() {
+      const teamId = this.$route.query.team;
+      return this.isScrumMaster && this.teams.some((t) => t.id === teamId) ? teamId : null;
+    },
     emitTeamChange() {
       this.$emit('team-changed', this.selectedTeamId);
     },

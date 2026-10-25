@@ -18,7 +18,8 @@
     "list": {
       "empty": "Todavía no hay ninguna retro.",
       "untitled": "Retro sin título",
-      "deleted": "La retro se ha eliminado"
+      "deleted": "La retro se ha eliminado",
+      "edit": "Editar"
     },
     "associate": {
       "retro": "Retro",
@@ -60,6 +61,85 @@
       "unknownTeam": "Equipo desconocido",
       "unknownSprint": "Sprint desconocido",
       "loadError": "Error al cargar las notas"
+    },
+    "edit": {
+      "title": "Editar la retro",
+      "retroName": "Nombre de la retro",
+      "categories": "Categorías",
+      "categoryName": "Nombre de la categoría",
+      "categoryDescription": "Descripción",
+      "image": "Imagen",
+      "noImage": "Sin imagen",
+      "changeImage": "Cambiar la imagen",
+      "addImage": "Añadir una imagen",
+      "removeImage": "Quitar la imagen",
+      "undo": "Deshacer",
+      "imagesPlanHint": "Las imágenes de categoría están disponibles con el plan Pro.",
+      "addCategory": "Añadir una categoría",
+      "removeCategory": "Eliminar la categoría",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "success": "Retro modificada",
+      "loadError": "No se pudo cargar la retro",
+      "nameRequired": "La retro y cada categoría necesitan un nombre.",
+      "minCategories": "Una retro necesita al menos 2 categorías.",
+      "duplicateNames": "Dos categorías no pueden tener el mismo nombre.",
+      "createTitle": "Nueva retro",
+      "create": "Crear",
+      "created": "{name} creada"
+    },
+    "teams": {
+      "noTeam": "Crea primero un equipo para planificar retros.",
+      "plan": "Planificar",
+      "planRetro": "Planificar una retro",
+      "remove": "Quitar",
+      "activate": "Activar",
+      "openBoard": "Abrir el tablero",
+      "nothingPlanned": "Ninguna retro prevista para el próximo sprint",
+      "history": "Historial: {count} retro terminada | Historial: {count} retros terminadas",
+      "viewPostits": "Ver las notas",
+      "retroOfRetro": "Retro de retros",
+      "status": {
+        "active": "Activa",
+        "pending": "Por activar",
+        "done": "Terminada"
+      },
+      "hintPending": "Aún no visible para el equipo",
+      "hintActive": "Visible para el equipo",
+      "hintInProgress": "Retro en curso",
+      "activated": "Retro activada: el equipo ya puede añadir sus notas",
+      "removed": "Planificación quitada"
+    },
+    "templates": {
+      "create": "Crear una retro",
+      "empty": "Todavía no hay retros.",
+      "uses": "Nunca usada | Usada una vez | Usada {count} veces",
+      "inUse": "Esta retro está planificada o activa: quítala primero del equipo.",
+      "archive": "Archivar",
+      "archiveHint": "Ya utilizada: se oculta pero permanece en el historial",
+      "unarchive": "Reactivar",
+      "archivedBadge": "Archivada",
+      "archivedTitle": "Retros archivadas",
+      "archivedHint": "Ya no se proponen al planificar. Reactívalas para volver a usarlas.",
+      "showArchived": "Mostrar archivadas ({count})",
+      "hideArchived": "Ocultar archivadas",
+      "archived": "{name} archivada",
+      "unarchived": "{name} reactivada"
+    },
+    "plan": {
+      "title": "Planificar una retro para {team}",
+      "sprint": "Sprint",
+      "noSprint": "No hay ningún sprint disponible para este equipo.",
+      "createSprint": "Crear un sprint",
+      "retro": "Retro a utilizar",
+      "chooseRetro": "Elegir una retro",
+      "reuse": "Reutilizar una retro existente",
+      "createNew": "Crear una nueva retro…",
+      "retroHint": "Reutiliza una retro existente o crea una nueva.",
+      "pendingInfo": "La retro se añadirá {status}. Actívala cuando el equipo esté listo para empezar.",
+      "submit": "Planificar",
+      "success": "{retro} planificada para el {sprint}. No olvides activarla.",
+      "createAndUse": "Crear y usar"
     }
   }
 }

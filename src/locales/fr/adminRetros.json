@@ -18,7 +18,8 @@
     "list": {
       "empty": "Aucune rétro pour le moment.",
       "untitled": "Rétro sans titre",
-      "deleted": "La rétro a été supprimée"
+      "deleted": "La rétro a été supprimée",
+      "edit": "Modifier"
     },
     "associate": {
       "retro": "Rétro",
@@ -60,6 +61,85 @@
       "unknownTeam": "Équipe inconnue",
       "unknownSprint": "Sprint inconnu",
       "loadError": "Erreur lors du chargement des tickets"
+    },
+    "edit": {
+      "title": "Modifier la rétro",
+      "retroName": "Nom de la rétro",
+      "categories": "Catégories",
+      "categoryName": "Nom de la catégorie",
+      "categoryDescription": "Description",
+      "image": "Image",
+      "noImage": "Aucune image",
+      "changeImage": "Changer l’image",
+      "addImage": "Ajouter une image",
+      "removeImage": "Retirer l’image",
+      "undo": "Annuler le retrait",
+      "imagesPlanHint": "Les images de catégories sont disponibles avec l’offre Pro.",
+      "addCategory": "Ajouter une catégorie",
+      "removeCategory": "Supprimer la catégorie",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "success": "Rétro modifiée",
+      "loadError": "Impossible de charger la rétro",
+      "nameRequired": "Le nom de la rétro et de chaque catégorie est obligatoire.",
+      "minCategories": "Une rétro doit contenir au moins 2 catégories.",
+      "duplicateNames": "Deux catégories ne peuvent pas avoir le même nom.",
+      "createTitle": "Nouvelle rétro",
+      "create": "Créer",
+      "created": "{name} créée"
+    },
+    "teams": {
+      "noTeam": "Créez d’abord une équipe pour planifier des rétros.",
+      "plan": "Planifier",
+      "planRetro": "Planifier une rétro",
+      "remove": "Retirer",
+      "activate": "Activer",
+      "openBoard": "Ouvrir le tableau",
+      "nothingPlanned": "Aucune rétro prévue pour le prochain sprint",
+      "history": "Historique : {count} rétro terminée | Historique : {count} rétros terminées",
+      "viewPostits": "Voir les post-its",
+      "retroOfRetro": "Rétro de rétro",
+      "status": {
+        "active": "Active",
+        "pending": "À activer",
+        "done": "Terminée"
+      },
+      "hintPending": "Pas encore visible par l’équipe",
+      "hintActive": "Visible par l’équipe",
+      "hintInProgress": "Rétro en cours",
+      "activated": "Rétro activée : l’équipe peut maintenant ajouter ses post-its",
+      "removed": "Planification retirée"
+    },
+    "templates": {
+      "create": "Créer une rétro",
+      "empty": "Aucune rétro pour le moment.",
+      "uses": "Jamais utilisée | Utilisée {count} fois | Utilisée {count} fois",
+      "inUse": "Cette rétro est planifiée ou active : retirez-la d’abord de l’équipe.",
+      "archive": "Archiver",
+      "archiveHint": "Déjà utilisée : elle est masquée mais reste dans l’historique",
+      "unarchive": "Réactiver",
+      "archivedBadge": "Archivée",
+      "archivedTitle": "Rétros archivées",
+      "archivedHint": "Elles ne sont plus proposées lors de la planification. Réactivez-les pour les réutiliser.",
+      "showArchived": "Afficher les archives ({count})",
+      "hideArchived": "Masquer les archives",
+      "archived": "{name} archivée",
+      "unarchived": "{name} réactivée"
+    },
+    "plan": {
+      "title": "Planifier une rétro pour {team}",
+      "sprint": "Sprint",
+      "noSprint": "Aucun sprint disponible pour cette équipe.",
+      "createSprint": "Créer un sprint",
+      "retro": "Rétro à utiliser",
+      "chooseRetro": "Choisir une rétro",
+      "reuse": "Réutiliser une rétro existante",
+      "createNew": "Créer une nouvelle rétro…",
+      "retroHint": "Réutilisez une rétro existante ou créez-en une nouvelle.",
+      "pendingInfo": "La rétro sera ajoutée {status}. Vous l’activerez quand l’équipe sera prête à commencer.",
+      "submit": "Planifier",
+      "success": "{retro} planifiée pour le {sprint}. Pensez à l’activer.",
+      "createAndUse": "Créer et utiliser"
     }
   }
 }

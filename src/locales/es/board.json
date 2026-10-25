@@ -2,14 +2,8 @@
   "board": {
     "retroBoard": {
       "postitColor": "Color de las notas",
-      "readyToStart": "La retro está lista: haz clic en «Iniciar» cuando todos los participantes estén listos.",
       "noActiveSprint": "El equipo aún no tiene ningún sprint en curso.",
       "fetchErrorMessage": "Error al cargar los datos.",
-      "action": {
-        "initialize": "Inicializar",
-        "start": "Iniciar",
-        "finish": "Finalizar"
-      },
       "toast": {
         "sprintFinished": "Sprint finalizado correctamente",
         "sprintCloseError": "Error al cerrar el sprint",
@@ -21,7 +15,40 @@
         "postitAdded": "Nota añadida",
         "postitAddError": "Error al añadir la nota",
         "fetchError": "Error al recuperar los datos"
-      }
+      },
+      "empty": {
+        "pendingTitle": "La retro del {sprint} está lista pero aún no activada",
+        "pendingText": "{retro} está planificada para {team}. Actívala para que el equipo pueda añadir sus notas.",
+        "activate": "Activar la retro",
+        "activated": "Retro activada",
+        "adminOnly": "Solo los administradores ven este bloque.",
+        "nothingTitle": "Ninguna retro planificada para este equipo",
+        "nothingText": "Planifica una retro para el próximo sprint desde la gestión de retros.",
+        "plan": "Planificar una retro",
+        "waitingTitle": "La retro aún no ha empezado",
+        "waitingText": "Tu Scrum Master todavía no ha lanzado la retro de este sprint. Vuelve un poco más tarde."
+      },
+      "phase": {
+        "label": "Fases de la retro",
+        "collect": "Recogida",
+        "discussion": "Retro",
+        "done": "Terminada"
+      },
+      "addPostit": "Añadir una nota",
+      "participationPostits": "Ninguna nota | {count} nota | {count} notas",
+      "participationMembers": "{participants}/{team} participantes",
+      "action": {
+        "startDiscussion": "Iniciar la retro",
+        "closeSprint": "Cerrar el sprint"
+      },
+      "hint": {
+        "collect": "Añade tus notas: siguen siendo privadas hasta que empiece la retro.",
+        "discussion": "La retro ha empezado: las notas de todo el equipo son visibles."
+      },
+      "emptyColumnCollect": "Todavía no has añadido ninguna nota.",
+      "emptyColumn": "Ninguna nota.",
+      "annotated": "Anotada por el Scrum Master",
+      "anonymous": "Anónima"
     },
     "addPostit": {
       "titleAdd": "Añadir una nota",
@@ -29,7 +56,9 @@
       "messageLabel": "Mensaje:",
       "messagePlaceholder": "Describe tu punto...",
       "categoryLabel": "Categoría:",
-      "categoryPlaceholder": "Elige una categoría"
+      "categoryPlaceholder": "Elige una categoría",
+      "anonymous": "Anónima para el equipo",
+      "anonymousHint": "Ni el equipo ni el Scrum Master verán que esta nota es tuya."
     },
     "readPostit": {
       "annotationLabel": "Anotación:",

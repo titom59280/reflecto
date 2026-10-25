@@ -136,7 +136,8 @@ exports.remove = async (req, res) => {
     const link = await pool.queryOne('SELECT *  FROM sprintsretrosteams WHERE id = $1', [id]);
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 
-    if (link?.isRetroDone)
+    // Colonne en minuscules : link.isRetroDone valait undefined
+    if (link.isretrodone)
       return resultRequest(
         res,
         false,
@@ -168,9 +169,10 @@ exports.getNextSprintName = async (req, res) => {
     ]);
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 
-    const currentSprintId = link.sprintId;
+    // Colonne en minuscules (sprintid) ; on prend la prochaine rétro planifiée de l'équipe
+    const currentSprintId = link.sprintid;
     const result = await pool.queryOne(
-      `SELECT s.id, s.name, s.isactif AS "iSActif", s.companyid AS "companyId", s.isclosed AS "isClosed", s.isretrodone AS "isRetroDone", s.createdat AS "createdAt" FROM sprints s JOIN sprintsretrosteams links ON links.sprintid = s.id WHERE s.id <> $1 AND links.isclosed= false and links.teamid = $2`,
+      `SELECT s.id, s.name, s.isactif AS "iSActif", s.companyid AS "companyId", s.isclosed AS "isClosed", s.isretrodone AS "isRetroDone", s.createdat AS "createdAt" FROM sprints s JOIN sprintsretrosteams links ON links.sprintid = s.id WHERE s.id <> $1 AND links.isclosed= false AND links.isretrodone= false AND links.teamid = $2 ORDER BY s.createdat ASC LIMIT 1`,
       [currentSprintId, teamId]
     );
 
@@ -215,8 +217,9 @@ exports.markRetroDone = async (req, res) => {
     }
 
     if (nextSprintId) {
+      // nextSprintId est l'id du SPRINT suivant : on cherche le lien de l'équipe pour ce sprint
       const nextLink = await pool.queryOne(
-        'SELECT * FROM sprintsretrosteams WHERE id = $1 AND teamid = $2',
+        'SELECT * FROM sprintsretrosteams WHERE sprintid = $1 AND teamid = $2 AND isretrodone= false',
         [nextSprintId, teamId]
       );
       if (!nextLink)
@@ -228,10 +231,7 @@ exports.markRetroDone = async (req, res) => {
           'NEXT_SPRINT_LINK_NOT_FOUND'
         );
 
-      await pool.query(
-        'UPDATE sprintsretrosteams SET isactif= true WHERE id = $1 AND teamid = $2',
-        [nextSprintId, teamId]
-      );
+      await pool.query('UPDATE sprintsretrosteams SET isactif= true WHERE id = $1', [nextLink.id]);
     }
 
     resultRequest(res, true, '', link);
@@ -271,12 +271,16 @@ exports.activate = async (req, res) => {
     if (req.user === undefined || req.user === null || !req.user.isScrumMaster)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
     const { linkId } = req.body;
-    const link = await pool.queryOne('SELECT * FROM sprintsretrosteams where id = $1', [linkId]);
+    const link = await pool.queryOne(
+      'SELECT * FROM sprintsretrosteams where id = $1 AND companyid = $2',
+      [linkId, req.user.companyId]
+    );
     if (!link) return resultRequest(res, false, 'Lien non trouvé', {}, 'LINK_NOT_FOUND');
 
+    // Les colonnes sont renvoyées en minuscules (teamid) : link.teamId valait undefined
     const activeRetro = await pool.queryOne(
-      'SELECT * FROM sprintsretrosteams WHERE teamId = $1 AND isactif= true',
-      [link.teamId]
+      'SELECT * FROM sprintsretrosteams WHERE teamid = $1 AND isactif= true AND isretrodone= false',
+      [link.teamid]
     );
     if (activeRetro)
       return resultRequest(

@@ -3,10 +3,9 @@
     "dashboard": {
       "title": "Administración",
       "manageRetros": "Gestionar retros",
-      "manageRetrosDesc": "Crear, asociar y consultar el historial",
+      "manageRetrosDesc": "Planificar, activar y consultar el historial",
       "newRetro": "Nueva retro",
       "kpi": {
-        "companies": "Empresas",
         "teams": "Equipos",
         "members": "Miembros",
         "activeSprints": "Sprints activos",
@@ -16,94 +15,136 @@
         "sprints": "Sprints",
         "teams": "Equipos",
         "members": "Miembros",
-        "companies": "Empresas"
+        "platform": "Plataforma"
       }
     },
     "companies": {
-      "title": "Gestionar empresas",
-      "tabs": {
-        "create": "Crear una empresa",
-        "list": "Lista de empresas"
-      },
       "name": "Nombre de la empresa",
-      "scrumMasterName": "Nombre del Scrum Master",
-      "scrumMasterEmail": "Email del Scrum Master",
-      "scrumMasterTrigram": "Iniciales del Scrum Master",
-      "subscriptionLevel": "Plan de suscripción",
-      "subscription": {
-        "free": "Gratis",
-        "basic": "Basic",
-        "premium": "Premium"
-      },
+      "scrumMasterName": "Nombre",
+      "scrumMasterEmail": "Email",
+      "scrumMasterTrigram": "Iniciales",
+      "subscriptionLevel": "Plan",
       "empty": "Todavía no hay empresas.",
       "toast": {
         "saved": "Cambios guardados",
-        "created": "Empresa creada",
-        "deleted": "Empresa eliminada"
-      }
+        "created": "Empresa creada"
+      },
+      "search": "Buscar una empresa",
+      "filterAll": "Todas",
+      "filterOver": "Fuera de límite ({count})",
+      "create": "Crear una empresa",
+      "noResult": "Ninguna empresa coincide con tu búsqueda.",
+      "colCompany": "Empresa",
+      "colPlan": "Plan",
+      "colTeams": "Equipos",
+      "colMembers": "Miembros",
+      "overLimit": "fuera de límite",
+      "unlimited": "ilimitado",
+      "createTitle": "Crear una empresa",
+      "editTitle": "Editar la empresa",
+      "firstTeam": "Primer equipo",
+      "createSubmit": "Crear"
     },
     "members": {
       "title": "Gestionar miembros",
-      "tabs": {
-        "add": "Añadir un miembro",
-        "list": "Lista de miembros"
-      },
-      "limitReached": "La suscripción de tu empresa ha alcanzado el límite de miembros",
       "email": "Email",
       "fullName": "Nombre completo",
       "scrumMaster": "Scrum Master",
       "trigram": "Iniciales",
       "team": "Equipo",
       "addSubmit": "Añadir miembro",
-      "listTitle": "Miembros",
       "empty": "Todavía no hay miembros.",
-      "nameField": "Nombre:",
-      "trigramField": "Iniciales:",
-      "teamField": "Equipo:",
       "unknownTeam": "Equipo desconocido",
       "toast": {
         "saved": "Cambios guardados",
         "created": "Nuevo miembro creado",
         "deleted": "Miembro eliminado"
-      }
+      },
+      "summaryMembers": "Ningún miembro | {count} miembro | {count} miembros",
+      "summaryScrumMasters": "Ningún Scrum Master | {count} Scrum Master | {count} Scrum Masters",
+      "summaryPending": "{count} cuenta no activada | {count} cuentas no activadas",
+      "add": "Añadir un miembro",
+      "search": "Buscar un nombre o unas iniciales",
+      "allTeams": "Todos los equipos",
+      "noResult": "Ningún miembro coincide con tu búsqueda.",
+      "colMember": "Miembro",
+      "colStatus": "Estado",
+      "you": "Tú",
+      "active": "Activo",
+      "pending": "Cuenta no activada",
+      "limitBanner": "Tu plan incluye {limit} miembros: no puedes añadir más.",
+      "addTitle": "Añadir un miembro",
+      "editTitle": "Editar el miembro",
+      "emailKeep": "Déjalo vacío para conservar el email actual",
+      "emailEditable": "La cuenta aún no está activada: puedes corregir el email.",
+      "emailLocked": "El email no se puede modificar: el miembro ya activó su cuenta.",
+      "scrumMasterHint": "Puede gestionar las retros, los sprints, los equipos y los miembros.",
+      "selfRole": "No puedes quitarte tu propio rol de Scrum Master.",
+      "accessHint": "El miembro activará su cuenta al registrarse con este email. Aparecerá como «Cuenta no activada» hasta que cree su contraseña.",
+      "confirmDeleteTitle": "¿Eliminar a {name}?",
+      "confirmDeleteText": "El miembro perderá el acceso a Reflecto. Esta acción es definitiva.",
+      "pendingHint": "El miembro debe registrarse con su email para activar su cuenta."
     },
     "sprints": {
       "title": "Gestionar sprints",
-      "tabs": {
-        "create": "Crear un sprint",
-        "list": "Lista de sprints"
-      },
-      "number": "Número del sprint",
-      "createSubmit": "Crear sprint",
       "empty": "Todavía no hay sprints.",
       "status": {
-        "closed": "Sprint cerrado",
-        "done": "Sprint terminado",
-        "active": "Sprint activo o próximo"
+        "active": "En curso",
+        "upcoming": "Próximo",
+        "done": "Terminado"
       },
       "toast": {
         "loadError": "Error al cargar los sprints",
         "created": "Sprint creado",
         "createError": "Error al crear el sprint",
-        "deleted": "Sprint eliminado"
-      }
+        "deleted": "Sprint eliminado",
+        "createdName": "{name} creado"
+      },
+      "filters": {
+        "all": "Todos",
+        "active": "En curso",
+        "upcoming": "Próximos",
+        "done": "Terminados"
+      },
+      "nameLabel": "Nombre del nuevo sprint",
+      "namePlaceholder": "Sprint 1",
+      "createHint": "Nombre libre: se propone el siguiente y puedes cambiarlo.",
+      "create": "Crear",
+      "nameRequired": "Ponle un nombre al sprint.",
+      "emptyFilter": "Ningún sprint en esta categoría.",
+      "noRetro": "Ninguna retro planificada",
+      "planRetro": "Planificar una retro",
+      "confirmDeleteTitle": "¿Eliminar «{name}»?",
+      "confirmDeleteText": "No tiene ninguna retro asociada. Esta acción es definitiva."
     },
     "teams": {
       "title": "Gestionar equipos",
-      "tabs": {
-        "create": "Crear un equipo",
-        "list": "Lista de equipos"
-      },
       "name": "Nombre del equipo",
-      "limitReached": "La suscripción de tu empresa ha alcanzado el límite de equipos",
       "empty": "Todavía no hay equipos.",
-      "membersField": "Miembros:",
       "noMembers": "Sin miembros",
       "toast": {
-        "saved": "Cambios guardados",
         "created": "Equipo creado",
-        "deleted": "Equipo eliminado"
-      }
+        "renamed": "Equipo renombrado como «{name}»",
+        "deleted": "Equipo «{name}» eliminado"
+      },
+      "summaryTeams": "{count} equipo | {count} equipos",
+      "summaryMembers": "Ningún miembro | {count} miembro | {count} miembros",
+      "namePlaceholder": "Nombre del nuevo equipo",
+      "create": "Crear",
+      "rename": "Renombrar",
+      "manageMembers": "Gestionar los miembros",
+      "noRetro": "Ninguna retro planificada",
+      "viewRetros": "Ver las retros",
+      "retro": {
+        "active": "Retro activa",
+        "pending": "Por activar"
+      },
+      "nameRequired": "Ponle un nombre al equipo.",
+      "limitBanner": "Tu plan no permite crear más equipos. El plan Pro permite crear más.",
+      "seePlans": "Ver los planes",
+      "notDeletable": "No se puede eliminar: el equipo tiene miembros o un historial de retros.",
+      "confirmDeleteTitle": "¿Eliminar «{name}»?",
+      "confirmDeleteText": "Este equipo no tiene miembros ni retros. Esta acción es definitiva."
     },
     "retros": {
       "title": "Gestionar retros",
@@ -112,14 +153,19 @@
         "list": "Lista de retros",
         "associate": "Asociar una retro",
         "links": "Asociaciones existentes",
-        "completed": "Retros completadas"
+        "completed": "Retros completadas",
+        "teams": "Equipos",
+        "templates": "Plantillas de retro"
       },
       "noLinks": "Todavía no hay asociaciones.",
       "toast": {
         "loadRetrosError": "Error al cargar las retros",
         "loadSprintsError": "Error al cargar los sprints",
-        "loadTeamsError": "Error al cargar los equipos"
-      }
+        "loadTeamsError": "Error al cargar los equipos",
+        "loadLinksError": "Error al cargar las retros planificadas"
+      },
+      "toActivate": "{count} retro por activar | {count} retros por activar",
+      "upToDate": "Todo al día"
     },
     "retroDeRetro": {
       "close": "Cerrar retro",
@@ -127,6 +173,22 @@
         "closed": "Retro cerrada correctamente",
         "closeError": "Error al cerrar la retro",
         "loadError": "Error al cargar los datos"
+      },
+      "hint": "Repasa las notas y anotaciones del sprint anterior y luego cierra la retro de retros."
+    },
+    "platform": {
+      "title": "Plataforma Reflecto",
+      "plans": "Reparto por plan",
+      "colActivity": "Última actividad",
+      "noActivity": "Sin actividad",
+      "filterInactive": "Inactivas",
+      "kpi": {
+        "companies": "Empresas",
+        "active": "Activas (30 d)",
+        "members": "Miembros",
+        "inactiveMembers": "Cuentas no activadas",
+        "openRetros": "Retros en curso",
+        "over": "Fuera de límite"
       }
     }
   }

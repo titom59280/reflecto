@@ -20,7 +20,11 @@
           <div>
             <span class="hero-title">{{ $t('admin.dashboard.manageRetros') }}</span>
             <span class="hero-desc">{{ $t('admin.dashboard.manageRetrosDesc') }}</span>
-            <span class="hero-cta"
+            <span v-if="stats.pendingRetros" class="hero-cta hero-alert">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              {{ $t('admin.retros.toActivate', stats.pendingRetros) }}
+            </span>
+            <span v-else class="hero-cta"
               ><i class="fa-solid fa-plus"></i> {{ $t('admin.dashboard.newRetro') }}</span
             >
           </div>
@@ -57,26 +61,23 @@ export default {
     return {
       isFullAdmin: false,
       stats: {
-        companies: null,
         teams: null,
         members: null,
         activeSprints: null,
         openRetros: null,
+        pendingRetros: 0,
       },
     };
   },
   computed: {
     kpis() {
-      const kpis = [];
-      if (this.isFullAdmin)
-        kpis.push({ label: this.$t('admin.dashboard.kpi.companies'), value: this.stats.companies });
-      kpis.push(
+      // Uniquement la compagnie de l'utilisateur ; les chiffres globaux sont sur la page Plateforme
+      return [
         { label: this.$t('admin.dashboard.kpi.teams'), value: this.stats.teams },
         { label: this.$t('admin.dashboard.kpi.members'), value: this.stats.members },
         { label: this.$t('admin.dashboard.kpi.activeSprints'), value: this.stats.activeSprints },
-        { label: this.$t('admin.dashboard.kpi.openRetros'), value: this.stats.openRetros }
-      );
-      return kpis;
+        { label: this.$t('admin.dashboard.kpi.openRetros'), value: this.stats.openRetros },
+      ];
     },
     links() {
       const links = [
@@ -101,9 +102,9 @@ export default {
       ];
       if (this.isFullAdmin) {
         links.push({
-          to: '/admin/companies',
-          label: this.$t('admin.dashboard.links.companies'),
-          icon: 'fa-solid fa-building',
+          to: '/admin/plateforme',
+          label: this.$t('admin.dashboard.links.platform'),
+          icon: 'fa-solid fa-globe',
           color: 'blue',
         });
       }
@@ -122,23 +123,23 @@ export default {
     async fetchStats() {
       // Chaque KPI est indépendant : un échec n'empêche pas l'affichage des autres
       const safe = (promise) => promise.catch(() => null);
-      const [companies, teams, members, sprints, links] = await Promise.all([
-        // /companies est réservé aux full admins côté API
-        this.isFullAdmin ? safe(AdminService.getCompanies()) : null,
+      const [teams, members, links] = await Promise.all([
         safe(AdminService.getTeams()),
         safe(AdminService.getMembers()),
-        safe(AdminService.getSprints()),
         safe(AdminService.getSprintRetroLinks()),
       ]);
 
-      if (companies?.isSuccess) this.stats.companies = companies.result.length;
       if (teams?.isSuccess) this.stats.teams = teams.result.length;
       if (members?.isSuccess) this.stats.members = members.result.members.length;
-      if (sprints?.isSuccess) {
-        this.stats.activeSprints = sprints.result.filter((s) => s.isActif && !s.isClosed).length;
-      }
       if (links?.isSuccess) {
+        // Sprint en cours = sprint portant une rétro active (même règle que la page Sprints)
+        this.stats.activeSprints = new Set(
+          links.result.filter((l) => l.isActif && !l.isRetroDone).map((l) => l.sprintId)
+        ).size;
         this.stats.openRetros = links.result.filter((l) => !l.isClosed && !l.isRetroDone).length;
+        this.stats.pendingRetros = links.result.filter(
+          (l) => !l.isActif && !l.isClosed && !l.isRetroDone
+        ).length;
       }
     },
   },
@@ -169,6 +170,8 @@ export default {
 }
 
 .kpi-card {
+  /* Indicateur non cliquable : curseur standard, pas de curseur texte */
+  cursor: default;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -232,6 +235,12 @@ export default {
   margin-top: 0.3rem;
   font-size: 0.98rem;
   color: #b8cfd2;
+}
+
+.hero-cta.hero-alert {
+  background: #ef9f27;
+  color: #412402;
+  border-radius: 999px;
 }
 
 .hero-cta {

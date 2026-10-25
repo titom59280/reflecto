@@ -68,12 +68,14 @@ const routes = [
         meta: { requiresAuth: true, requiresScrumMaster: true },
       },
       {
-        path: '/admin/companies',
-        name: 'CompaniesManager',
+        // Page « Plateforme » : indicateurs globaux et compagnies, réservée aux administrateurs
+        path: '/admin/plateforme',
+        name: 'PlatformManager',
         component: CompaniesManager,
         props: true,
-        meta: { requiresAuth: true, requiresScrumMaster: true },
+        meta: { requiresAuth: true, requiresScrumMaster: true, requiresFullAdmin: true },
       },
+      { path: '/admin/companies', redirect: '/admin/plateforme' },
       {
         path: '/admin/teams',
         name: 'TeamsManager',
@@ -118,6 +120,9 @@ router.beforeEach((to, from, next) => {
     next({ name: '/' });
   } else if (to.meta.requiresScrumMaster && !user?.isScrumMaster) {
     next({ name: '/' });
+  } else if (to.meta.requiresFullAdmin && !user?.isFullAdmin) {
+    // Les données restent protégées côté serveur ; ceci évite d'afficher une page vide
+    next({ path: '/admin' });
   } else {
     next();
   }

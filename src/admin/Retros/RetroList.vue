@@ -9,6 +9,14 @@
           <div class="retro-header">
             <h3 class="retro-header-title">{{ retro.name || $t('adminRetros.list.untitled') }}</h3>
             <button
+              class="edit"
+              :aria-label="$t('adminRetros.list.edit')"
+              :title="$t('adminRetros.list.edit')"
+              @click="editedRetro = retro"
+            >
+              ✏️
+            </button>
+            <button
               class="delete"
               :aria-label="$t('common.delete')"
               :title="$t('common.delete')"
@@ -25,13 +33,21 @@
         </div>
       </div>
     </div>
+    <RetroEdit
+      v-if="editedRetro"
+      :retro="editedRetro"
+      @close="editedRetro = null"
+      @saved="onSaved"
+    />
   </div>
 </template>
 
 <script>
 import AdminService from './../AdminService';
+import RetroEdit from './RetroEdit.vue';
 
 export default {
+  components: { RetroEdit },
   props: {
     retros: {
       type: Array,
@@ -39,7 +55,16 @@ export default {
     },
   },
   emits: ['refresh'],
+  data() {
+    return {
+      editedRetro: null,
+    };
+  },
   methods: {
+    onSaved() {
+      this.editedRetro = null;
+      this.$emit('refresh');
+    },
     async deleteRetro(id) {
       try {
         const result = await AdminService.deleteRetro(id);
@@ -142,6 +167,18 @@ button:not(.delete) {
 .delete {
   background-color: #dc3545;
   border: 1px solid #dc3545;
+}
+
+.edit {
+  background-color: #ffffff !important;
+  border: 1px solid #005a64 !important;
+  margin-bottom: 0 !important;
+  margin-left: auto;
+  margin-right: 0.5rem;
+}
+
+.edit:hover {
+  background-color: #e6f0f2 !important;
 }
 
 button:not(.delete):hover {

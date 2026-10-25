@@ -29,8 +29,22 @@ exports.create = async (req, res) => {
   try {
     if (req.user === undefined || req.user === null)
       return resultRequest(res, false, 'Methode non accessible', {}, 'METHOD_NOT_ALLOWED');
-    const { name, isActive = false, isClosed = false, isRetroDone = false } = req.body;
+    const { isActive = false, isClosed = false, isRetroDone = false } = req.body;
+    // Nom libre (numéro ou texte), sans doublon dans la compagnie
+    const name = (req.body.name || '').trim();
     if (!name) return resultRequest(res, false, 'Nom obligatoire', {}, 'NAME_REQUIRED');
+    const sameName = await pool.queryOne(
+      'SELECT id FROM sprints WHERE UPPER(name) = UPPER($1) AND companyid = $2',
+      [name, req.user.companyId]
+    );
+    if (sameName)
+      return resultRequest(
+        res,
+        false,
+        'Un sprint avec ce nom existe déjà',
+        {},
+        'SPRINT_NAME_EXISTS'
+      );
     const company = await pool.queryOne('SELECT * from companies WHERE id = $1', [
       req.user.companyId,
     ]);
@@ -104,10 +118,7 @@ exports.remove = async (req, res) => {
         'LINKED_RETRO_ACTIVE'
       );
 
-    await pool.query(
-      "DELETE FROM sprints WHERE id = $1",
-      [req.params.id]
-    );
+    await pool.query('DELETE FROM sprints WHERE id = $1', [req.params.id]);
     resultRequest(res, true, '', {});
   } catch (err) {
     console.error('[sprint.remove] erreur', err);

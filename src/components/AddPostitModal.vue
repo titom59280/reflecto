@@ -21,6 +21,15 @@
           </option>
         </select>
 
+        <!-- Anonymat choisi post-it par post-it -->
+        <label class="anonymous">
+          <input v-model="isAnonymous" type="checkbox" />
+          <span>
+            <b>{{ $t('board.addPostit.anonymous') }}</b>
+            <small>{{ $t('board.addPostit.anonymousHint') }}</small>
+          </span>
+        </label>
+
         <div class="modal-actions">
           <button class="btn cancel" @click="close">{{ $t('common.cancel') }}</button>
           <button class="btn submit" :disabled="!message || !selectedCategory" @click="submit">
@@ -54,6 +63,7 @@ export default {
       id: this.initialPostit?.id || null,
       message: this.initialPostit?.message || '',
       selectedCategory: this.initialPostit?.categoryName || '',
+      isAnonymous: !!this.initialPostit?.isAnonymous,
     };
   },
   watch: {
@@ -62,11 +72,13 @@ export default {
         this.id = null;
         this.message = '';
         this.selectedCategory = '';
+        this.isAnonymous = false;
         return;
       }
       this.id = value.id;
       this.message = value.message;
       this.selectedCategory = value.categoryName;
+      this.isAnonymous = !!value.isAnonymous;
     },
   },
   methods: {
@@ -90,12 +102,14 @@ export default {
     close() {
       this.message = '';
       this.selectedCategory = '';
+      this.isAnonymous = false;
       this.$emit('close');
     },
     submit() {
       this.$emit('submit', {
         message: this.message,
         category: this.selectedCategory,
+        isAnonymous: this.isAnonymous,
       });
       this.close();
     },
@@ -184,6 +198,36 @@ select {
 textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+.anonymous {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-top: 0.9rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #ece7da;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.anonymous input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  flex-shrink: 0;
+}
+
+.anonymous span {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.anonymous small {
+  color: #6b7678;
+  font-size: 0.82rem;
 }
 
 .modal-actions {

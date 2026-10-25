@@ -25,10 +25,15 @@ export default {
       type: Array,
       required: true,
     },
+    // Onglet ouvert à l'arrivée sur la page
+    initialTab: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
-      activeTab: 0,
+      activeTab: this.initialTab,
     };
   },
 };

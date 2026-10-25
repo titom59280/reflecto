@@ -1,33 +1,76 @@
 <template>
   <div class="retro-page">
-    <div v-if="retro" class="retro-columns">
-      <div v-for="cat in categories" :key="cat.id" class="retro-column">
-        <h3>{{ cat.name }}</h3>
-        <img v-if="cat.image" :src="cat.image" class="category-image" />
-        <p class="description">{{ cat.description }}</p>
-        <div class="post-it-container">
+    <div v-if="retro" class="board">
+      <!-- Même bandeau que le tableau de rétro : rétro, équipe, sprint, phase et action -->
+      <div class="board-bar">
+        <div class="board-title">
+          <h2>{{ retro.name }}</h2>
+          <p>{{ teamName }} · {{ sprintName }}</p>
+        </div>
+
+        <ol class="phases" :aria-label="$t('board.retroBoard.phase.label')">
+          <li class="done">
+            <span class="phase-dot"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+            {{ $t('board.retroBoard.phase.collect') }}
+          </li>
+          <li class="done">
+            <span class="phase-dot"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+            {{ $t('board.retroBoard.phase.discussion') }}
+          </li>
+          <li class="on">
+            <span class="phase-dot">3</span>{{ $t('adminRetros.teams.retroOfRetro') }}
+          </li>
+        </ol>
+
+        <div class="board-actions">
+          <button class="board-btn primary" type="button" @click="closeRetroModalVisible = true">
+            {{ $t('admin.retroDeRetro.close') }}
+          </button>
+        </div>
+      </div>
+
+      <p class="phase-hint">{{ $t('admin.retroDeRetro.hint') }}</p>
+
+      <div class="retro-columns">
+        <section v-for="cat in categories" :key="cat.id" class="retro-column">
+          <header class="column-head">
+            <img v-if="cat.image" :src="cat.image" :alt="cat.name" class="category-image" />
+            <div class="column-title">
+              <h3>{{ cat.name }}</h3>
+              <span class="count">{{ filteredPostIts(cat.name).length }}</span>
+            </div>
+            <p class="description">{{ cat.description }}</p>
+          </header>
+
           <transition-group name="postit" tag="div" class="postit-list">
             <div
               v-for="post in filteredPostIts(cat.name)"
               :key="post.id"
-              class="post-it"
-              :class="{ hasAnnotation: post.annotation && post.annotation !== '' }"
-              @mouseenter="hoveredPostId = post.id"
-              @mouseleave="hoveredPostId = null"
-              @click="handlePostitClick(post)"
+              class="post-it clickable"
+              :style="{ background: post.color }"
+              :title="post.message"
+              @click="openReadModal(post)"
             >
               <p class="post-text">{{ truncateText(post.message) }}</p>
-              <span class="trigram">{{ post.trigramme }}</span>
+              <span class="post-footer">
+                <i
+                  v-if="post.annotation"
+                  class="fa-solid fa-comment-dots annotation"
+                  :title="$t('board.retroBoard.annotated')"
+                ></i>
+                <span v-if="post.isAnonymous" class="trigram anonymous-label">
+                  <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
+                  {{ $t('board.retroBoard.anonymous') }}
+                </span>
+                <span v-else class="trigram">{{ post.trigramme }}</span>
+              </span>
             </div>
           </transition-group>
-        </div>
+          <p v-if="!filteredPostIts(cat.name).length" class="empty-column">
+            {{ $t('board.retroBoard.emptyColumn') }}
+          </p>
+        </section>
       </div>
-    </div>
-
-    <div class="add-button-container">
-      <button class="add-postit-btn" @click="closeRetroModalVisible = true">
-        {{ $t('admin.retroDeRetro.close') }}
-      </button>
     </div>
   </div>
   <ReadPostitModal
@@ -66,8 +109,9 @@ export default {
   emits: ['close'],
   data() {
     return {
-      currentDisplayedPostit: null,
       closeRetroModalVisible: false,
+      teamName: '',
+      sprintName: '',
       user: authService.getUser(),
       selectedPostit: null,
       currentLink: null,
@@ -77,18 +121,10 @@ export default {
       postits: [],
     };
   },
-  computed: {
-    showTrigram() {
-      return this.currentLink?.showTrigram || this.isScrumMaster;
-    },
-  },
   mounted() {
     this.fetchLinkData();
   },
   methods: {
-    handlePostitClick(post) {
-      this.openReadModal(post);
-    },
     openReadModal(post) {
       this.selectedPostit = post;
       this.readModalVisible = true;
@@ -104,8 +140,12 @@ export default {
     },
     async fetchLinkData() {
       try {
-        const resultRetros = await AdminService.getRetros();
-        const resultlinks = await AdminService.getSprintRetroLinks();
+        const [resultRetros, resultlinks, resultTeams, resultSprints] = await Promise.all([
+          AdminService.getRetros(),
+          AdminService.getSprintRetroLinks(),
+          AdminService.getTeams(),
+          AdminService.getSprints(),
+        ]);
 
         if (!resultlinks.isSuccess) {
           this.$root.showToast(this.$apiMessage(resultlinks), 'error');
@@ -118,6 +158,15 @@ export default {
         }
         this.currentLink = resultlinks.result.find((link) => link.id === this.currentLinkId);
         this.retro = resultRetros.result.find((r) => r.id === this.currentLink.retroId);
+        // Équipe et sprint affichés dans le bandeau
+        if (resultTeams.isSuccess) {
+          this.teamName =
+            resultTeams.result.find((t) => t.id === this.currentLink.teamId)?.name || '';
+        }
+        if (resultSprints.isSuccess) {
+          this.sprintName =
+            resultSprints.result.find((sp) => sp.id === this.currentLink.sprintId)?.name || '';
+        }
         const resultCategories = await AdminService.getCategories(this.currentLink.retroId);
 
         if (!resultCategories.isSuccess) {
@@ -129,7 +178,6 @@ export default {
         this.fetchPostIts();
       } catch (err) {
         this.$root.showToast(this.$t('admin.retroDeRetro.toast.loadError'), 'error');
-        this.noRetroMessage = this.$t('admin.retroDeRetro.toast.loadError');
       }
     },
     async fetchPostIts() {
@@ -140,7 +188,7 @@ export default {
       }
       this.postits = resultPostId.result;
     },
-    truncateText(text, maxChars = 60) {
+    truncateText(text, maxChars = 140) {
       if (!text) return '';
       return text.length > maxChars ? text.slice(0, maxChars) + '…' : text;
     },
@@ -151,366 +199,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.start-retro-explain span {
-  align-content: center;
-}
-
-.retro-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.retro-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  height: 100%;
-  overflow: auto;
-}
-.retro-column {
-  padding: 1rem;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.post-it {
-  background: #fff;
-  border: 1px solid #ccc;
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border-radius: 8px;
-}
-.btn-delete {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #dc3545;
-  border: none;
-  border-radius: 50%;
-  color: white;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.9;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-delete:hover {
-  background-color: white;
-  color: #dc3545;
-  border: 1px solid #dc3545;
-}
-
-.hasAnnotation {
-  background-color: #014d64;
-  color: white;
-}
-
-.post-it:not(.hasAnnotation) {
-  background-color: #fff89a;
-  color: #333;
-}
-
-.no-access {
-  color: #c00;
-  font-weight: bold;
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-.retro-board {
-  padding: 2rem;
-  min-height: 100vh;
-}
-
-.columns {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.column {
-  border-radius: 12px;
-  padding: 1rem;
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: background 0.3s ease;
-}
-
-.category-image {
-  height: 100px;
-  margin-bottom: 1rem;
-}
-
-.post-it-container {
-  background-color: #ebe4d7;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 95%;
-  border-radius: 5%;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #c5c5c5 #f5f5f5;
-}
-
-.start-retro-explain {
-  display: flex;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: #014d64;
-  flex: 1;
-}
-
-.description {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #4a3f35; /* marron doux, inspiré maquette */
-  line-height: 1.4;
-}
-
-.add-button-container {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  gap: 1.2rem;
-}
-
-.add-postit-btn {
-  background-color: #014d64;
-  color: white;
-  padding: 0.7rem 1.4rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.add-postit-btn:hover {
-  background-color: #02677a;
-}
-
-.post-it {
-  border-radius: 8px;
-  margin: 0.5rem 0;
-  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.1);
-  width: 105px;
-  height: 105px;
-  overflow: hidden;
-  white-space: normal;
-  display: -webkit-box;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  line-height: 1.2;
-  font-size: 0.85rem;
-  padding: 0.6rem;
-  font-family: 'Segoe UI', sans-serif;
-  transform: rotate(-1.5deg);
-  position: relative;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.post-it::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 10px;
-  background: rgba(0, 0, 0, 0.05);
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-.fade-postit-enter-active {
-  transition: all 0.4s ease;
-}
-.fade-postit-enter-from {
-  transform: scale(0.6) rotate(-10deg);
-  opacity: 0;
-}
-.fade-postit-enter-to {
-  transform: rotate(-1.5deg);
-  opacity: 1;
-}
-
-.retro-page {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  overflow: auto;
-}
-
-/* transition d'insertion */
-.postit-enter-active,
-.postit-leave-active {
-  transition: all 0.4s ease;
-}
-
-.postit-enter-from {
-  opacity: 0;
-  transform: scale(0.5) rotate(-8deg);
-}
-
-.postit-enter-to {
-  opacity: 1;
-  transform: scale(1) rotate(-1.5deg);
-}
-
-.postit-leave-to {
-  opacity: 0;
-  transform: scale(0.5) translateY(20px);
-}
-
-.postit-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 12px;
-  justify-items: center;
-  padding: 1rem;
-  max-height: 300px;
-  scroll-behavior: smooth;
-}
-
-/* Webkit (Chrome, Edge, Safari) */
-.post-it-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.post-it-container::-webkit-scrollbar-track {
-  background: #f5f5f5;
-  border-radius: 10px;
-}
-
-.post-it-container::-webkit-scrollbar-thumb {
-  background-color: #b4b4b4;
-  border-radius: 10px;
-  border: 2px solid #f5f5f5; /* padding via border */
-  transition: background 0.3s;
-}
-
-.post-it-container::-webkit-scrollbar-thumb:hover {
-  background-color: #888;
-}
-
-.post-it {
-  position: relative;
-  width: 105px;
-  height: 105px;
-  padding: 8px;
-  border-radius: 6px;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.post-text {
-  font-size: 0.8rem;
-  line-height: 1.1;
-  flex-grow: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.trigram {
-  font-size: 0.75rem;
-  color: #555;
-  text-align: right;
-  margin-top: 4px;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  /* On laisse la page défiler naturellement plutôt que des scrolls imbriqués */
-  .retro-page,
-  .retro-columns {
-    height: auto;
-    overflow: visible;
-  }
-
-  .retro-columns {
-    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-  }
-
-  .retro-column {
-    padding: 0.75rem 0.5rem;
-  }
-
-  .retro-column h3 {
-    text-align: center;
-    overflow-wrap: anywhere;
-  }
-
-  .category-image {
-    height: 80px;
-    max-width: 100%;
-    object-fit: contain;
-  }
-
-  .description {
-    font-size: 1.05rem;
-  }
-
-  .post-it-container {
-    width: 100%;
-  }
-
-  .postit-list {
-    padding: 0.75rem;
-  }
-
-  .add-button-container {
-    margin-top: 1.25rem;
-  }
-
-  .add-postit-btn {
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 480px) {
-  .retro-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .category-image {
-    height: 64px;
-  }
-
-  .description {
-    font-size: 1rem;
-  }
-
-  .postit-list {
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-    gap: 10px;
-    padding: 0.5rem;
-  }
-
-  .add-postit-btn {
-    width: 100%;
-  }
-}
-</style>
+<style scoped src="@/styles/retro-board.css"></style>

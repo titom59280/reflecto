@@ -54,7 +54,9 @@ export default {
     showToast(message, type = 'success', duration = 3000) {
       this.toast.message = message;
       this.toast.type = type;
-      setTimeout(() => {
+      // Un nouveau toast repart pour sa durée complète (l'ancien minuteur ne l'efface plus)
+      clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => {
         this.toast.message = '';
         this.toast.type = '';
       }, duration);

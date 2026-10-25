@@ -1,0 +1,341 @@
+/* Styles communs du tableau de rétro (RetroBoard) et de la rétro de rétro (RetroDeRetro).
+   Importés en « scoped » par chaque composant. */
+.retro-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== Bandeau ===== */
+.board-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  flex-wrap: wrap;
+  background: #ffffff;
+  border: 1px solid #ece7da;
+  border-radius: 16px;
+  padding: 0.9rem 1.25rem;
+}
+
+.board-title {
+  min-width: 180px;
+  flex: 1 1 auto;
+}
+
+.board-title h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #003d47;
+}
+
+.board-title p {
+  margin: 0.15rem 0 0;
+  color: #6b7678;
+  font-size: 0.92rem;
+}
+
+.phases {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  color: #9aa3a5;
+}
+
+.phases li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.phases li + li::before {
+  content: '›';
+  margin-right: 0.4rem;
+  color: #c8c4b8;
+}
+
+.phase-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #d3d1c7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.phases li.on {
+  color: #003d47;
+  font-weight: 600;
+}
+
+.phases li.on .phase-dot {
+  background: #003d47;
+  border-color: #003d47;
+  color: #ffffff;
+}
+
+.phases li.done {
+  color: #3b6d11;
+}
+
+.phases li.done .phase-dot {
+  background: #eaf3de;
+  border-color: #97c459;
+  color: #3b6d11;
+}
+
+.board-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.participation {
+  color: #5b6669;
+  font-size: 0.9rem;
+}
+
+.board-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  border: 1px solid #005a64;
+  cursor: pointer;
+  font-family: inherit;
+  min-height: 40px;
+  transition: background 0.2s ease;
+}
+
+.board-btn.primary {
+  background: #005a64;
+  color: #ffffff;
+}
+
+.board-btn.primary:hover {
+  background: #002b36;
+}
+
+.board-btn.secondary {
+  background: #ffffff;
+  color: #005a64;
+}
+
+.board-btn.secondary:hover {
+  background: #e6f0f2;
+}
+
+.board-btn.ghost {
+  background: transparent;
+  color: #5b6669;
+  border-color: #d6d1c4;
+}
+
+.board-btn.ghost:hover {
+  background: #f1ede3;
+}
+
+.phase-hint {
+  margin: 0.75rem 0 1rem;
+  color: #6b7678;
+  font-size: 0.9rem;
+}
+
+/* ===== Colonnes ===== */
+.retro-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.retro-column {
+  background: #f3eee3;
+  border-radius: 14px;
+  padding: 0.9rem;
+}
+
+.column-head {
+  margin-bottom: 0.75rem;
+}
+
+.category-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.column-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.column-title h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #003d47;
+  overflow-wrap: anywhere;
+}
+
+.count {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #5b6669;
+}
+
+.description {
+  margin: 0.25rem 0 0;
+  color: #6b7678;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.postit-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(130px, 100%), 1fr));
+  gap: 0.7rem;
+}
+
+.post-it {
+  position: relative;
+  min-height: 96px;
+  border-radius: 4px;
+  padding: 0.6rem 0.65rem 1.6rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  color: #2c2c2a;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.post-it.clickable {
+  cursor: pointer;
+}
+
+.post-it.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+}
+
+.post-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.post-footer {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.trigram {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #5f5e5a;
+}
+
+.anonymous-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.annotation {
+  color: #3c3489;
+  font-size: 0.8rem;
+}
+
+/* Suppression : visible au survol, toujours visible sur écran tactile */
+.btn-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  color: #a32d2d;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.post-it:hover .btn-delete,
+.btn-delete:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .btn-delete {
+    opacity: 1;
+  }
+}
+
+.empty-column {
+  margin: 0;
+  color: #8a9294;
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+/* Animation d'apparition des post-its */
+.postit-enter-active,
+.postit-leave-active {
+  transition: all 0.3s ease;
+}
+
+.postit-enter-from,
+.postit-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .board-bar {
+    padding: 0.8rem 1rem;
+  }
+
+  .board-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .phases {
+    font-size: 0.8rem;
+  }
+
+  .board-actions .board-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

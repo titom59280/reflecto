@@ -16,12 +16,12 @@ export default {
     const res = await authService.instance.post(`/teams`, { name });
     return res.data;
   },
-  async updateTeam(team) {
-    const res = await authService.instance.put(`/teams/${team.id}`, team);
-    return res.data;
-  },
   async deleteTeam(id) {
     const res = await authService.instance.delete(`/teams/${id}`);
+    return res.data;
+  },
+  async updateTeam(team) {
+    const res = await authService.instance.put(`/teams/${team.id}`, team);
     return res.data;
   },
 
@@ -31,18 +31,19 @@ export default {
     return res.data;
   },
 
+  async getPlatformStats() {
+    const res = await authService.instance.get(`/companies/stats`);
+    return res.data;
+  },
+
   async getCompanie() {
     const res = await authService.instance.get(`/companies/getCompanie`);
     return res.data;
   },
 
-  async createCompany(companyName, scrumMasterEmail, scrumMasterName, scrumMasterTrigramme) {
-    const res = await authService.instance.post(`/companies`, {
-      companyName,
-      scrumMasterEmail,
-      scrumMasterName,
-      scrumMasterTrigramme,
-    });
+  // Création par un full admin (offre au choix) : route dédiée, distincte de l'inscription publique
+  async createCompany(company) {
+    const res = await authService.instance.post(`/companies/admin`, company);
     return res.data;
   },
 
@@ -52,11 +53,6 @@ export default {
       companyName,
       subscriptionLevel,
     });
-    return res.data;
-  },
-
-  async deleteCompany(companyId) {
-    const res = await authService.instance.delete(`/companies/${companyId}`);
     return res.data;
   },
 
@@ -110,6 +106,16 @@ export default {
     const res = await authService.instance.post(`/retros`, retro, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    return res.data;
+  },
+  async updateRetro(id, retro) {
+    const res = await authService.instance.put(`/retros/${id}`, retro, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  },
+  async setRetroArchived(id, archived) {
+    const res = await authService.instance.put(`/retros/${id}/archive`, { archived });
     return res.data;
   },
   async deleteRetro(id) {

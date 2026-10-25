@@ -18,7 +18,8 @@
     "list": {
       "empty": "No retros yet.",
       "untitled": "Untitled retro",
-      "deleted": "The retro has been deleted"
+      "deleted": "The retro has been deleted",
+      "edit": "Edit"
     },
     "associate": {
       "retro": "Retro",
@@ -60,6 +61,85 @@
       "unknownTeam": "Unknown team",
       "unknownSprint": "Unknown sprint",
       "loadError": "Error while loading sticky notes"
+    },
+    "edit": {
+      "title": "Edit retro",
+      "retroName": "Retro name",
+      "categories": "Categories",
+      "categoryName": "Category name",
+      "categoryDescription": "Description",
+      "image": "Image",
+      "noImage": "No image",
+      "changeImage": "Change image",
+      "addImage": "Add an image",
+      "removeImage": "Remove image",
+      "undo": "Undo removal",
+      "imagesPlanHint": "Category images are available with the Pro plan.",
+      "addCategory": "Add a category",
+      "removeCategory": "Delete category",
+      "save": "Save",
+      "saving": "Saving…",
+      "success": "Retro updated",
+      "loadError": "Couldn’t load the retro",
+      "nameRequired": "The retro and every category need a name.",
+      "minCategories": "A retro needs at least 2 categories.",
+      "duplicateNames": "Two categories can’t have the same name.",
+      "createTitle": "New retro",
+      "create": "Create",
+      "created": "{name} created"
+    },
+    "teams": {
+      "noTeam": "Create a team first to plan retros.",
+      "plan": "Plan",
+      "planRetro": "Plan a retro",
+      "remove": "Remove",
+      "activate": "Activate",
+      "openBoard": "Open board",
+      "nothingPlanned": "No retro planned for the next sprint",
+      "history": "History: {count} finished retro | History: {count} finished retros",
+      "viewPostits": "View sticky notes",
+      "retroOfRetro": "Retro of retros",
+      "status": {
+        "active": "Active",
+        "pending": "To activate",
+        "done": "Finished"
+      },
+      "hintPending": "Not visible to the team yet",
+      "hintActive": "Visible to the team",
+      "hintInProgress": "Retro in progress",
+      "activated": "Retro activated: the team can now add sticky notes",
+      "removed": "Planning removed"
+    },
+    "templates": {
+      "create": "Create a retro",
+      "empty": "No retros yet.",
+      "uses": "Never used | Used once | Used {count} times",
+      "inUse": "This retro is planned or active: remove it from the team first.",
+      "archive": "Archive",
+      "archiveHint": "Already used: it’s hidden but stays in the history",
+      "unarchive": "Restore",
+      "archivedBadge": "Archived",
+      "archivedTitle": "Archived retros",
+      "archivedHint": "They’re no longer offered when planning. Restore them to use them again.",
+      "showArchived": "Show archive ({count})",
+      "hideArchived": "Hide archive",
+      "archived": "{name} archived",
+      "unarchived": "{name} restored"
+    },
+    "plan": {
+      "title": "Plan a retro for {team}",
+      "sprint": "Sprint",
+      "noSprint": "No sprint available for this team.",
+      "createSprint": "Create a sprint",
+      "retro": "Retro to use",
+      "chooseRetro": "Choose a retro",
+      "reuse": "Reuse an existing retro",
+      "createNew": "Create a new retro…",
+      "retroHint": "Reuse an existing retro or create a new one.",
+      "pendingInfo": "The retro will be added as {status}. Activate it when the team is ready to start.",
+      "submit": "Plan",
+      "success": "{retro} planned for {sprint}. Remember to activate it.",
+      "createAndUse": "Create and use"
     }
   }
 }

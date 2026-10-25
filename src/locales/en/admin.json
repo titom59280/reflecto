@@ -3,10 +3,9 @@
     "dashboard": {
       "title": "Administration",
       "manageRetros": "Manage retros",
-      "manageRetrosDesc": "Create, associate and browse history",
+      "manageRetrosDesc": "Plan, activate and browse history",
       "newRetro": "New retro",
       "kpi": {
-        "companies": "Companies",
         "teams": "Teams",
         "members": "Members",
         "activeSprints": "Active sprints",
@@ -16,94 +15,136 @@
         "sprints": "Sprints",
         "teams": "Teams",
         "members": "Members",
-        "companies": "Companies"
+        "platform": "Platform"
       }
     },
     "companies": {
-      "title": "Manage companies",
-      "tabs": {
-        "create": "Create a company",
-        "list": "Company list"
-      },
       "name": "Company name",
-      "scrumMasterName": "Scrum Master name",
-      "scrumMasterEmail": "Scrum Master email",
-      "scrumMasterTrigram": "Scrum Master initials",
-      "subscriptionLevel": "Subscription plan",
-      "subscription": {
-        "free": "Free",
-        "basic": "Basic",
-        "premium": "Premium"
-      },
+      "scrumMasterName": "Name",
+      "scrumMasterEmail": "Email",
+      "scrumMasterTrigram": "Initials",
+      "subscriptionLevel": "Plan",
       "empty": "No companies yet.",
       "toast": {
         "saved": "Changes saved",
-        "created": "Company created",
-        "deleted": "Company deleted"
-      }
+        "created": "Company created"
+      },
+      "search": "Search a company",
+      "filterAll": "All",
+      "filterOver": "Over limit ({count})",
+      "create": "Create a company",
+      "noResult": "No company matches your search.",
+      "colCompany": "Company",
+      "colPlan": "Plan",
+      "colTeams": "Teams",
+      "colMembers": "Members",
+      "overLimit": "over limit",
+      "unlimited": "unlimited",
+      "createTitle": "Create a company",
+      "editTitle": "Edit company",
+      "firstTeam": "First team",
+      "createSubmit": "Create"
     },
     "members": {
       "title": "Manage members",
-      "tabs": {
-        "add": "Add a member",
-        "list": "Member list"
-      },
-      "limitReached": "Your company's subscription has reached its member limit",
       "email": "Email",
       "fullName": "Full name",
       "scrumMaster": "Scrum Master",
       "trigram": "Initials",
       "team": "Team",
       "addSubmit": "Add member",
-      "listTitle": "Members",
       "empty": "No members yet.",
-      "nameField": "Name:",
-      "trigramField": "Initials:",
-      "teamField": "Team:",
       "unknownTeam": "Unknown team",
       "toast": {
         "saved": "Changes saved",
         "created": "New member created",
         "deleted": "Member deleted"
-      }
+      },
+      "summaryMembers": "No members | {count} member | {count} members",
+      "summaryScrumMasters": "No Scrum Master | {count} Scrum Master | {count} Scrum Masters",
+      "summaryPending": "{count} account not activated | {count} accounts not activated",
+      "add": "Add a member",
+      "search": "Search a name or initials",
+      "allTeams": "All teams",
+      "noResult": "No member matches your search.",
+      "colMember": "Member",
+      "colStatus": "Status",
+      "you": "You",
+      "active": "Active",
+      "pending": "Account not activated",
+      "limitBanner": "Your plan includes {limit} members: you can’t add more.",
+      "addTitle": "Add a member",
+      "editTitle": "Edit member",
+      "emailKeep": "Leave empty to keep the current email",
+      "emailEditable": "The account isn’t activated yet: you can fix the email.",
+      "emailLocked": "Email can’t be changed: the member has already activated their account.",
+      "scrumMasterHint": "Can manage retros, sprints, teams and members.",
+      "selfRole": "You can’t remove your own Scrum Master role.",
+      "accessHint": "The member activates their account by signing up with this email. They show as “Account not activated” until they create their password.",
+      "confirmDeleteTitle": "Delete {name}?",
+      "confirmDeleteText": "The member will lose access to Reflecto. This can’t be undone.",
+      "pendingHint": "The member needs to sign up with their email to activate their account."
     },
     "sprints": {
       "title": "Manage sprints",
-      "tabs": {
-        "create": "Create a sprint",
-        "list": "Sprint list"
-      },
-      "number": "Sprint number",
-      "createSubmit": "Create sprint",
       "empty": "No sprints yet.",
       "status": {
-        "closed": "Sprint closed",
-        "done": "Sprint completed",
-        "active": "Sprint active or upcoming"
+        "active": "In progress",
+        "upcoming": "Upcoming",
+        "done": "Finished"
       },
       "toast": {
         "loadError": "Failed to load sprints",
         "created": "Sprint created",
         "createError": "Failed to create sprint",
-        "deleted": "Sprint deleted"
-      }
+        "deleted": "Sprint deleted",
+        "createdName": "{name} created"
+      },
+      "filters": {
+        "all": "All",
+        "active": "In progress",
+        "upcoming": "Upcoming",
+        "done": "Finished"
+      },
+      "nameLabel": "New sprint name",
+      "namePlaceholder": "Sprint 1",
+      "createHint": "Free text: the next name is suggested, and you can change it.",
+      "create": "Create",
+      "nameRequired": "Give the sprint a name.",
+      "emptyFilter": "No sprints in this category.",
+      "noRetro": "No retro planned",
+      "planRetro": "Plan a retro",
+      "confirmDeleteTitle": "Delete “{name}”?",
+      "confirmDeleteText": "No retro is attached to it. This can’t be undone."
     },
     "teams": {
       "title": "Manage teams",
-      "tabs": {
-        "create": "Create a team",
-        "list": "Team list"
-      },
       "name": "Team name",
-      "limitReached": "Your company's subscription has reached its team limit",
       "empty": "No teams yet.",
-      "membersField": "Members:",
       "noMembers": "No members",
       "toast": {
-        "saved": "Changes saved",
         "created": "Team created",
-        "deleted": "Team deleted"
-      }
+        "renamed": "Team renamed to “{name}”",
+        "deleted": "Team “{name}” deleted"
+      },
+      "summaryTeams": "{count} team | {count} teams",
+      "summaryMembers": "No members | {count} member | {count} members",
+      "namePlaceholder": "New team name",
+      "create": "Create",
+      "rename": "Rename",
+      "manageMembers": "Manage members",
+      "noRetro": "No retro planned",
+      "viewRetros": "View retros",
+      "retro": {
+        "active": "Active retro",
+        "pending": "To activate"
+      },
+      "nameRequired": "Give the team a name.",
+      "limitBanner": "Your plan doesn’t allow more teams. The Pro plan lets you create more.",
+      "seePlans": "See pricing",
+      "notDeletable": "Can’t be deleted: the team has members or a retro history.",
+      "confirmDeleteTitle": "Delete “{name}”?",
+      "confirmDeleteText": "This team has no members and no retros. This can’t be undone."
     },
     "retros": {
       "title": "Manage retros",
@@ -112,14 +153,19 @@
         "list": "Retro list",
         "associate": "Associate a retro",
         "links": "Existing associations",
-        "completed": "Completed retros"
+        "completed": "Completed retros",
+        "teams": "Teams",
+        "templates": "Retro templates"
       },
       "noLinks": "No associations yet.",
       "toast": {
         "loadRetrosError": "Failed to load retros",
         "loadSprintsError": "Failed to load sprints",
-        "loadTeamsError": "Failed to load teams"
-      }
+        "loadTeamsError": "Failed to load teams",
+        "loadLinksError": "Couldn’t load planned retros"
+      },
+      "toActivate": "{count} retro to activate | {count} retros to activate",
+      "upToDate": "All up to date"
     },
     "retroDeRetro": {
       "close": "Close retro",
@@ -127,6 +173,22 @@
         "closed": "Retro closed successfully",
         "closeError": "Failed to close the retro",
         "loadError": "Failed to load data"
+      },
+      "hint": "Go back over the previous sprint’s sticky notes and annotations, then close the retro of retros."
+    },
+    "platform": {
+      "title": "Reflecto platform",
+      "plans": "Plan breakdown",
+      "colActivity": "Last activity",
+      "noActivity": "No activity",
+      "filterInactive": "Inactive",
+      "kpi": {
+        "companies": "Companies",
+        "active": "Active (30 d)",
+        "members": "Members",
+        "inactiveMembers": "Accounts not activated",
+        "openRetros": "Open retros",
+        "over": "Over limit"
       }
     }
   }

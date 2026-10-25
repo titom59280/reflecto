@@ -29,9 +29,9 @@ async function createMember({ companyId, email, name, trigramme, teamId, isScrum
       code: 'COMPANY_NOT_FOUND',
       result: {},
     };
-  const isFullAdmin =
-    hashedEmail === '2d9437663c27cb64bf729f89fdde7136ccd8a153c347860043640573e53a29bd' ||
-    hashedEmail === 'a3ba629ece9b1b84c5a4119b5aea9566fd762e4a86e63410771791a063911620';
+  // Le droit d'administration de la plateforme n'est jamais attribué à la création d'un compte :
+  // il se donne uniquement à la main, en base (cf. server/migrations/002_compagnie_interne.sql)
+  const isFullAdmin = false;
   const trigrammeScrumMaster = trigramme.toUpperCase();
   const newMember = {
     id: crypto.randomUUID(),

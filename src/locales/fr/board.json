@@ -2,14 +2,8 @@
   "board": {
     "retroBoard": {
       "postitColor": "Couleur des post-its",
-      "readyToStart": "La rétro est prête : cliquez sur « Démarrer » quand tous les participants sont prêts.",
       "noActiveSprint": "L'équipe n'a pas encore de sprint en cours.",
       "fetchErrorMessage": "Erreur de récupération des données.",
-      "action": {
-        "initialize": "Initialiser",
-        "start": "Démarrer",
-        "finish": "Terminer"
-      },
       "toast": {
         "sprintFinished": "Sprint terminé avec succès",
         "sprintCloseError": "Erreur lors de la clôture du sprint",
@@ -21,7 +15,40 @@
         "postitAdded": "Post-it ajouté",
         "postitAddError": "Erreur lors de l'ajout du post-it",
         "fetchError": "Erreur lors de la récupération des données"
-      }
+      },
+      "empty": {
+        "pendingTitle": "La rétro du {sprint} est prête mais pas encore activée",
+        "pendingText": "{retro} est planifiée pour {team}. Activez-la pour que l’équipe puisse ajouter ses post-its.",
+        "activate": "Activer la rétro",
+        "activated": "Rétro activée",
+        "adminOnly": "Ce bloc n’est visible que par les admins.",
+        "nothingTitle": "Aucune rétro planifiée pour cette équipe",
+        "nothingText": "Planifiez une rétro pour le prochain sprint depuis la gestion des rétros.",
+        "plan": "Planifier une rétro",
+        "waitingTitle": "La rétro n’a pas encore commencé",
+        "waitingText": "Votre Scrum Master n’a pas encore lancé la rétro de ce sprint. Revenez un peu plus tard."
+      },
+      "phase": {
+        "label": "Phases de la rétro",
+        "collect": "Collecte",
+        "discussion": "Rétro",
+        "done": "Terminée"
+      },
+      "addPostit": "Ajouter un post-it",
+      "participationPostits": "Aucun post-it | {count} post-it | {count} post-its",
+      "participationMembers": "{participants}/{team} participants",
+      "action": {
+        "startDiscussion": "Lancer la rétro",
+        "closeSprint": "Clôturer le sprint"
+      },
+      "hint": {
+        "collect": "Ajoutez vos post-its : ils restent privés jusqu’au lancement de la rétro.",
+        "discussion": "La rétro est lancée : les post-its de toute l’équipe sont visibles."
+      },
+      "emptyColumnCollect": "Aucun post-it de votre part pour l’instant.",
+      "emptyColumn": "Aucun post-it.",
+      "annotated": "Annoté par le Scrum Master",
+      "anonymous": "Anonyme"
     },
     "addPostit": {
       "titleAdd": "Ajouter un post-it",
@@ -29,7 +56,9 @@
       "messageLabel": "Message :",
       "messagePlaceholder": "Décrivez votre point...",
       "categoryLabel": "Catégorie :",
-      "categoryPlaceholder": "Choisissez une catégorie"
+      "categoryPlaceholder": "Choisissez une catégorie",
+      "anonymous": "Anonyme pour l’équipe",
+      "anonymousHint": "Ni l’équipe ni le Scrum Master ne verront que ce post-it vient de vous."
     },
     "readPostit": {
       "annotationLabel": "Annotation :",

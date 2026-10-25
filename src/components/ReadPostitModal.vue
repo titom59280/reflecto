@@ -8,7 +8,9 @@
         }}</span>
         <div class="info">
           <span class="category">{{ post.categoryName }}</span>
-          <span class="trigram">{{ post.trigramme }}</span>
+          <span class="trigram">{{
+            post.isAnonymous ? $t('board.retroBoard.anonymous') : post.trigramme
+          }}</span>
         </div>
         <div class="annotation-section">
           <label>{{ $t('board.readPostit.annotationLabel') }}</label>

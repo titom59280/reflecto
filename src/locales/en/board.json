@@ -2,14 +2,8 @@
   "board": {
     "retroBoard": {
       "postitColor": "Sticky note color",
-      "readyToStart": "The retro is ready: click \"Start\" once all participants are ready.",
       "noActiveSprint": "The team has no sprint in progress yet.",
       "fetchErrorMessage": "Could not load data.",
-      "action": {
-        "initialize": "Initialize",
-        "start": "Start",
-        "finish": "Finish"
-      },
       "toast": {
         "sprintFinished": "Sprint finished successfully",
         "sprintCloseError": "Error while closing the sprint",
@@ -21,7 +15,40 @@
         "postitAdded": "Sticky note added",
         "postitAddError": "Error while adding the sticky note",
         "fetchError": "Error while loading data"
-      }
+      },
+      "empty": {
+        "pendingTitle": "The {sprint} retro is ready but not activated yet",
+        "pendingText": "{retro} is planned for {team}. Activate it so the team can add sticky notes.",
+        "activate": "Activate retro",
+        "activated": "Retro activated",
+        "adminOnly": "Only admins can see this block.",
+        "nothingTitle": "No retro planned for this team",
+        "nothingText": "Plan a retro for the next sprint from retro management.",
+        "plan": "Plan a retro",
+        "waitingTitle": "The retro hasn’t started yet",
+        "waitingText": "Your Scrum Master hasn’t started this sprint’s retro yet. Check back a bit later."
+      },
+      "phase": {
+        "label": "Retro phases",
+        "collect": "Collect",
+        "discussion": "Retro",
+        "done": "Finished"
+      },
+      "addPostit": "Add a sticky note",
+      "participationPostits": "No sticky notes | {count} sticky note | {count} sticky notes",
+      "participationMembers": "{participants}/{team} participants",
+      "action": {
+        "startDiscussion": "Start the retro",
+        "closeSprint": "Close the sprint"
+      },
+      "hint": {
+        "collect": "Add your sticky notes: they stay private until the retro starts.",
+        "discussion": "The retro has started: the whole team’s sticky notes are visible."
+      },
+      "emptyColumnCollect": "No sticky notes from you yet.",
+      "emptyColumn": "No sticky notes.",
+      "annotated": "Annotated by the Scrum Master",
+      "anonymous": "Anonymous"
     },
     "addPostit": {
       "titleAdd": "Add a sticky note",
@@ -29,7 +56,9 @@
       "messageLabel": "Message:",
       "messagePlaceholder": "Describe your point...",
       "categoryLabel": "Category:",
-      "categoryPlaceholder": "Choose a category"
+      "categoryPlaceholder": "Choose a category",
+      "anonymous": "Anonymous to the team",
+      "anonymousHint": "Neither the team nor the Scrum Master will see that this sticky note is yours."
     },
     "readPostit": {
       "annotationLabel": "Annotation:",

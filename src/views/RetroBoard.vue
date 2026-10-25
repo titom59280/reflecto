@@ -1,63 +1,183 @@
 <template>
   <div class="retro-page">
-    <div v-if="noRetroMessage || !retro" class="no-access">
-      {{ noRetroMessage ? $t(noRetroMessage) : '' }}
-    </div>
+    <template v-if="noRetroMessage || !retro">
+      <!-- Pas de rétro active : admin = action, membre = message d'attente -->
+      <div v-if="noRetroMessage === 'board.retroBoard.noActiveSprint'" class="board-empty">
+        <template v-if="isScrumMaster && pendingLink">
+          <div class="empty-icon pending"><i class="fa-solid fa-play" aria-hidden="true"></i></div>
+          <h3>
+            {{ $t('board.retroBoard.empty.pendingTitle', { sprint: pendingLink.sprintName }) }}
+          </h3>
+          <p>
+            {{
+              $t('board.retroBoard.empty.pendingText', {
+                retro: pendingLink.retroName,
+                team: pendingLink.teamName,
+              })
+            }}
+          </p>
+          <button class="empty-btn" :disabled="activating" @click="activatePendingLink">
+            {{ $t('board.retroBoard.empty.activate') }}
+          </button>
+          <div class="admin-note">
+            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+            {{ $t('board.retroBoard.empty.adminOnly') }}
+          </div>
+        </template>
+        <template v-else-if="isScrumMaster">
+          <div class="empty-icon"><i class="fa-solid fa-calendar-plus" aria-hidden="true"></i></div>
+          <h3>{{ $t('board.retroBoard.empty.nothingTitle') }}</h3>
+          <p>{{ $t('board.retroBoard.empty.nothingText') }}</p>
+          <router-link
+            class="empty-btn"
+            :to="{ path: '/admin/retros', query: { plan: getTeamId() } }"
+          >
+            {{ $t('board.retroBoard.empty.plan') }}
+          </router-link>
+          <div class="admin-note">
+            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+            {{ $t('board.retroBoard.empty.adminOnly') }}
+          </div>
+        </template>
+        <template v-else>
+          <div class="empty-icon waiting">
+            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+          </div>
+          <h3>{{ $t('board.retroBoard.empty.waitingTitle') }}</h3>
+          <p>{{ $t('board.retroBoard.empty.waitingText') }}</p>
+        </template>
+      </div>
+      <div v-else class="no-access">
+        {{ noRetroMessage ? $t(noRetroMessage) : '' }}
+      </div>
+    </template>
 
-    <div v-else class="retro-columns">
-      <div v-for="cat in categories" :key="cat.id" class="retro-column">
-        <h3>{{ cat.name }}</h3>
-        <img v-if="cat.image" :src="cat.image" class="category-image" />
-        <p class="description">{{ cat.description }}</p>
-        <div v-if="messageToDisplay === ''" class="post-it-container">
+    <div v-else class="board">
+      <!-- Bandeau : rétro, équipe, sprint, phase et actions -->
+      <div class="board-bar">
+        <div class="board-title">
+          <h2>{{ retro.name }}</h2>
+          <p>{{ currentLink.teamName }} · {{ currentLink.sprintName }}</p>
+        </div>
+
+        <ol class="phases" :aria-label="$t('board.retroBoard.phase.label')">
+          <li :class="isCollecting ? 'on' : 'done'">
+            <span class="phase-dot">
+              <i v-if="!isCollecting" class="fa-solid fa-check" aria-hidden="true"></i>
+              <template v-else>1</template>
+            </span>
+            {{ $t('board.retroBoard.phase.collect') }}
+          </li>
+          <li :class="{ on: !isCollecting }">
+            <span class="phase-dot">2</span>{{ $t('board.retroBoard.phase.discussion') }}
+          </li>
+          <li><span class="phase-dot">3</span>{{ $t('board.retroBoard.phase.done') }}</li>
+        </ol>
+
+        <div class="board-actions">
+          <span v-if="isScrumMaster && isCollecting && stats" class="participation">
+            {{ $t('board.retroBoard.participationPostits', stats.total) }} ·
+            {{
+              $t('board.retroBoard.participationMembers', {
+                participants: stats.participants,
+                team: stats.teamMembers,
+              })
+            }}
+          </span>
+          <template v-if="isCollecting">
+            <button class="board-btn ghost" type="button" @click="showColorPicker = true">
+              <i class="fa-solid fa-palette" aria-hidden="true"></i>
+              {{ $t('board.retroBoard.postitColor') }}
+            </button>
+            <button
+              class="board-btn"
+              :class="isScrumMaster ? 'secondary' : 'primary'"
+              type="button"
+              @click="openAddModal"
+            >
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+              {{ $t('board.retroBoard.addPostit') }}
+            </button>
+          </template>
+          <button
+            v-if="isScrumMaster"
+            class="board-btn"
+            :class="isCollecting ? 'primary' : 'secondary'"
+            type="button"
+            @click="actionOnRetro"
+          >
+            {{
+              isCollecting
+                ? $t('board.retroBoard.action.startDiscussion')
+                : $t('board.retroBoard.action.closeSprint')
+            }}
+          </button>
+        </div>
+      </div>
+
+      <p class="phase-hint">
+        {{
+          isCollecting
+            ? $t('board.retroBoard.hint.collect')
+            : $t('board.retroBoard.hint.discussion')
+        }}
+      </p>
+
+      <div class="retro-columns">
+        <section v-for="cat in categories" :key="cat.id" class="retro-column">
+          <header class="column-head">
+            <img v-if="cat.image" :src="cat.image" :alt="cat.name" class="category-image" />
+            <div class="column-title">
+              <h3>{{ cat.name }}</h3>
+              <span class="count">{{ categoryCount(cat.name) }}</span>
+            </div>
+            <p class="description">{{ cat.description }}</p>
+          </header>
+
           <transition-group name="postit" tag="div" class="postit-list">
             <div
               v-for="post in filteredPostIts(cat.name)"
               :key="post.id"
               class="post-it"
-              :style="{
-                backgroundColor: post.color,
-                background: post.color,
-              }"
-              @mouseenter="hoveredPostId = post.id"
-              @mouseleave="hoveredPostId = null"
+              :class="{ clickable: isClickable(post) }"
+              :style="{ background: post.color }"
+              :title="post.message"
               @click="handlePostitClick(post)"
             >
               <p class="post-text">{{ truncateText(post.message) }}</p>
-              <span class="trigram">{{ post.trigramme }}</span>
+              <span class="post-footer">
+                <i
+                  v-if="post.annotation"
+                  class="fa-solid fa-comment-dots annotation"
+                  :title="$t('board.retroBoard.annotated')"
+                ></i>
+                <span v-if="post.isAnonymous" class="trigram anonymous-label">
+                  <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
+                  <!-- Jamais « (vous) » : le tableau est souvent projeté devant toute l'équipe -->
+                  {{ $t('board.retroBoard.anonymous') }}
+                </span>
+                <span v-else class="trigram">{{ post.trigramme }}</span>
+              </span>
               <button
-                v-if="hoveredPostId === post.id && canDelete(post)"
+                v-if="canDelete(post)"
                 class="btn-delete"
+                type="button"
+                :aria-label="$t('common.delete')"
                 @click.stop="confirmDelete(post.id)"
               >
                 ✖
               </button>
             </div>
           </transition-group>
-        </div>
+          <p v-if="!filteredPostIts(cat.name).length" class="empty-column">
+            {{
+              isCollecting
+                ? $t('board.retroBoard.emptyColumnCollect')
+                : $t('board.retroBoard.emptyColumn')
+            }}
+          </p>
+        </section>
       </div>
-    </div>
-    <div v-if="messageToDisplay !== ''" class="start-retro-explain">
-      <span>{{ $t(messageToDisplay) }}</span>
-    </div>
-    <div v-if="retro && !noRetroMessage" class="add-button-container">
-      <button
-        v-if="currentLink && !currentLink.isRetroInProgress && !initializedRetro"
-        class="add-postit-btn"
-        @click="openAddModal"
-      >
-        {{ $t('common.add') }}
-      </button>
-      <button
-        v-if="currentLink && !currentLink.isRetroInProgress && !initializedRetro"
-        class="add-postit-btn"
-        @click="showColorPicker = true"
-      >
-        {{ $t('board.retroBoard.postitColor') }}
-      </button>
-      <button v-if="isScrumMaster" class="add-postit-btn" @click="actionOnRetro">
-        {{ getActionOnRetroButtonLabel() }}
-      </button>
     </div>
   </div>
   <ColorPickerModal
@@ -108,12 +228,16 @@
 <script>
 import retroService from '@/services/retroService';
 import authService from '@/services/authService';
+import AdminService from '@/admin/AdminService';
 import AddPostitModal from '@/components/AddPostitModal.vue';
 import ReadPostitModal from '@/components/ReadPostitModal.vue';
 import StartRetroModeModal from '@/components/StartRetroModeModal.vue';
 import CloseSprintModal from '@/components/CloseSprintModal.vue';
 import DeletePostitModal from '@/components/DeletePostitModal.vue';
 import ColorPickerModal from '@/components/ColorPickerModal.vue';
+
+// Mise à jour automatique du tableau (phase et post-its)
+const POLL_INTERVAL_MS = 15000;
 
 export default {
   components: {
@@ -137,16 +261,19 @@ export default {
       user: authService.getUser(),
       isScrumMaster: false,
       currentLink: null,
+      // Rétro planifiée mais pas encore activée (visible uniquement par les admins)
+      pendingLink: null,
+      activating: false,
+      loadedTeamId: null,
       showCloseModal: false,
       showColorPicker: false,
-      initializedRetro: false,
       alreadyFetchData: false,
-      hoveredPostId: null,
+      // Participation pendant la collecte (Scrum Master)
+      stats: null,
+      pollTimer: null,
       readModalVisible: false,
       selectedPostit: null,
       deleteModalVisible: false,
-      // clé i18n (vide = aucun message)
-      messageToDisplay: '',
       nextSprintName: '',
       teams: [],
       retro: null,
@@ -165,14 +292,14 @@ export default {
     showTrigram() {
       return this.currentLink?.showTrigram || this.isScrumMaster;
     },
-    canAddPostits() {
-      return this.currentLink && !this.currentLink.isRetroDone;
+    // Collecte : la rétro n'est pas encore lancée (chacun ne voit que ses post-its)
+    isCollecting() {
+      return !!this.currentLink && !this.currentLink.isRetroInProgress;
     },
   },
   watch: {
     selectedTeamId(newId) {
-      console.log('selectedTeam is ', newId);
-      if (newId && !this.alreadyFetchData) {
+      if (newId && (newId !== this.loadedTeamId || !this.alreadyFetchData)) {
         this.fetchLinkData();
       }
     },
@@ -181,20 +308,29 @@ export default {
     if (!this.alreadyFetchData) {
       this.fetchLinkData();
     }
+    // Mise à jour automatique : changement de phase et post-its, sans recharger la page
+    this.pollTimer = setInterval(this.refreshBoard, POLL_INTERVAL_MS);
+  },
+  beforeUnmount() {
+    clearInterval(this.pollTimer);
   },
   methods: {
     async handleSprintClosure() {
       this.showCloseModal = false;
       try {
+        // getTeamId() et non selectedTeamId (vide quand il n'y a qu'une équipe)
         const resultFinish = await retroService.finishRetro(
           this.currentLink.id,
           this.nextSprintId,
-          this.selectedTeamId
+          this.getTeamId()
         );
 
         if (resultFinish.isSuccess) {
           this.$root.showToast(this.$t('board.retroBoard.toast.sprintFinished'), 'success');
-          window.location.reload();
+          this.nextSprint = null;
+          this.nextSprintId = null;
+          this.nextSprintName = '';
+          await this.fetchLinkData();
           return;
         }
 
@@ -205,8 +341,6 @@ export default {
     },
     async startRetro() {
       this.startRetroModal = false;
-      this.messageToDisplay = '';
-      this.currentLink.isRetroInProgress = true;
       const resultStart = await retroService.startRetro(this.currentLink.id);
 
       if (!resultStart.isSuccess) {
@@ -214,6 +348,8 @@ export default {
         return;
       }
 
+      this.currentLink.isRetroInProgress = true;
+      this.stats = null;
       await this.fetchPostIts();
     },
     async populateNextSprint() {
@@ -232,12 +368,6 @@ export default {
         this.nextSprintId = this.nextSprint.id;
       }
     },
-    async initializeRetro() {
-      this.populateNextSprint();
-      this.messageToDisplay = 'board.retroBoard.readyToStart';
-      this.initializedRetro = true;
-      this.postits = [];
-    },
     async showNextPostit(annotation) {
       if (
         this.selectedPostit !== undefined &&
@@ -252,54 +382,15 @@ export default {
       this.readModalVisible = false;
     },
     async actionOnRetro() {
-      let currentStateRetroForAction = this.getCurrentStateRetro();
-
-      switch (currentStateRetroForAction) {
-        case 1:
-          this.initializeRetro();
-          break;
-        case 2:
-          this.startRetroModal = true;
-          break;
-        case 3:
-          if (!this.nextSprint) {
-            await this.populateNextSprint();
-          }
-          this.showCloseModal = true;
-          break;
-        default:
-          this.$root.showToast(this.$t('board.retroBoard.toast.unexpectedAction'), 'error');
-          break;
+      // Collecte → lancer la discussion ; discussion → clôturer le sprint
+      if (this.isCollecting) {
+        this.startRetroModal = true;
+        return;
       }
-    },
-    getCurrentStateRetro() {
-      if (!this.currentLink) {
-        return -1;
+      if (!this.nextSprint) {
+        await this.populateNextSprint();
       }
-      if (this.currentLink.isRetroDone) {
-        return 4;
-      }
-
-      if (this.currentLink.isRetroInProgress) {
-        return 3;
-      }
-
-      if (!this.currentLink.isRetroInProgress && this.initializedRetro) {
-        return 2;
-      }
-
-      return 1;
-    },
-    getActionOnRetroButtonLabel() {
-      let currentState = this.getCurrentStateRetro();
-      switch (currentState) {
-        case 3:
-          return this.$t('board.retroBoard.action.finish');
-        case 2:
-          return this.$t('board.retroBoard.action.start');
-        default:
-          return this.$t('board.retroBoard.action.initialize');
-      }
+      this.showCloseModal = true;
     },
     cancelEditOrAddPostIt() {
       this.selectedPostit = null;
@@ -327,19 +418,24 @@ export default {
       this.deletePostItId = id;
       this.deleteModalVisible = true;
     },
+    // Suppression : son propre post-it, pendant la collecte (règle identique côté serveur)
     canDelete(post) {
-      return this.user.id === post.memberId;
+      return this.isCollecting && this.user.id === post.memberId;
+    },
+    isClickable(post) {
+      return (
+        (this.isCollecting && post.memberId === this.user.id) ||
+        (!this.isCollecting && this.isScrumMaster)
+      );
     },
     handlePostitClick(post) {
       const isMine = post.memberId === this.user.id;
-      const isMaster = this.user.isScrumMaster;
-      const isRetroStarted = this.currentLink.isRetroInProgress;
-      if (isMine && !isRetroStarted) {
+      if (isMine && this.isCollecting) {
         this.openEditModal(post);
         return;
       }
 
-      if (isMaster && isRetroStarted) {
+      if (this.isScrumMaster && !this.isCollecting) {
         this.openReadModal(post);
       }
     },
@@ -391,11 +487,12 @@ export default {
         this.$root.showToast(this.$t('board.retroBoard.toast.colorChangeError'), 'error');
       }
     },
-    async handlePostitCreation({ message, category }) {
+    async handlePostitCreation({ message, category, isAnonymous }) {
       try {
         if (this.selectedPostit !== null) {
           this.selectedPostit.message = message;
           this.selectedPostit.categoryName = category;
+          this.selectedPostit.isAnonymous = isAnonymous;
           this.updatePostit();
           return;
         }
@@ -404,6 +501,7 @@ export default {
           message,
           categoryName: category,
           sprintRetroTeamLinkId: this.currentLink.id,
+          isAnonymous,
         };
         const resultCreatePostIt = await retroService.createPostit(newPostit);
         if (!resultCreatePostIt.isSuccess) {
@@ -433,6 +531,9 @@ export default {
       ) {
         return this.selectedTeamId;
       }
+      if (this.user.isScrumMaster && this.$route.query.team) {
+        return this.$route.query.team;
+      }
       return this.user.teamId;
     },
     async getLinksUser() {
@@ -453,6 +554,22 @@ export default {
       }
       return resultGetUserRetroLinks.result;
     },
+    async activatePendingLink() {
+      this.activating = true;
+      try {
+        const result = await AdminService.activateSprint(this.pendingLink.id);
+        if (!result.isSuccess) {
+          this.$root.showToast(this.$apiMessage(result), 'error', 5000);
+          return;
+        }
+        this.$root.showToast(this.$t('board.retroBoard.empty.activated'), 'success');
+        await this.fetchLinkData();
+      } catch (err) {
+        this.$root.showToast(this.$apiMessage(err.response?.data), 'error');
+      } finally {
+        this.activating = false;
+      }
+    },
     async fetchLinkData() {
       try {
         if (!this.user) {
@@ -461,11 +578,20 @@ export default {
         }
         const teamId = this.getTeamId();
         this.alreadyFetchData = true;
+        this.loadedTeamId = teamId;
         this.isScrumMaster = this.user.isScrumMaster;
-        const links = await this.getLinksUser();
+        this.currentLink = null;
+        this.pendingLink = null;
+        this.retro = null;
+        const links = (await this.getLinksUser()) || [];
+        // Une autre équipe a été choisie entre-temps : ce chargement est périmé
+        if (teamId !== this.getTeamId()) return;
 
-        if (links.length > 0) {
-          this.currentLink = links.find((link) => link.teamId === teamId && link.isActif);
+        this.currentLink = links.find((link) => link.teamId === teamId && link.isActif);
+        if (this.isScrumMaster) {
+          this.pendingLink = links.find(
+            (link) => link.teamId === teamId && !link.isActif && !link.isRetroDone
+          );
         }
 
         if (this.user.isScrumMaster) {
@@ -487,6 +613,7 @@ export default {
         this.noRetroMessage = '';
         if (!this.currentLink) {
           this.noRetroMessage = 'board.retroBoard.noActiveSprint';
+          this.alreadyFetchData = false;
           return;
         }
 
@@ -514,9 +641,49 @@ export default {
         this.noRetroMessage = 'board.retroBoard.fetchErrorMessage';
       }
     },
+    // Badge des colonnes : en collecte, le Scrum Master voit le total ; les autres leurs post-its
+    categoryCount(categoryName) {
+      if (this.isScrumMaster && this.isCollecting && this.stats) {
+        return this.stats.byCategory.find((c) => c.categoryName === categoryName)?.count || 0;
+      }
+      return this.filteredPostIts(categoryName).length;
+    },
+    async fetchStats() {
+      if (!this.isScrumMaster || !this.isCollecting) return;
+      try {
+        const result = await retroService.getPostitStats(this.currentLink.id);
+        if (result.isSuccess) this.stats = result.result;
+      } catch (err) {
+        // Indicatif seulement : pas de message si la participation n'est pas disponible
+      }
+    },
+    // Rafraîchissement silencieux (sans toast) : nouvelle phase, nouveaux post-its
+    async refreshBoard() {
+      if (!this.currentLink || document.hidden) return;
+      try {
+        const teamId = this.getTeamId();
+        const result = this.isScrumMaster
+          ? await retroService.getRetroLinksByTeamId(teamId)
+          : await retroService.getUserRetroLinks(this.user.id);
+        if (!result.isSuccess || teamId !== this.getTeamId()) return;
+        const link = result.result.find((l) => l.teamId === teamId && l.isActif);
+        const phaseChanged =
+          !link ||
+          link.id !== this.currentLink.id ||
+          link.isRetroInProgress !== this.currentLink.isRetroInProgress;
+        if (phaseChanged) {
+          await this.fetchLinkData();
+          return;
+        }
+        await this.fetchPostIts();
+      } catch (err) {
+        // Nouvel essai au prochain intervalle
+      }
+    },
     async fetchPostIts() {
       if (!this.currentLink) return;
-      if (this.isScrumMaster && this.currentLink.isRetroInProgress) {
+      // Discussion : tout le monde voit tous les post-its. Collecte : chacun ne voit que les siens.
+      if (this.currentLink.isRetroInProgress) {
         const resultPostIts = await retroService.getPostitsByLink(this.currentLink.id);
         if (!resultPostIts.isSuccess) {
           this.$root.showToast(this.$apiMessage(resultPostIts), 'error');
@@ -533,13 +700,14 @@ export default {
       }
       const all = resultAll.result;
       this.postits = all.filter((p) => p.sprintRetroTeamLinkId === this.currentLink.id);
+      await this.fetchStats();
     },
-    truncateText(text, maxChars = 60) {
+    truncateText(text, maxChars = 140) {
       if (!text) return '';
       return text.length > maxChars ? text.slice(0, maxChars) + '…' : text;
     },
     openAddModal() {
-      // Tu pourras afficher une modale ou une interface pour créer un post-it
+      this.selectedPostit = null;
       this.showModal = true;
     },
     filteredPostIts(category) {
@@ -549,54 +717,92 @@ export default {
 };
 </script>
 
+<style scoped src="@/styles/retro-board.css"></style>
+
 <style scoped>
-.retro-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.retro-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  height: 100%;
-}
-.retro-column {
-  padding: 1rem;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.post-it {
-  background: #fff;
-  border: 1px solid #ccc;
-  margin: 0.5rem 0;
-  padding: 0.5rem;
-  border-radius: 8px;
-}
-.btn-delete {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #dc3545;
-  border: none;
-  border-radius: 50%;
-  color: white;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
-  display: flex;
-  justify-content: center;
-  opacity: 0.9;
-  cursor: pointer;
-  transition: background 0.2s;
+/* ===== État vide (aucune rétro active) ===== */
+.board-empty {
+  max-width: 520px;
+  margin: 3rem auto;
+  background: #ffffff;
+  border: 1px solid #ece7da;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.btn-delete:hover {
-  background-color: white;
-  color: #dc3545;
-  border: 1px solid #dc3545;
+.board-empty h3 {
+  margin: 0 0 0.5rem;
+  color: #003d47;
+  font-size: 1.25rem;
+}
+
+.board-empty p {
+  color: #6b7678;
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.empty-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  background: #e6f0f2;
+  color: #005a64;
+}
+
+.empty-icon.pending {
+  background: #faeeda;
+  color: #854f0b;
+}
+
+.empty-btn {
+  display: inline-block;
+  background: #005a64;
+  color: #ffffff;
+  border: 1px solid #005a64;
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.empty-btn:hover {
+  background: #002b36;
+}
+
+.empty-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.admin-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #6b7678;
+  background: #f6f3ea;
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+@media (max-width: 480px) {
+  .board-empty {
+    margin: 1.5rem auto;
+    padding: 1.5rem 1rem;
+  }
+
+  .empty-btn {
+    width: 100%;
+  }
 }
 
 .no-access {
@@ -607,318 +813,5 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-}
-.retro-board {
-  padding: 2rem;
-  min-height: 100vh;
-}
-
-.columns {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.column {
-  border-radius: 12px;
-  padding: 1rem;
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: background 0.3s ease;
-}
-
-.category-image {
-  height: 100px;
-  margin-bottom: 1rem;
-}
-
-.post-it-container {
-  background-color: #ebe4d7;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 95%;
-  border-radius: 5%;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #c5c5c5 #f5f5f5;
-}
-
-.start-retro-explain {
-  display: flex;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: #014d64;
-  flex: 1;
-}
-
-.description {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #4a3f35; /* marron doux, inspiré maquette */
-  line-height: 1.4;
-}
-
-.add-button-container {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  gap: 1.2rem;
-}
-
-.add-postit-btn {
-  background-color: #014d64;
-  color: white;
-  padding: 0.7rem 1.4rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.add-postit-btn:hover {
-  background-color: #02677a;
-}
-
-.post-it {
-  background: #fff89a;
-  color: #333;
-  margin: 0.5rem 0;
-  white-space: normal;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  line-height: 1.2;
-  font-size: 0.85rem;
-  transform: rotate(-1.5deg);
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.post-it::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 10px;
-  background: #000;
-  background: rgba(0, 0, 0, 0.05);
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-.fade-postit-enter-active {
-  transition: all 0.4s ease;
-}
-.fade-postit-enter-from {
-  transform: scale(0.6) rotate(-10deg);
-  opacity: 0;
-}
-.fade-postit-enter-to {
-  transform: rotate(-1.5deg);
-  opacity: 1;
-}
-
-.retro-page {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-}
-
-/* transition d'insertion */
-.postit-enter-active,
-.postit-leave-active {
-  transition: all 0.4s ease;
-}
-
-.postit-enter-from {
-  opacity: 0;
-  transform: scale(0.5) rotate(-8deg);
-}
-
-.postit-enter-to {
-  opacity: 1;
-  transform: scale(1) rotate(-1.5deg);
-}
-
-.postit-leave-to {
-  opacity: 0;
-  transform: scale(0.5) translateY(20px);
-}
-
-.postit-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 12px;
-  justify-items: center;
-  padding: 1rem;
-  max-height: 350px;
-  scroll-behavior: smooth;
-}
-
-/* Webkit (Chrome, Edge, Safari) */
-.post-it-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.post-it-container::-webkit-scrollbar-track {
-  background: #f5f5f5;
-  border-radius: 10px;
-}
-
-.post-it-container::-webkit-scrollbar-thumb {
-  background-color: #b4b4b4;
-  border-radius: 10px;
-  border: 2px solid #f5f5f5; /* padding via border */
-  transition: background 0.3s;
-}
-
-.post-it-container::-webkit-scrollbar-thumb:hover {
-  background-color: #888;
-}
-
-.post-it {
-  position: relative;
-  width: 105px;
-  height: 105px;
-  padding: 8px;
-  border-radius: 6px;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #333;
-  margin: 0.5rem 0;
-  white-space: normal;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  line-height: 1.2;
-  font-size: 0.85rem;
-  transform: rotate(-1.5deg);
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.post-text {
-  font-size: 0.8rem;
-  line-height: 1.1;
-  flex-grow: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.trigram {
-  font-size: 0.75rem;
-  color: #555;
-  text-align: right;
-  margin-top: 4px;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .retro-columns {
-    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-    gap: 0.75rem;
-  }
-
-  .retro-column {
-    padding: 0.75rem 0.5rem;
-  }
-
-  /* Titres et descriptions de catégorie plus compacts */
-  .retro-column h3 {
-    font-size: 1.1rem;
-    margin: 0 0 0.4rem;
-    text-align: center;
-  }
-
-  .category-image {
-    height: 64px;
-    margin-bottom: 0.5rem;
-  }
-
-  .description {
-    font-size: 0.95rem;
-    font-weight: 600;
-    line-height: 1.3;
-    margin: 0 0 0.75rem;
-  }
-
-  .post-it-container {
-    width: 100%;
-  }
-
-  .postit-list {
-    padding: 0.75rem;
-    gap: 10px;
-  }
-
-  .start-retro-explain {
-    padding: 0 0.5rem;
-    text-align: center;
-  }
-
-  .add-button-container {
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
-  }
-
-  .add-postit-btn {
-    min-height: 44px;
-  }
-
-  .btn-delete {
-    width: 28px;
-    height: 28px;
-    align-items: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .retro-column {
-    padding: 0.5rem 0.25rem;
-  }
-
-  .retro-column h3 {
-    font-size: 1rem;
-  }
-
-  .category-image {
-    height: 48px;
-  }
-
-  .description {
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .postit-list {
-    padding: 0.5rem;
-  }
-
-  /* Boutons d'action empilés sur toute la largeur */
-  .add-button-container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-
-  .add-postit-btn {
-    width: 100%;
-  }
 }
 </style>

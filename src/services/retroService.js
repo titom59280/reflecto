@@ -6,18 +6,25 @@ export default {
     return res.data;
   },
 
+  // Participation pendant la collecte (Scrum Master) : des chiffres, jamais de contenu
+  async getPostitStats(linkId) {
+    const res = await authService.instance.get(`/postits/stats/${linkId}`);
+    return res.data;
+  },
+
   async getPostitsByUser(linkId) {
     const res = await authService.instance.get(`/postits/me/${linkId}`);
     return res.data;
   },
 
   // 🔹 Créer un nouveau post-it
-  async createPostit({ message, authorId, categoryName, sprintRetroTeamLinkId }) {
+  async createPostit({ message, authorId, categoryName, sprintRetroTeamLinkId, isAnonymous }) {
     const res = await authService.instance.post(`/postits`, {
       message,
       authorId,
       categoryName,
       sprintRetroTeamLinkId,
+      isAnonymous: !!isAnonymous,
     });
     return res.data;
   },
@@ -31,12 +38,13 @@ export default {
   },
 
   // 🔹 Mettre à jour un post-it
-  async updatePostit({ id, message, categoryName, annotation }) {
+  async updatePostit({ id, message, categoryName, annotation, isAnonymous }) {
     const res = await authService.instance.put(`/postits`, {
       id,
       message,
       categoryName,
       annotation,
+      isAnonymous,
     });
     return res.data;
   },

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="retros-page">
     <div class="admin-header">
       <router-link v-if="!currentLinkId" to="/admin" class="back-admin-button">
         ← {{ $t('common.back') }}
@@ -9,76 +9,116 @@
       >
       <h1 class="page-title">{{ $t('admin.retros.title') }}</h1>
     </div>
+
     <RetroDeRetro v-if="currentLinkId" :current-link-id="currentLinkId" @close="closeRetro" />
-    <AdminTabs v-else :tabs="tabLabels">
-      <template #tab-0>
-        <div class="tab-content-animated">
-          <RetroCreate
-            :sprints="sprints"
-            :teams="teams"
-            :links="links"
-            @refresh="
-              fetchRetros();
-              fetchLinks();
-            "
-          />
+
+    <div v-else class="retros-content tab-content-animated">
+      <div class="toolbar">
+        <div class="seg" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            :aria-selected="tab === 'teams'"
+            :class="{ on: tab === 'teams' }"
+            @click="tab = 'teams'"
+          >
+            {{ $t('admin.retros.tabs.teams') }}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            :aria-selected="tab === 'templates'"
+            :class="{ on: tab === 'templates' }"
+            @click="tab = 'templates'"
+          >
+            {{ $t('admin.retros.tabs.templates') }}
+            <span class="count">({{ activeRetros.length }})</span>
+          </button>
         </div>
-      </template>
-      <template #tab-1>
-        <RetroList :retros="retros" @refresh="fetchRetros" />
-      </template>
-      <template #tab-2>
-        <RetroAssociate
-          :retros="retros"
-          :sprints="sprints"
+        <span v-if="pendingCount" class="alert-pill">
+          <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+          {{ $t('admin.retros.toActivate', pendingCount) }}
+        </span>
+        <span v-else-if="links.length" class="alert-pill ok">
+          <i class="fa-solid fa-check" aria-hidden="true"></i> {{ $t('admin.retros.upToDate') }}
+        </span>
+      </div>
+
+      <div class="retros-list">
+        <RetroTeams
+          v-if="tab === 'teams'"
           :teams="teams"
-          @refresh-links="fetchLinks"
-        />
-      </template>
-      <template #tab-3>
-        <div v-if="links.length === 0" class="no-access">{{ $t('admin.retros.noLinks') }}</div>
-        <div v-else class="retros-grid tab-content-animated">
-          <RetroLinks
-            :teams="teams"
-            :retros="retros"
-            :sprints="sprints"
-            :links="links"
-            @refresh-links="fetchLinks"
-            @start-retro="doRetroRetro"
-          />
-        </div>
-      </template>
-      <template #tab-4>
-        <RetroPreviousList
-          :retros="retros"
-          :teams="teams"
-          :sprints="sprints"
           :links="links"
+          :retros="retros"
+          :sprints="sprints"
           @refresh="fetchLinks"
+          @plan="openPlan"
+          @open-board="openBoard"
+          @start-retro="doRetroRetro"
+          @view-postits="viewPostits"
         />
-      </template>
-    </AdminTabs>
+        <RetroTemplates
+          v-else
+          :retros="retros"
+          :links="links"
+          @refresh="fetchRetros"
+          @create="openRetroForm(null)"
+          @edit="openRetroForm"
+        />
+      </div>
+    </div>
+
+    <!-- Gardée montée (v-show) pendant la création d'une rétro pour conserver le sprint choisi -->
+    <RetroPlanModal
+      v-if="planTeam"
+      v-show="!retroForm"
+      :team="planTeam"
+      :sprints="sprints"
+      :retros="activeRetros"
+      :links="links"
+      :selected-retro-id="planRetroId"
+      :selected-sprint-id="planSprintId"
+      @close="closePlan"
+      @planned="onPlanned"
+      @create-retro="openRetroForm(null, true)"
+    />
+
+    <RetroEdit
+      v-if="retroForm"
+      :retro="retroForm.retro"
+      :submit-label="retroForm.fromPlan ? $t('adminRetros.plan.createAndUse') : ''"
+      @close="closeRetroForm"
+      @saved="onRetroSaved"
+    />
+
+    <RetroPostitsModal
+      v-if="postitsLink"
+      :link="postitsLink"
+      :retro-name="nameOf(retros, postitsLink.retroId)"
+      :team-name="nameOf(teams, postitsLink.teamId)"
+      :sprint-name="nameOf(sprints, postitsLink.sprintId)"
+      @close="postitsLink = null"
+    />
   </div>
 </template>
 
 <script>
 import AdminService from './AdminService';
-import AdminTabs from './AdminTabs.vue';
 import RetroDeRetro from './RetroDeRetro.vue';
-import RetroAssociate from './Retros/RetroAssociate.vue';
-import RetroCreate from './Retros/RetroCreate.vue';
-import RetroLinks from './Retros/RetroLinks.vue';
-import RetroList from './Retros/RetroList.vue';
-import RetroPreviousList from './Retros/RetroPreviousList.vue';
+import RetroEdit from './Retros/RetroEdit.vue';
+import RetroPlanModal from './Retros/RetroPlanModal.vue';
+import RetroPostitsModal from './Retros/RetroPostitsModal.vue';
+import RetroTeams from './Retros/RetroTeams.vue';
+import RetroTemplates from './Retros/RetroTemplates.vue';
+
 export default {
   components: {
-    AdminTabs,
     RetroDeRetro,
-    RetroCreate,
-    RetroList,
-    RetroAssociate,
-    RetroLinks,
-    RetroPreviousList,
+    RetroEdit,
+    RetroPlanModal,
+    RetroPostitsModal,
+    RetroTeams,
+    RetroTemplates,
   },
   props: {
     selectedTeamId: {
@@ -88,57 +128,85 @@ export default {
   },
   data() {
     return {
-      openTeams: {},
-      messageError: '',
+      tab: 'teams',
       retros: [],
       currentLinkId: null,
       sprints: [],
       teams: [],
       links: [],
-      selectedTeamIdForRetroSprint: '',
-      viewAllLink: true,
-      selectedSprintId: '',
-      selectedRetroId: '',
-      newRetro: {
-        name: '',
-        categories: [{ name: '', description: '', image: null }],
-      },
+      planTeam: null,
+      planRetroId: '',
+      planSprintId: '',
+      // { retro: null | rétro à modifier, fromPlan: ouverte depuis « Planifier » }
+      retroForm: null,
+      postitsLink: null,
     };
   },
   computed: {
-    tabLabels() {
-      return [
-        { label: this.$t('admin.retros.tabs.create') },
-        { label: this.$t('admin.retros.tabs.list') },
-        { label: this.$t('admin.retros.tabs.associate') },
-        { label: this.$t('admin.retros.tabs.links') },
-        { label: this.$t('admin.retros.tabs.completed') },
-      ];
+    // Les rétros archivées restent chargées (noms de l'historique) mais ne sont plus proposées
+    activeRetros() {
+      return this.retros.filter((retro) => !retro.isArchived);
     },
-    retrosByTeam() {
-      const grouped = {};
-      for (const retro of this.retros) {
-        if (!grouped[retro.teamId]) {
-          grouped[retro.teamId] = [];
-        }
-        grouped[retro.teamId].push(retro);
-      }
-      return grouped;
+    pendingCount() {
+      return this.links.filter((l) => !l.isActif && !l.isRetroDone && !l.isClosed).length;
     },
   },
-  mounted() {
-    this.fetchRetros();
-    this.fetchSprints();
-    this.fetchLinks();
-    this.fetchTeams();
+  async mounted() {
+    await Promise.all([
+      this.fetchRetros(),
+      this.fetchSprints(),
+      this.fetchLinks(),
+      this.fetchTeams(),
+    ]);
+    // Lien direct depuis le tableau de rétro : /admin/retros?plan=<teamId>
+    const teamToPlan = this.$route.query.plan;
+    if (teamToPlan) this.openPlan(teamToPlan, this.$route.query.sprint || '');
   },
   methods: {
+    nameOf(list, id) {
+      return list.find((item) => item.id === id)?.name || '';
+    },
     closeRetro() {
       this.currentLinkId = null;
       this.fetchLinks();
     },
     doRetroRetro(linkId) {
       this.currentLinkId = linkId;
+    },
+    openBoard(teamId) {
+      this.$router.push({ path: '/retro', query: { team: teamId } });
+    },
+    viewPostits(link) {
+      this.postitsLink = link;
+    },
+    openPlan(teamId, sprintId = '') {
+      const team = this.teams.find((t) => t.id === teamId);
+      if (!team) return;
+      this.planRetroId = '';
+      this.planSprintId = sprintId;
+      this.planTeam = team;
+    },
+    closePlan() {
+      this.planTeam = null;
+      this.planRetroId = '';
+    },
+    onPlanned() {
+      this.closePlan();
+      this.tab = 'teams';
+      this.fetchLinks();
+    },
+    openRetroForm(retro, fromPlan = false) {
+      this.retroForm = { retro, fromPlan };
+    },
+    closeRetroForm() {
+      this.retroForm = null;
+    },
+    async onRetroSaved(savedRetro) {
+      const fromPlan = this.retroForm?.fromPlan;
+      this.retroForm = null;
+      await this.fetchRetros();
+      // Créée depuis « Planifier » : on revient à la planification avec la rétro sélectionnée
+      if (fromPlan && savedRetro?.id) this.planRetroId = savedRetro.id;
     },
     async fetchRetros() {
       try {
@@ -159,19 +227,23 @@ export default {
           this.$root.showToast(this.$apiMessage(resultSprints), 'error');
           return;
         }
-        this.sprints = resultSprints.result.filter((s) => !s.isRetroDone);
+        // Tous les sprints : les terminés servent à nommer l'historique
+        this.sprints = resultSprints.result;
       } catch (error) {
         this.$root.showToast(this.$t('admin.retros.toast.loadSprintsError'), 'error');
       }
     },
     async fetchLinks() {
-      const resultRetroLinks = await AdminService.getSprintRetroLinks();
-      if (!resultRetroLinks.isSuccess) {
-        this.$root.showToast(this.$apiMessage(resultRetroLinks), 'error');
-        return;
+      try {
+        const resultRetroLinks = await AdminService.getSprintRetroLinks();
+        if (!resultRetroLinks.isSuccess) {
+          this.$root.showToast(this.$apiMessage(resultRetroLinks), 'error');
+          return;
+        }
+        this.links = resultRetroLinks.result;
+      } catch (error) {
+        this.$root.showToast(this.$t('admin.retros.toast.loadLinksError'), 'error');
       }
-
-      this.links = resultRetroLinks.result;
     },
     async fetchTeams() {
       try {
@@ -181,9 +253,6 @@ export default {
           return;
         }
         this.teams = resultTeams.result;
-        this.teams.forEach((eq) => {
-          this.openTeams[eq.id] = false;
-        });
       } catch (error) {
         this.$root.showToast(this.$t('admin.retros.toast.loadTeamsError'), 'error');
       }
@@ -193,302 +262,133 @@ export default {
 </script>
 
 <style scoped>
-.admin-container {
-  background-color: #fffaf2;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  max-width: 800px;
+/* Contenu centré, même largeur que le tableau de bord d'administration */
+.retros-page {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.retros-page > .admin-header {
+  flex: none;
+}
+
+.retros-content {
+  width: 100%;
+  max-width: 1000px;
   margin: 0 auto;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-.retro-header-title {
-  font-size: 1.2rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.form-group label {
-  margin-bottom: 0.3rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.form-group input,
-.form-group select {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-/* Le bouton en dessous, à gauche */
-.btn-submit {
-  grid-column: 1 / -1; /* Force le bouton à s'étendre sur toute la ligne */
-  justify-self: start;
-  padding: 0.6rem 1.2rem;
-  background-color: #014d64; /* Couleur header */
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-submit:hover {
-  background-color: white;
-  color: #014d64;
-  border: 1px solid #014d64;
-}
-.category-group {
-  border: 1px solid #014d64;
-  border-radius: 4px;
-  padding: 12px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-button {
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: white;
-}
-
-button:not(.delete) {
-  background-color: #005a64;
-  border: 1px solid #005a64;
-  margin-bottom: 8px;
-}
-
-.delete {
-  background-color: #dc3545;
-  border: 1px solid #dc3545;
-}
-
-button:not(.delete):hover {
-  background-color: white;
-  color: #005a64;
-  border: 1px solid #005a64;
-}
-
-.delete:hover {
-  background-color: white;
-  color: #dc3545;
-  border: 1px solid #dc3545;
-}
-
-/* Affichage des équipes */
-.team-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.retro-card {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-left: 4px solid #006d77;
-  padding: 1rem;
-  border-radius: 6px;
-}
-
-.retro-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.retro-title {
-  font-weight: bold;
-  margin: 0.5rem 0 0.2rem;
-}
-
-.form-container {
-  background-color: #fff;
-  padding: 0.5rem;
-}
-
-.categories,
-.accordions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.retro-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-}
-
-.retro-card {
-  position: relative;
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.retro-header-title {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #014d64;
-}
-
-.retro-card p {
-  margin: 0.2rem 0;
-  color: #333;
-}
-
-.empty-text {
-  font-style: italic;
-  color: #777;
-}
-
-.retro-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.retro-group summary {
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 0.5rem;
-}
-
-.retro-group ul {
-  margin-left: 1rem;
-  padding-left: 1rem;
-  border-left: 2px solid #ccc;
-}
-.team-accordion {
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.accordion-header {
-  background: #f7f7f7;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.retro-list {
-  padding: 1rem;
-  background: #fff;
-}
-
-.infos {
-  display: flex;
-  justify-content: center;
-}
-
-.retro-card {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.retro-categories {
-  margin-top: 0.5rem;
-  padding-left: 1rem;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-.accordion-enter-active,
-.accordion-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-.accordion-enter,
-.accordion-leave-to {
-  opacity: 0;
-}
-.badge {
-  background-color: #4caf50;
-  color: white;
-  border-radius: 6px;
-  padding: 0.5rem;
-}
-
-.actions {
+  /* La page occupe la hauteur disponible : seule la liste défile, le haut reste visible */
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-.team-panel {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  overflow: hidden;
+.retros-content > .toolbar {
+  flex: none;
 }
 
-.team-header {
-  background: #f0f0f0;
-  padding: 10px;
-  cursor: pointer;
+.retros-list {
+  flex: 0 1 auto;
+  min-height: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
 
-.panel-content {
-  padding: 10px;
-  background: #fff;
-}
-.no-access {
-  color: #c00;
-  font-weight: bold;
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+/* Vue Équipes : la grille défile ; marge interne pour ne pas couper le halo orange */
+.retros-list > .teams {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px;
+  margin: -4px;
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .no-access {
-    text-align: center;
+  /* Sur mobile, toute la page défile */
+  .retros-page,
+  .retros-content,
+  .retros-list {
+    display: block;
   }
 
-  /* Le style scopé .retro-container (1fr 1fr) s'applique aussi à la racine de
-     RetroAssociate : on reprend ici son comportement responsive */
-  .retro-container {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
-    gap: 0 1rem;
+  .retros-list > .teams {
+    overflow-y: visible;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.seg {
+  display: inline-flex;
+  background: #ffffff;
+  border: 1px solid #ece7da;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.seg button {
+  border: 0;
+  background: none;
+  padding: 0.6rem 1.1rem;
+  border-radius: 9px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #5b6669;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.seg button.on {
+  background: #003d47;
+  color: #ffffff;
+}
+
+.seg .count {
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+.alert-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #faeeda;
+  color: #633806;
+  border: 1px solid #ef9f27;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.alert-pill.ok {
+  background: #eaf3de;
+  color: #27500a;
+  border-color: #97c459;
+}
+
+.back-admin-button {
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .seg {
+    width: 100%;
   }
 
-  /* Le lien « Retour » (balise a sans href) doit rester cliquable au doigt */
-  a.back-admin-button {
-    cursor: pointer;
-    min-height: 30px;
-    display: inline-flex;
-    align-items: center;
+  .seg button {
+    flex: 1;
+    padding: 0.55rem 0.5rem;
+    font-size: 0.92rem;
   }
 }
 </style>

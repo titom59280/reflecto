@@ -8,6 +8,8 @@ const upload = multer({ dest: 'uploads/' });
 router.get('/', auth, controller.getAll);
 router.get('/categories/:id', auth, controller.getCategories);
 router.post('/', auth, requireScrumMaster, upload.any(), controller.create);
+router.put('/:id/archive', auth, requireScrumMaster, controller.setArchived);
+router.put('/:id', auth, requireScrumMaster, upload.any(), controller.update);
 router.delete('/:id', auth, requireScrumMaster, controller.remove);
 
 module.exports = router;
